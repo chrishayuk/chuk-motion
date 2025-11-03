@@ -25,6 +25,7 @@ class ComponentInfo(BaseModel):
     template_path: Path | None = None
     register_tool: Callable | None = None
     add_to_composition: Callable | None = None
+    directory_name: str | None = None  # Actual directory name (e.g., "overlays", "charts")
 
     class Config:
         arbitrary_types_allowed = True

@@ -9,6 +9,7 @@ This example showcases:
 - Design system integration
 """
 import asyncio
+import shutil
 import sys
 from pathlib import Path
 
@@ -27,10 +28,18 @@ async def main():
     print()
 
     # Create project
-    print("📦 Step 1: Creating grid showcase project...")
     manager = ProjectManager()
+    project_name = "code_grid"
+
+    # Clean up existing project if it exists
+    project_path = manager.workspace_dir / project_name
+    if project_path.exists():
+        print(f"🔄 Removing existing project: {project_name}")
+        shutil.rmtree(project_path)
+
+    print(f"📦 Step 1: Creating {project_name} project...")
     project = manager.create_project(
-        name="code_grid",
+        name=project_name,
         theme="tech",
         fps=30,
         width=1920,

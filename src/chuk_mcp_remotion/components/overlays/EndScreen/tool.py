@@ -39,8 +39,14 @@ def register_tool(mcp, project_manager):
                     duration_seconds=duration_seconds,
                 )
 
+                # Get the actual start time from the last added component
+                last_component = project_manager.current_composition.components[-1]
+                actual_start_time = last_component.start_frame / project_manager.current_composition.fps
+
                 return OverlayComponentResponse(
-                    component="EndScreen", start_time=0.0, duration=duration_seconds
+                    component="EndScreen",
+                    start_time=actual_start_time,
+                    duration=duration_seconds,
                 ).model_dump_json()
             except Exception as e:
                 return ErrorResponse(error=str(e)).model_dump_json()

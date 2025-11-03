@@ -17,16 +17,19 @@ def add_to_composition(
     """
     Add EndScreen to the composition.
 
+    Automatically places end screen after all existing components.
+
     Returns:
         CompositionBuilder instance for chaining
     """
     from ....generator.composition_builder import ComponentInstance
 
-    # Calculate frames if time-based props exist
-    start_frame = builder.seconds_to_frames(locals().get("start_time", 0.0))
-    duration_frames = builder.seconds_to_frames(
-        locals().get("duration_seconds") or locals().get("duration", 3.0)
-    )
+    # Auto-calculate start time: place after all existing components
+    start_time = builder.get_total_duration_seconds()
+
+    # Calculate frames
+    start_frame = builder.seconds_to_frames(start_time)
+    duration_frames = builder.seconds_to_frames(duration_seconds)
 
     component = ComponentInstance(
         component_type="EndScreen",

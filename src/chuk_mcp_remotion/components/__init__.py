@@ -65,6 +65,7 @@ def discover_components() -> dict[str, ComponentInfo]:
                     template_path=template_file if template_file.exists() else None,
                     register_tool=getattr(module, "register_tool", None),
                     add_to_composition=getattr(module, "add_to_composition", None),
+                    directory_name=category_name,  # Store actual directory name
                 )
 
                 components[component_name] = component_info
@@ -92,8 +93,12 @@ def get_component_registry() -> dict[str, dict]:
     for name, comp_info in components.items():
         try:
             # Import module to get MCP_SCHEMA
-            category = comp_info.category
-            module_path = f"chuk_mcp_remotion.components.{category}.{name}"
+            # Use directory_name (actual folder) not category (metadata field)
+            directory = comp_info.directory_name
+            if not directory:
+                continue
+
+            module_path = f"chuk_mcp_remotion.components.{directory}.{name}"
             module = importlib.import_module(module_path)
             mcp_schema = getattr(module, "MCP_SCHEMA", None)
 

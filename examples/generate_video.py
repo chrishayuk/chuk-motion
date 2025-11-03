@@ -10,6 +10,7 @@ This example demonstrates the complete workflow for generating a video:
 """
 import asyncio
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -28,11 +29,18 @@ async def main():
 
     # Initialize project manager
     manager = ProjectManager()
+    project_name = "ai_explainer_video"
+
+    # Clean up existing project if it exists
+    project_path = manager.workspace_dir / project_name
+    if project_path.exists():
+        print(f"\n🔄 Removing existing project: {project_name}")
+        shutil.rmtree(project_path)
 
     # Step 1: Create project
-    print("\n📁 Step 1: Creating project...")
+    print(f"\n📁 Step 1: Creating {project_name} project...")
     project = manager.create_project(
-        name="ai_explainer_video",
+        name=project_name,
         theme="tech",
         fps=30,
         width=1920,
