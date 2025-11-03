@@ -1627,7 +1627,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
     def _format_prop_value(self, value: Any) -> str:
         """Format a prop value for JSX."""
         if isinstance(value, str):
-            return f'"{value}"'
+            # Use template literals for strings (supports multiline and quotes)
+            # Escape backticks and ${} in the string
+            escaped = value.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
+            return '{`' + escaped + '`}'
         elif isinstance(value, bool):
             return "{" + str(value).lower() + "}"
         elif isinstance(value, (int, float)):
