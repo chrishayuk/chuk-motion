@@ -1,0 +1,319 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/overlays/EndScreen/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface EndScreenProps {
+  ctaText: string;
+  thumbnailUrl?: string;
+  variant: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const EndScreen: React.FC<EndScreenProps> = ({
+  ctaText,
+  thumbnailUrl,
+  variant,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Animation: fade in with scale
+  const progress = spring({
+    frame: relativeFrame,
+    fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      mass: [[ motion.default_spring.config.mass ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]]
+    }
+  });
+
+  const opacity = interpolate(progress, [0, 1], [0, 1]);
+  const scale = interpolate(progress, [0, 1], [0.9, 1]);
+
+  // Pulse animation for CTA
+  const pulse = Math.sin((relativeFrame / 30) * Math.PI * 2) * 0.05 + 1;
+
+  // Render based on variant
+  const renderContent = () => {
+    if (variant === 'minimal') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 40
+          }}
+        >
+          <div
+            style={{
+              fontSize: 80,
+              fontWeight: 900,
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {ctaText}
+          </div>
+          <div
+            style={{
+              padding: '24px 60px',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: 16,
+              fontSize: 36,
+              fontWeight: 700,
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    } else if (variant === 'split') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            gap: 40,
+            padding: 60
+          }}
+        >
+          {/* Left side - CTA */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: '[[ colors.background.glass ]]',
+              backdropFilter: 'blur(10px)',
+              borderRadius: 24,
+              padding: 60,
+              gap: 40
+            }}
+          >
+            <div
+              style={{
+                fontSize: 64,
+                fontWeight: 900,
+                color: '[[ colors.text.on_dark ]]',
+                textAlign: 'center',
+                letterSpacing: '-0.02em'
+              }}
+            >
+              {ctaText}
+            </div>
+            <div
+              style={{
+                padding: '24px 60px',
+                background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+                borderRadius: 16,
+                fontSize: 32,
+                fontWeight: 700,
+                color: '[[ colors.text.on_dark ]]',
+                transform: `scale(${pulse})`,
+                boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
+              }}
+            >
+              SUBSCRIBE
+            </div>
+          </div>
+
+          {/* Right side - Thumbnail */}
+          {thumbnailUrl && (
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: '[[ colors.background.glass ]]',
+                backdropFilter: 'blur(10px)',
+                borderRadius: 24,
+                padding: 40,
+                gap: 20
+              }}
+            >
+              <Img
+                src={thumbnailUrl}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: 16,
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+                }}
+              />
+              <div
+                style={{
+                  fontSize: 28,
+                  fontWeight: 600,
+                  color: '[[ colors.text.on_dark ]]',
+                  textAlign: 'center'
+                }}
+              >
+                Watch Next
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    } else if (variant === 'carousel') {
+      // Simplified carousel - would need multiple thumbnails for full effect
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 60,
+            padding: 60
+          }}
+        >
+          <div
+            style={{
+              fontSize: 72,
+              fontWeight: 900,
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {ctaText}
+          </div>
+          {thumbnailUrl && (
+            <div
+              style={{
+                display: 'flex',
+                gap: 40,
+                alignItems: 'center'
+              }}
+            >
+              <Img
+                src={thumbnailUrl}
+                style={{
+                  width: 480,
+                  height: 270,
+                  borderRadius: 16,
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+                  border: `4px solid [[ colors.accent[0] ]]`
+                }}
+              />
+            </div>
+          )}
+          <div
+            style={{
+              padding: '24px 60px',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: 16,
+              fontSize: 36,
+              fontWeight: 700,
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    } else {
+      // Standard variant
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 60,
+            padding: 80
+          }}
+        >
+          {thumbnailUrl && (
+            <Img
+              src={thumbnailUrl}
+              style={{
+                width: 640,
+                height: 360,
+                borderRadius: 20,
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+                border: `3px solid [[ colors.primary[0] ]]`
+              }}
+            />
+          )}
+          <div
+            style={{
+              fontSize: 72,
+              fontWeight: 900,
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {ctaText}
+          </div>
+          <div
+            style={{
+              padding: '28px 80px',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: 20,
+              fontSize: 40,
+              fontWeight: 700,
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`,
+              cursor: 'pointer'
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: '[[ colors.background.dark ]]',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
+      }}
+    >
+      <div
+        style={{
+          opacity,
+          transform: `scale(${scale})`,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {renderContent()}
+      </div>
+    </AbsoluteFill>
+  );
+};

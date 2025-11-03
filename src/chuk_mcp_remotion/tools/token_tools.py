@@ -7,15 +7,15 @@ These tools give granular access to specific token categories and values.
 
 import asyncio
 import json
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from chuk_virtual_fs import AsyncVirtualFileSystem
 
 from ..tokens.colors import COLOR_TOKENS
-from ..tokens.typography import TYPOGRAPHY_TOKENS
 from ..tokens.motion import MOTION_TOKENS
 from ..tokens.token_manager import TokenManager
+from ..tokens.typography import TYPOGRAPHY_TOKENS
 
 
 def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
@@ -50,6 +50,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             colors = await remotion_list_color_tokens()
             # Returns all color tokens across all themes
         """
+
         def _list():
             return json.dumps(COLOR_TOKENS, indent=2)
 
@@ -73,25 +74,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             tech_colors = await remotion_get_theme_colors(theme_name="tech")
             # Returns tech theme colors only
         """
+
         def _get():
             if theme_name not in COLOR_TOKENS:
-                return json.dumps({
-                    "error": f"Theme '{theme_name}' not found",
-                    "available_themes": list(COLOR_TOKENS.keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Theme '{theme_name}' not found",
+                        "available_themes": list(COLOR_TOKENS.keys()),
+                    }
+                )
 
-            return json.dumps({
-                "theme": theme_name,
-                "colors": COLOR_TOKENS[theme_name]
-            }, indent=2)
+            return json.dumps({"theme": theme_name, "colors": COLOR_TOKENS[theme_name]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
     @mcp.tool
     async def remotion_get_color_value(
-        theme_name: str,
-        color_type: str,
-        index: Optional[int] = None
+        theme_name: str, color_type: str, index: int | None = None
     ) -> str:
         """
         Get a specific color value from a theme.
@@ -115,6 +114,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             )
             # Returns "#0066FF"
         """
+
         def _get():
             if theme_name not in COLOR_TOKENS:
                 return json.dumps({"error": f"Theme '{theme_name}' not found"})
@@ -122,49 +122,50 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             theme_colors = COLOR_TOKENS[theme_name]
 
             if color_type not in theme_colors:
-                return json.dumps({
-                    "error": f"Color type '{color_type}' not found",
-                    "available_types": list(theme_colors.keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Color type '{color_type}' not found",
+                        "available_types": list(theme_colors.keys()),
+                    }
+                )
 
             color_value = theme_colors[color_type]
 
             # Handle array colors (primary, accent)
             if isinstance(color_value, list):
                 if index is None:
-                    return json.dumps({
-                        "theme": theme_name,
-                        "color_type": color_type,
-                        "values": color_value
-                    }, indent=2)
+                    return json.dumps(
+                        {"theme": theme_name, "color_type": color_type, "values": color_value},
+                        indent=2,
+                    )
                 elif 0 <= index < len(color_value):
-                    return json.dumps({
-                        "theme": theme_name,
-                        "color_type": color_type,
-                        "index": index,
-                        "value": color_value[index]
-                    })
+                    return json.dumps(
+                        {
+                            "theme": theme_name,
+                            "color_type": color_type,
+                            "index": index,
+                            "value": color_value[index],
+                        }
+                    )
                 else:
-                    return json.dumps({
-                        "error": f"Index {index} out of range",
-                        "available_indices": list(range(len(color_value)))
-                    })
+                    return json.dumps(
+                        {
+                            "error": f"Index {index} out of range",
+                            "available_indices": list(range(len(color_value))),
+                        }
+                    )
 
             # Handle dict colors (background, text, semantic)
             elif isinstance(color_value, dict):
-                return json.dumps({
-                    "theme": theme_name,
-                    "color_type": color_type,
-                    "values": color_value
-                }, indent=2)
+                return json.dumps(
+                    {"theme": theme_name, "color_type": color_type, "values": color_value}, indent=2
+                )
 
             # Handle string colors (gradient)
             else:
-                return json.dumps({
-                    "theme": theme_name,
-                    "color_type": color_type,
-                    "value": color_value
-                })
+                return json.dumps(
+                    {"theme": theme_name, "color_type": color_type, "value": color_value}
+                )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -187,6 +188,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             typography = await remotion_list_typography_tokens()
             # Returns font families, sizes, weights, text styles
         """
+
         def _list():
             return json.dumps(TYPOGRAPHY_TOKENS, indent=2)
 
@@ -207,10 +209,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             fonts = await remotion_get_font_families()
             # Returns display, body, mono, decorative font stacks
         """
+
         def _get():
-            return json.dumps({
-                "font_families": TYPOGRAPHY_TOKENS["font_families"]
-            }, indent=2)
+            return json.dumps({"font_families": TYPOGRAPHY_TOKENS["font_families"]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -232,17 +233,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             sizes = await remotion_get_font_sizes(resolution="video_1080p")
             # Returns sizes optimized for 1080p video
         """
+
         def _get():
             if resolution not in TYPOGRAPHY_TOKENS["font_sizes"]:
-                return json.dumps({
-                    "error": f"Resolution '{resolution}' not found",
-                    "available_resolutions": list(TYPOGRAPHY_TOKENS["font_sizes"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Resolution '{resolution}' not found",
+                        "available_resolutions": list(TYPOGRAPHY_TOKENS["font_sizes"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "resolution": resolution,
-                "font_sizes": TYPOGRAPHY_TOKENS["font_sizes"][resolution]
-            }, indent=2)
+            return json.dumps(
+                {
+                    "resolution": resolution,
+                    "font_sizes": TYPOGRAPHY_TOKENS["font_sizes"][resolution],
+                },
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -264,17 +271,20 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             style = await remotion_get_text_style(style_name="hero_title")
             # Returns hero title style (4xl, black weight, tight line height)
         """
+
         def _get():
             if style_name not in TYPOGRAPHY_TOKENS["text_styles"]:
-                return json.dumps({
-                    "error": f"Style '{style_name}' not found",
-                    "available_styles": list(TYPOGRAPHY_TOKENS["text_styles"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Style '{style_name}' not found",
+                        "available_styles": list(TYPOGRAPHY_TOKENS["text_styles"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "style_name": style_name,
-                "style": TYPOGRAPHY_TOKENS["text_styles"][style_name]
-            }, indent=2)
+            return json.dumps(
+                {"style_name": style_name, "style": TYPOGRAPHY_TOKENS["text_styles"][style_name]},
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -297,6 +307,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             motion = await remotion_list_motion_tokens()
             # Returns springs, easings, durations, animation presets
         """
+
         def _list():
             return json.dumps(MOTION_TOKENS, indent=2)
 
@@ -317,10 +328,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             springs = await remotion_get_spring_configs()
             # Returns all spring animation configs
         """
+
         def _get():
-            return json.dumps({
-                "spring_configs": MOTION_TOKENS["spring_configs"]
-            }, indent=2)
+            return json.dumps({"spring_configs": MOTION_TOKENS["spring_configs"]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -342,17 +352,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             bouncy = await remotion_get_spring_config(spring_name="bouncy")
             # Returns bouncy spring config with playful overshoot
         """
+
         def _get():
             if spring_name not in MOTION_TOKENS["spring_configs"]:
-                return json.dumps({
-                    "error": f"Spring '{spring_name}' not found",
-                    "available_springs": list(MOTION_TOKENS["spring_configs"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Spring '{spring_name}' not found",
+                        "available_springs": list(MOTION_TOKENS["spring_configs"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "spring_name": spring_name,
-                "config": MOTION_TOKENS["spring_configs"][spring_name]
-            }, indent=2)
+            return json.dumps(
+                {
+                    "spring_name": spring_name,
+                    "config": MOTION_TOKENS["spring_configs"][spring_name],
+                },
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -371,10 +387,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             easings = await remotion_get_easing_curves()
             # Returns linear, ease-in, ease-out, ease-in-out, back easings, etc.
         """
+
         def _get():
-            return json.dumps({
-                "easing_curves": MOTION_TOKENS["easing_curves"]
-            }, indent=2)
+            return json.dumps({"easing_curves": MOTION_TOKENS["easing_curves"]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -396,17 +411,20 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             ease = await remotion_get_easing_curve(easing_name="ease_out_back")
             # Returns ease_out_back with overshoot effect
         """
+
         def _get():
             if easing_name not in MOTION_TOKENS["easing_curves"]:
-                return json.dumps({
-                    "error": f"Easing '{easing_name}' not found",
-                    "available_easings": list(MOTION_TOKENS["easing_curves"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Easing '{easing_name}' not found",
+                        "available_easings": list(MOTION_TOKENS["easing_curves"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "easing_name": easing_name,
-                "curve": MOTION_TOKENS["easing_curves"][easing_name]
-            }, indent=2)
+            return json.dumps(
+                {"easing_name": easing_name, "curve": MOTION_TOKENS["easing_curves"][easing_name]},
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -425,10 +443,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             durations = await remotion_get_durations()
             # Returns instant, ultra_fast, fast, normal, moderate, slow, etc.
         """
+
         def _get():
-            return json.dumps({
-                "durations": MOTION_TOKENS["durations"]
-            }, indent=2)
+            return json.dumps({"durations": MOTION_TOKENS["durations"]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -449,17 +466,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             normal = await remotion_get_duration(duration_name="normal")
             # Returns 20 frames / 0.667 seconds
         """
+
         def _get():
             if duration_name not in MOTION_TOKENS["durations"]:
-                return json.dumps({
-                    "error": f"Duration '{duration_name}' not found",
-                    "available_durations": list(MOTION_TOKENS["durations"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Duration '{duration_name}' not found",
+                        "available_durations": list(MOTION_TOKENS["durations"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "duration_name": duration_name,
-                "duration": MOTION_TOKENS["durations"][duration_name]
-            }, indent=2)
+            return json.dumps(
+                {
+                    "duration_name": duration_name,
+                    "duration": MOTION_TOKENS["durations"][duration_name],
+                },
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -478,10 +501,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             presets = await remotion_get_animation_presets()
             # Returns fade_in, slide_up, scale_in, bounce_in, etc.
         """
+
         def _get():
-            return json.dumps({
-                "animation_presets": MOTION_TOKENS["animation_presets"]
-            }, indent=2)
+            return json.dumps({"animation_presets": MOTION_TOKENS["animation_presets"]}, indent=2)
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -503,17 +525,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             fade = await remotion_get_animation_preset(preset_name="fade_in")
             # Returns fade_in animation: opacity 0 → 1, ease_out, normal duration
         """
+
         def _get():
             if preset_name not in MOTION_TOKENS["animation_presets"]:
-                return json.dumps({
-                    "error": f"Preset '{preset_name}' not found",
-                    "available_presets": list(MOTION_TOKENS["animation_presets"].keys())
-                })
+                return json.dumps(
+                    {
+                        "error": f"Preset '{preset_name}' not found",
+                        "available_presets": list(MOTION_TOKENS["animation_presets"].keys()),
+                    }
+                )
 
-            return json.dumps({
-                "preset_name": preset_name,
-                "preset": MOTION_TOKENS["animation_presets"][preset_name]
-            }, indent=2)
+            return json.dumps(
+                {
+                    "preset_name": preset_name,
+                    "preset": MOTION_TOKENS["animation_presets"][preset_name],
+                },
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -532,10 +560,11 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             youtube_opts = await remotion_get_youtube_optimizations()
             # Returns timing recommendations for YouTube content
         """
+
         def _get():
-            return json.dumps({
-                "youtube_optimizations": MOTION_TOKENS["youtube_optimizations"]
-            }, indent=2)
+            return json.dumps(
+                {"youtube_optimizations": MOTION_TOKENS["youtube_optimizations"]}, indent=2
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -545,10 +574,10 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
 
     @mcp.tool
     async def remotion_export_typography_tokens(
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         include_all: bool = True,
         font_families_only: bool = False,
-        text_styles_only: bool = False
+        text_styles_only: bool = False,
     ) -> str:
         """
         Export typography tokens to a JSON file.
@@ -575,23 +604,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             file_path=file_path,
             include_all=include_all,
             font_families_only=font_families_only,
-            text_styles_only=text_styles_only
+            text_styles_only=text_styles_only,
         )
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "file_path": result,
-            "message": "Typography tokens exported successfully"
-        }, indent=2)
+        return json.dumps(
+            {
+                "status": "success",
+                "file_path": result,
+                "message": "Typography tokens exported successfully",
+            },
+            indent=2,
+        )
 
     @mcp.tool
-    async def remotion_import_typography_tokens(
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def remotion_import_typography_tokens(file_path: str, merge: bool = True) -> str:
         """
         Import typography tokens from a JSON file.
 
@@ -611,23 +640,16 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 merge=True
             )
         """
-        result = await token_manager.import_typography_tokens(
-            file_path=file_path,
-            merge=merge
-        )
+        result = await token_manager.import_typography_tokens(file_path=file_path, merge=merge)
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "message": result
-        }, indent=2)
+        return json.dumps({"status": "success", "message": result}, indent=2)
 
     @mcp.tool
     async def remotion_export_color_tokens(
-        file_path: Optional[str] = None,
-        theme_name: Optional[str] = None
+        file_path: str | None = None, theme_name: str | None = None
     ) -> str:
         """
         Export color tokens to a JSON file.
@@ -647,25 +669,22 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 theme_name="tech"
             )
         """
-        result = await token_manager.export_color_tokens(
-            file_path=file_path,
-            theme_name=theme_name
-        )
+        result = await token_manager.export_color_tokens(file_path=file_path, theme_name=theme_name)
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "file_path": result,
-            "message": "Color tokens exported successfully"
-        }, indent=2)
+        return json.dumps(
+            {
+                "status": "success",
+                "file_path": result,
+                "message": "Color tokens exported successfully",
+            },
+            indent=2,
+        )
 
     @mcp.tool
-    async def remotion_import_color_tokens(
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def remotion_import_color_tokens(file_path: str, merge: bool = True) -> str:
         """
         Import color tokens from a JSON file.
 
@@ -685,25 +704,19 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 merge=True
             )
         """
-        result = await token_manager.import_color_tokens(
-            file_path=file_path,
-            merge=merge
-        )
+        result = await token_manager.import_color_tokens(file_path=file_path, merge=merge)
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "message": result
-        }, indent=2)
+        return json.dumps({"status": "success", "message": result}, indent=2)
 
     @mcp.tool
     async def remotion_export_motion_tokens(
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         springs_only: bool = False,
         easings_only: bool = False,
-        presets_only: bool = False
+        presets_only: bool = False,
     ) -> str:
         """
         Export motion tokens to a JSON file.
@@ -729,23 +742,23 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
             file_path=file_path,
             springs_only=springs_only,
             easings_only=easings_only,
-            presets_only=presets_only
+            presets_only=presets_only,
         )
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "file_path": result,
-            "message": "Motion tokens exported successfully"
-        }, indent=2)
+        return json.dumps(
+            {
+                "status": "success",
+                "file_path": result,
+                "message": "Motion tokens exported successfully",
+            },
+            indent=2,
+        )
 
     @mcp.tool
-    async def remotion_import_motion_tokens(
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def remotion_import_motion_tokens(file_path: str, merge: bool = True) -> str:
         """
         Import motion tokens from a JSON file.
 
@@ -765,18 +778,12 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 merge=True
             )
         """
-        result = await token_manager.import_motion_tokens(
-            file_path=file_path,
-            merge=merge
-        )
+        result = await token_manager.import_motion_tokens(file_path=file_path, merge=merge)
 
         if result.startswith("Error"):
             return json.dumps({"error": result})
 
-        return json.dumps({
-            "status": "success",
-            "message": result
-        }, indent=2)
+        return json.dumps({"status": "success", "message": result}, indent=2)
 
     @mcp.tool
     async def remotion_export_all_tokens(output_dir: str) -> str:
@@ -799,8 +806,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
         """
         results = await token_manager.export_all_tokens(output_dir)
 
-        return json.dumps({
-            "status": "success",
-            "files": results,
-            "message": "All tokens exported successfully"
-        }, indent=2)
+        return json.dumps(
+            {"status": "success", "files": results, "message": "All tokens exported successfully"},
+            indent=2,
+        )

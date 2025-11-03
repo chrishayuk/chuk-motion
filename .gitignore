@@ -59,6 +59,7 @@ out/
 *.mp4
 *.webm
 *.mov
+remotion-projects/
 
 # Environment
 .env

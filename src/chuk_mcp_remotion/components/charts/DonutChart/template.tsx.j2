@@ -1,0 +1,302 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/DonutChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface DonutChartProps {
+  data?: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+  centerText?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const DonutChart: React.FC<DonutChartProps> = ({
+  data = [],
+  title,
+  centerText,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  // Calculate total
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  // Chart dimensions
+  const chartSize = 500;
+  const outerRadius = 200;
+  const innerRadius = 120;
+  const centerX = chartSize / 2;
+  const centerY = chartSize / 2;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.5, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Default colors
+  const defaultColors = [
+    '#0066FF', '#00D9FF', '#7B61FF', '#FF6B9D',
+    '#FFB800', '#00E5A0', '#FF4D4D', '#9D4EDD'
+  ];
+
+  // Calculate slice paths
+  const slices = [];
+  let currentAngle = -90; // Start at top
+
+  data.forEach((item, idx) => {
+    const percentage = (item.value / total);
+    const sliceAngle = percentage * 360;
+
+    slices.push({
+      ...item,
+      percentage,
+      startAngle: currentAngle,
+      endAngle: currentAngle + sliceAngle,
+      color: item.color || defaultColors[idx % defaultColors.length]
+    });
+
+    currentAngle += sliceAngle;
+  });
+
+  // Function to create SVG donut arc path
+  const createDonutPath = (startAngle: number, endAngle: number, outer: number, inner: number) => {
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+
+    const x1Outer = centerX + outer * Math.cos(startRad);
+    const y1Outer = centerY + outer * Math.sin(startRad);
+    const x2Outer = centerX + outer * Math.cos(endRad);
+    const y2Outer = centerY + outer * Math.sin(endRad);
+
+    const x1Inner = centerX + inner * Math.cos(startRad);
+    const y1Inner = centerY + inner * Math.sin(startRad);
+    const x2Inner = centerX + inner * Math.cos(endRad);
+    const y2Inner = centerY + inner * Math.sin(endRad);
+
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+    return `M ${x1Outer} ${y1Outer}
+            A ${outer} ${outer} 0 ${largeArc} 1 ${x2Outer} ${y2Outer}
+            L ${x2Inner} ${y2Inner}
+            A ${inner} ${inner} 0 ${largeArc} 0 ${x1Inner} ${y1Inner}
+            Z`;
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 40
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: 40,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
+              letterSpacing: '-0.02em',
+              margin: 0
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 60 }}>
+          {/* Donut chart */}
+          <div style={{ position: 'relative' }}>
+            <svg
+              width={chartSize}
+              height={chartSize}
+              style={{
+                filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))'
+              }}
+            >
+              <defs>
+                <filter id="glowDonut">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {slices.map((slice, idx) => {
+                const sliceDelay = idx * 3;
+                const sliceProgress = spring({
+                  frame: Math.max(0, relativeFrame - sliceDelay),
+                  fps,
+                  config: { damping: 150, mass: 0.5, stiffness: 200 }
+                });
+
+                const animatedEndAngle = slice.startAngle + (slice.endAngle - slice.startAngle) * sliceProgress;
+                const path = createDonutPath(slice.startAngle, animatedEndAngle, outerRadius, innerRadius);
+
+                return (
+                  <path
+                    key={idx}
+                    d={path}
+                    fill={slice.color}
+                    stroke="rgba(255, 255, 255, 0.1)"
+                    strokeWidth="2"
+                    filter="url(#glowDonut)"
+                    opacity={sliceProgress}
+                  />
+                );
+              })}
+            </svg>
+
+            {/* Center text */}
+            {centerText && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  textAlign: 'center',
+                  opacity: interpolate(entranceProgress, [0, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 48,
+                    fontWeight: 900,
+                    color: '#FFFFFF',
+                    lineHeight: 1,
+                    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
+                  }}
+                >
+                  {total}
+                </div>
+                <div
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 500,
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    marginTop: 8
+                  }}
+                >
+                  {centerText}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+            {slices.map((slice, idx) => {
+              const legendDelay = idx * 3 + 10;
+              const legendProgress = spring({
+                frame: Math.max(0, relativeFrame - legendDelay),
+                fps,
+                config: { damping: 150, mass: 0.5, stiffness: 200 }
+              });
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    opacity: legendProgress,
+                    transform: `translateX(${interpolate(legendProgress, [0, 1], [20, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 6,
+                      backgroundColor: slice.color,
+                      flexShrink: 0
+                    }}
+                  />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 600,
+                        color: '#FFFFFF',
+                        lineHeight: 1.2
+                      }}
+                    >
+                      {slice.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 14,
+                        fontWeight: 400,
+                        color: 'rgba(255, 255, 255, 0.6)'
+                      }}
+                    >
+                      {slice.value} ({Math.round(slice.percentage * 100)}%)
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};

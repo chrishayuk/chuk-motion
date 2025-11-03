@@ -1,0 +1,163 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/overlays/SubscribeButton/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface SubscribeButtonProps {
+  variant: string;
+  animation: string;
+  position: string;
+  customText: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
+  variant,
+  animation,
+  position,
+  customText,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Base animation progress
+  const progress = spring({
+    frame: relativeFrame,
+    fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      mass: [[ motion.default_spring.config.mass ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]]
+    }
+  });
+
+  // Animation-specific transforms
+  let transform = 'none';
+  let opacity = interpolate(progress, [0, 1], [0, 1]);
+
+  if (animation === 'bounce') {
+    const bounceScale = spring({
+      frame: relativeFrame,
+      fps,
+      config: {
+        damping: 8,
+        mass: 0.5,
+        stiffness: 100
+      }
+    });
+    const scale = interpolate(bounceScale, [0, 1], [0.3, 1]);
+    transform = `scale(${scale})`;
+  } else if (animation === 'pulse') {
+    const pulse = Math.sin((relativeFrame / 20) * Math.PI * 2) * 0.1 + 1;
+    transform = `scale(${pulse})`;
+  } else if (animation === 'slide') {
+    const slideDistance = position.includes('right') ? 200 : position.includes('left') ? -200 : 0;
+    const translateX = interpolate(progress, [0, 1], [slideDistance, 0]);
+    transform = `translateX(${translateX}px)`;
+  } else if (animation === 'glow') {
+    const pulse = Math.sin((relativeFrame / 30) * Math.PI * 2) * 0.5 + 1;
+    transform = `scale(${pulse})`;
+  } else if (animation === 'wiggle') {
+    const wiggle = Math.sin((relativeFrame / 5) * Math.PI * 2) * 5;
+    transform = `rotate(${wiggle}deg) scale(${interpolate(progress, [0, 1], [0.5, 1])})`;
+  }
+
+  // Fade out near end
+  const fadeOut = interpolate(
+    relativeFrame,
+    [durationInFrames - 15, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const finalOpacity = opacity * fadeOut;
+
+  // Position styles
+  const positions: Record<string, any> = {
+    bottom_right: { bottom: 100, right: 100 },
+    bottom_center: { bottom: 100, left: '50%', transform: `${transform} translateX(-50%)` },
+    center: { top: '50%', left: '50%', transform: `${transform} translate(-50%, -50%)` },
+    top_right: { top: 100, right: 100 }
+  };
+
+  const positionStyle = positions[position] || positions.bottom_right;
+
+  // Variant styles
+  const variants: Record<string, any> = {
+    minimal: {
+      background: '[[ colors.background.dark ]]',
+      padding: '16px 40px',
+      borderRadius: 8,
+      border: `2px solid [[ colors.primary[0] ]]`
+    },
+    standard: {
+      background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+      padding: '20px 50px',
+      borderRadius: 12,
+      boxShadow: `0 8px 32px [[ colors.primary[0] ]]60`
+    },
+    animated: {
+      background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+      padding: '24px 60px',
+      borderRadius: 16,
+      boxShadow: `0 10px 40px [[ colors.primary[0] ]]80`,
+      border: '2px solid rgba(255, 255, 255, 0.3)'
+    },
+    '3d': {
+      background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+      padding: '24px 60px',
+      borderRadius: 16,
+      boxShadow: `
+        0 10px 40px [[ colors.primary[0] ]]80,
+        0 4px 0 [[ colors.primary[1] ]],
+        0 8px 20px rgba(0, 0, 0, 0.3)
+      `,
+      transform: `${transform} translateY(-4px)`
+    }
+  };
+
+  const variantStyle = variants[variant] || variants.standard;
+
+  // Glow effect for certain animations
+  const glowIntensity = animation === 'glow' ? Math.sin((relativeFrame / 30) * Math.PI * 2) * 0.5 + 0.5 : 0;
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          ...positionStyle,
+          ...variantStyle,
+          opacity: finalOpacity,
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize: 28,
+          fontWeight: 700,
+          color: '[[ colors.text.on_dark ]]',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          cursor: 'pointer',
+          userSelect: 'none',
+          ...(animation === 'glow' && {
+            boxShadow: `
+              ${variantStyle.boxShadow},
+              0 0 ${40 + glowIntensity * 40}px [[ colors.accent[0] ]]
+            `
+          })
+        }}
+      >
+        {customText}
+      </div>
+    </AbsoluteFill>
+  );
+};

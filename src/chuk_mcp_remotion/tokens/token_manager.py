@@ -8,16 +8,16 @@ Provides import/export and customization for:
 - Motion tokens (springs, easings, durations, presets)
 """
 
+import contextlib
 import json
-from pathlib import Path
-from typing import Dict, Any, Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from chuk_virtual_fs import AsyncVirtualFileSystem
 
 from .colors import COLOR_TOKENS
-from .typography import TYPOGRAPHY_TOKENS
 from .motion import MOTION_TOKENS
+from .typography import TYPOGRAPHY_TOKENS
 
 
 class TokenManager:
@@ -35,9 +35,9 @@ class TokenManager:
             vfs: Virtual filesystem for file operations
         """
         self.vfs = vfs
-        self.custom_typography_tokens = {}
-        self.custom_color_tokens = {}
-        self.custom_motion_tokens = {}
+        self.custom_typography_tokens: dict[str, Any] = {}
+        self.custom_color_tokens: dict[str, Any] = {}
+        self.custom_motion_tokens: dict[str, Any] = {}
 
     # ========================================================================
     # TYPOGRAPHY TOKEN MANAGEMENT
@@ -45,10 +45,10 @@ class TokenManager:
 
     async def export_typography_tokens(
         self,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         include_all: bool = True,
         font_families_only: bool = False,
-        text_styles_only: bool = False
+        text_styles_only: bool = False,
     ) -> str:
         """
         Export typography tokens to JSON file.
@@ -90,11 +90,7 @@ class TokenManager:
         except Exception as e:
             return f"Error exporting typography tokens: {str(e)}"
 
-    async def import_typography_tokens(
-        self,
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def import_typography_tokens(self, file_path: str, merge: bool = True) -> str:
         """
         Import typography tokens from JSON file.
 
@@ -127,11 +123,8 @@ class TokenManager:
             return f"Error importing typography tokens: {str(e)}"
 
     def get_typography_token(
-        self,
-        category: str,
-        key: Optional[str] = None,
-        use_custom: bool = True
-    ) -> Optional[Any]:
+        self, category: str, key: str | None = None, use_custom: bool = True
+    ) -> Any | None:
         """
         Get a typography token value.
 
@@ -165,9 +158,7 @@ class TokenManager:
     # ========================================================================
 
     async def export_color_tokens(
-        self,
-        file_path: Optional[str] = None,
-        theme_name: Optional[str] = None
+        self, file_path: str | None = None, theme_name: str | None = None
     ) -> str:
         """
         Export color tokens to JSON file.
@@ -204,11 +195,7 @@ class TokenManager:
         except Exception as e:
             return f"Error exporting color tokens: {str(e)}"
 
-    async def import_color_tokens(
-        self,
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def import_color_tokens(self, file_path: str, merge: bool = True) -> str:
         """
         Import color tokens from JSON file.
 
@@ -239,11 +226,8 @@ class TokenManager:
             return f"Error importing color tokens: {str(e)}"
 
     def get_color_token(
-        self,
-        theme_name: str,
-        color_type: Optional[str] = None,
-        use_custom: bool = True
-    ) -> Optional[Any]:
+        self, theme_name: str, color_type: str | None = None, use_custom: bool = True
+    ) -> Any | None:
         """
         Get a color token value.
 
@@ -278,10 +262,10 @@ class TokenManager:
 
     async def export_motion_tokens(
         self,
-        file_path: Optional[str] = None,
+        file_path: str | None = None,
         springs_only: bool = False,
         easings_only: bool = False,
-        presets_only: bool = False
+        presets_only: bool = False,
     ) -> str:
         """
         Export motion tokens to JSON file.
@@ -325,11 +309,7 @@ class TokenManager:
         except Exception as e:
             return f"Error exporting motion tokens: {str(e)}"
 
-    async def import_motion_tokens(
-        self,
-        file_path: str,
-        merge: bool = True
-    ) -> str:
+    async def import_motion_tokens(self, file_path: str, merge: bool = True) -> str:
         """
         Import motion tokens from JSON file.
 
@@ -360,11 +340,8 @@ class TokenManager:
             return f"Error importing motion tokens: {str(e)}"
 
     def get_motion_token(
-        self,
-        category: str,
-        key: Optional[str] = None,
-        use_custom: bool = True
-    ) -> Optional[Any]:
+        self, category: str, key: str | None = None, use_custom: bool = True
+    ) -> Any | None:
         """
         Get a motion token value.
 
@@ -397,7 +374,7 @@ class TokenManager:
     # UTILITY METHODS
     # ========================================================================
 
-    def list_custom_tokens(self) -> Dict[str, List[str]]:
+    def list_custom_tokens(self) -> dict[str, list[str]]:
         """
         List all custom tokens.
 
@@ -407,10 +384,10 @@ class TokenManager:
         return {
             "typography": list(self.custom_typography_tokens.keys()),
             "colors": list(self.custom_color_tokens.keys()),
-            "motion": list(self.custom_motion_tokens.keys())
+            "motion": list(self.custom_motion_tokens.keys()),
         }
 
-    def clear_custom_tokens(self, token_type: Optional[str] = None) -> None:
+    def clear_custom_tokens(self, token_type: str | None = None) -> None:
         """
         Clear custom tokens.
 
@@ -426,7 +403,7 @@ class TokenManager:
         if token_type == "motion" or token_type is None:
             self.custom_motion_tokens = {}
 
-    async def export_all_tokens(self, output_dir: str) -> Dict[str, str]:
+    async def export_all_tokens(self, output_dir: str) -> dict[str, str]:
         """
         Export all token types to separate files.
 
@@ -437,23 +414,16 @@ class TokenManager:
             Dictionary with file paths for each token type
         """
         # Ensure directory exists in virtual filesystem
-        # Check if directory exists first
-        try:
+        # Check if directory exists first (suppress errors if it already exists)
+        with contextlib.suppress(Exception):
             await self.vfs.mkdir(output_dir)
-        except Exception:
-            # Directory may already exist, which is fine
-            pass
 
         results = {
             "typography": await self.export_typography_tokens(
                 f"{output_dir}/typography_tokens.json"
             ),
-            "colors": await self.export_color_tokens(
-                f"{output_dir}/color_tokens.json"
-            ),
-            "motion": await self.export_motion_tokens(
-                f"{output_dir}/motion_tokens.json"
-            )
+            "colors": await self.export_color_tokens(f"{output_dir}/color_tokens.json"),
+            "motion": await self.export_motion_tokens(f"{output_dir}/motion_tokens.json"),
         }
 
         return results

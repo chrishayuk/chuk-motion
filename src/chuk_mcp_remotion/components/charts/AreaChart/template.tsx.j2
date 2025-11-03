@@ -1,0 +1,322 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/AreaChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  x: number;
+  y: number;
+  label?: string;
+}
+
+interface AreaChartProps {
+  data?: Array<[number, number] | { x: number; y: number; label?: string }>;
+  title?: string;
+  xlabel?: string;
+  ylabel?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const AreaChart: React.FC<AreaChartProps> = ({
+  data = [],
+  title,
+  xlabel,
+  ylabel,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Convert data to DataPoint format
+  const dataPoints: DataPoint[] = data.map((point, idx) => {
+    if (Array.isArray(point)) {
+      return { x: point[0], y: point[1] };
+    } else {
+      return { x: point.x, y: point.y, label: point.label };
+    }
+  });
+
+  if (dataPoints.length === 0) {
+    return null;
+  }
+
+  // Calculate bounds
+  const yValues = dataPoints.map(p => p.y);
+  const yMin = Math.min(...yValues, 0);
+  const yMax = Math.max(...yValues);
+
+  // Chart dimensions
+  const chartWidth = 900;
+  const chartHeight = 500;
+  const padding = 60;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.85, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Line and area drawing animation
+  const lineDelay = 10;
+  const lineProgress = spring({
+    frame: Math.max(0, relativeFrame - lineDelay),
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Scale coordinates to chart space
+  const scaleX = (x: number) => {
+    const normalized = x / (dataPoints.length - 1);
+    return padding + normalized * (chartWidth - 2 * padding);
+  };
+
+  const scaleY = (y: number) => {
+    const normalized = (y - yMin) / (yMax - yMin);
+    return chartHeight - padding - normalized * (chartHeight - 2 * padding);
+  };
+
+  // Generate path with animation
+  const numPointsToShow = Math.floor(lineProgress * dataPoints.length);
+  const visiblePoints = dataPoints.slice(0, Math.max(1, numPointsToShow));
+
+  // Create SVG line path
+  const linePath = visiblePoints.map((point, idx) => {
+    const x = scaleX(point.x);
+    const y = scaleY(point.y);
+    return idx === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+  }).join(' ');
+
+  // Create SVG area path (line + bottom + left close)
+  const baselineY = scaleY(yMin);
+  const firstX = scaleX(visiblePoints[0].x);
+  const lastX = scaleX(visiblePoints[visiblePoints.length - 1].x);
+
+  const areaPath = linePath + ` L ${lastX} ${baselineY} L ${firstX} ${baselineY} Z`;
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: 36,
+              fontWeight: 700,
+              color: '#FFFFFF',
+              marginBottom: 30,
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <svg
+          width={chartWidth}
+          height={chartHeight}
+          style={{
+            borderRadius: 16,
+            padding: 20,
+            overflow: 'visible'
+          }}
+        >
+          <defs>
+            <linearGradient id="bgGradientArea" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
+              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+            </linearGradient>
+            <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#0066FF" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="#00D9FF" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#00D9FF" stopOpacity="0.05" />
+            </linearGradient>
+            <linearGradient id="lineGradientArea" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#0066FF" />
+              <stop offset="100%" stopColor="#00D9FF" />
+            </linearGradient>
+            <filter id="glowArea">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Background rect */}
+          <rect
+            x="0"
+            y="0"
+            width={chartWidth}
+            height={chartHeight}
+            fill="url(#bgGradientArea)"
+            rx="16"
+          />
+
+          {/* Grid lines */}
+          <g stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1">
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+              const y = padding + ratio * (chartHeight - 2 * padding);
+              return (
+                <line
+                  key={`grid-${ratio}`}
+                  x1={padding}
+                  y1={y}
+                  x2={chartWidth - padding}
+                  y2={y}
+                />
+              );
+            })}
+          </g>
+
+          {/* Axes */}
+          <g stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
+            <line
+              x1={padding}
+              y1={padding}
+              x2={padding}
+              y2={chartHeight - padding}
+            />
+            <line
+              x1={padding}
+              y1={chartHeight - padding}
+              x2={chartWidth - padding}
+              y2={chartHeight - padding}
+            />
+          </g>
+
+          {/* Area fill */}
+          <path
+            d={areaPath}
+            fill="url(#areaGradient)"
+            opacity={lineProgress * 0.9}
+          />
+
+          {/* Line path */}
+          <path
+            d={linePath}
+            fill="none"
+            stroke="url(#lineGradientArea)"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glowArea)"
+            opacity={lineProgress}
+          />
+
+          {/* Data points */}
+          {visiblePoints.map((point, idx) => {
+            const x = scaleX(point.x);
+            const y = scaleY(point.y);
+            const pointDelay = idx * 3;
+            const pointProgress = interpolate(
+              relativeFrame,
+              [pointDelay, pointDelay + 15],
+              [0, 1],
+              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+            );
+            const pulseScale = 1 + Math.sin((relativeFrame - pointDelay) * 0.1) * 0.1 * pointProgress;
+
+            return (
+              <g key={idx} style={{ opacity: pointProgress }}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={12 * pulseScale}
+                  fill="#00D9FF"
+                  opacity={0.2}
+                />
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="8"
+                  fill="#00D9FF"
+                  stroke="#0A0E1A"
+                  strokeWidth="2"
+                  filter="url(#glowArea)"
+                />
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="3"
+                  fill="rgba(255, 255, 255, 0.8)"
+                />
+              </g>
+            );
+          })}
+
+          {/* Labels */}
+          {xlabel && (
+            <text
+              x={chartWidth / 2}
+              y={chartHeight - 10}
+              textAnchor="middle"
+              fill="rgba(255, 255, 255, 0.6)"
+              fontSize="16"
+              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+            >
+              {xlabel}
+            </text>
+          )}
+
+          {ylabel && (
+            <text
+              x={20}
+              y={chartHeight / 2}
+              textAnchor="middle"
+              fill="rgba(255, 255, 255, 0.6)"
+              fontSize="16"
+              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              transform={`rotate(-90 20 ${chartHeight / 2})`}
+            >
+              {ylabel}
+            </text>
+          )}
+        </svg>
+      </div>
+    </AbsoluteFill>
+  );
+};

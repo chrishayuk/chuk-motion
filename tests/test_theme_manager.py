@@ -1,12 +1,13 @@
+# chuk-mcp-remotion/tests/test_theme_manager.py
 """
 Tests for ThemeManager class.
 """
 
-import pytest
 import json
-from pathlib import Path
 
-from chuk_mcp_remotion.themes.theme_manager import ThemeManager, Theme
+import pytest
+
+from chuk_mcp_remotion.themes.theme_manager import Theme, ThemeManager
 
 
 class TestTheme:
@@ -262,7 +263,7 @@ class TestThemeManagerValidation:
         """Test validating theme missing required keys."""
         invalid_theme = {
             "name": "Test",
-            "description": "Test theme"
+            "description": "Test theme",
             # Missing colors, typography, motion
         }
 
@@ -387,18 +388,26 @@ class TestThemeManagerCustomThemes:
                 "gradient": "linear-gradient(135deg, #FF0000 0%, #00FF00 100%)",
                 "background": {"dark": "#000000", "light": "#FFFFFF", "glass": "rgba(0,0,0,0.8)"},
                 "text": {"on_dark": "#FFFFFF", "on_light": "#000000", "muted": "#808080"},
-                "semantic": {"success": "#00FF00", "warning": "#FFFF00", "error": "#FF0000", "info": "#0000FF"}
+                "semantic": {
+                    "success": "#00FF00",
+                    "warning": "#FFFF00",
+                    "error": "#FF0000",
+                    "info": "#0000FF",
+                },
             },
             typography_overrides={
                 "primary_font": {"name": "Display", "fonts": ["Arial"]},
                 "body_font": {"name": "Body", "fonts": ["Arial"]},
-                "default_resolution": "video_1080p"
+                "default_resolution": "video_1080p",
             },
             motion_overrides={
-                "default_spring": {"name": "Smooth", "config": {"damping": 200, "mass": 0.5, "stiffness": 200}},
+                "default_spring": {
+                    "name": "Smooth",
+                    "config": {"damping": 200, "mass": 0.5, "stiffness": 200},
+                },
                 "default_easing": {"name": "Ease", "curve": [0, 0, 1, 1]},
-                "default_duration": {"frames": 20, "seconds": 0.667}
-            }
+                "default_duration": {"frames": 20, "seconds": 0.667},
+            },
         )
 
         assert "Error" not in result
@@ -411,9 +420,7 @@ class TestThemeManagerCustomThemes:
             name="Custom Tech",
             description="Tech with custom colors",
             base_theme="tech",
-            color_overrides={
-                "primary": ["#FF0000", "#CC0000", "#990000"]
-            }
+            color_overrides={"primary": ["#FF0000", "#CC0000", "#990000"]},
         )
 
         assert "Error" not in result
@@ -426,8 +433,7 @@ class TestThemeManagerCustomThemes:
         """Test creating invalid custom theme."""
         # Even without base theme or overrides, it defaults to "tech" so it succeeds
         result = theme_manager.create_custom_theme(
-            name="Default Base",
-            description="Uses default tech base"
+            name="Default Base", description="Uses default tech base"
         )
 
         # Should succeed with default base theme
@@ -437,9 +443,7 @@ class TestThemeManagerCustomThemes:
     def test_custom_theme_key_format(self, theme_manager):
         """Test that custom theme keys are formatted correctly."""
         result = theme_manager.create_custom_theme(
-            name="My Custom Theme",
-            description="Test",
-            base_theme="tech"
+            name="My Custom Theme", description="Test", base_theme="tech"
         )
 
         assert result == "my_custom_theme"  # Spaces should become underscores
@@ -463,7 +467,7 @@ class TestThemeManagerEdgeCases:
             description="Different theme",
             colors=sample_theme.colors,
             typography=sample_theme.typography,
-            motion=sample_theme.motion
+            motion=sample_theme.motion,
         )
         theme_manager.register_theme("custom", new_theme)
 

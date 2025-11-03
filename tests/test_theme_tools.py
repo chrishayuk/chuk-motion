@@ -1,9 +1,11 @@
+# chuk-mcp-remotion/tests/test_theme_tools.py
 """
 Tests for theme MCP tools.
 """
 
-import pytest
 import json
+
+import pytest
 
 from chuk_mcp_remotion.tools.theme_tools import register_theme_tools
 
@@ -33,7 +35,7 @@ class TestThemeTools:
             "remotion_create_custom_theme",
             "remotion_export_theme",
             "remotion_import_theme",
-            "remotion_get_theme_for_content"
+            "remotion_get_theme_for_content",
         ]
 
         for tool in expected_tools:
@@ -174,7 +176,7 @@ class TestThemeTools:
             name="My Custom",
             description="Custom theme",
             base_theme="tech",
-            primary_colors='["#FF0000", "#CC0000", "#990000"]'
+            primary_colors='["#FF0000", "#CC0000", "#990000"]',
         )
 
         data = json.loads(result)
@@ -187,7 +189,7 @@ class TestThemeTools:
         tool = mcp_with_theme_tools.tools["remotion_create_custom_theme"]
         result = await tool(
             name="Standalone",
-            description="No base theme"
+            description="No base theme",
             # Will default to "tech" base theme
         )
 
@@ -212,10 +214,7 @@ class TestThemeTools:
         await vfs.write_file("test_theme.json", json.dumps(sample_theme_data))
 
         tool = mcp_with_theme_tools.tools["remotion_import_theme"]
-        result = await tool(
-            file_path="test_theme.json",
-            theme_key="imported_test"
-        )
+        result = await tool(file_path="test_theme.json", theme_key="imported_test")
 
         data = json.loads(result)
         assert data["status"] == "success"

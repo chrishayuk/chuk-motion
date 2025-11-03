@@ -1,9 +1,11 @@
+# chuk-mcp-remotion/tests/test_token_tools.py
 """
 Tests for token MCP tools.
 """
 
-import pytest
 import json
+
+import pytest
 
 from chuk_mcp_remotion.tools.token_tools import register_token_tools
 
@@ -47,7 +49,7 @@ class TestTokenTools:
             "remotion_import_color_tokens",
             "remotion_export_motion_tokens",
             "remotion_import_motion_tokens",
-            "remotion_export_all_tokens"
+            "remotion_export_all_tokens",
         ]
 
         for tool in expected_tools:
@@ -417,11 +419,7 @@ class TestTokenImportExportTools:
     async def test_export_typography_tokens_font_families_only(self, mcp_with_token_tools):
         """Test exporting only font families."""
         tool = mcp_with_token_tools.tools["remotion_export_typography_tokens"]
-        result = await tool(
-            file_path="families.json",
-            include_all=False,
-            font_families_only=True
-        )
+        result = await tool(file_path="families.json", include_all=False, font_families_only=True)
 
         data = json.loads(result)
         assert data["status"] == "success"
@@ -431,11 +429,7 @@ class TestTokenImportExportTools:
     async def test_export_typography_tokens_text_styles_only(self, mcp_with_token_tools):
         """Test exporting only text styles."""
         tool = mcp_with_token_tools.tools["remotion_export_typography_tokens"]
-        result = await tool(
-            file_path="styles.json",
-            include_all=False,
-            text_styles_only=True
-        )
+        result = await tool(file_path="styles.json", include_all=False, text_styles_only=True)
 
         data = json.loads(result)
         assert data["status"] == "success"
@@ -649,7 +643,9 @@ class TestTokenImportExportTools:
     # Error Path Tests
 
     @pytest.mark.asyncio
-    async def test_export_typography_tokens_error_path(self, mock_mcp_server, project_manager, mocker):
+    async def test_export_typography_tokens_error_path(
+        self, mock_mcp_server, project_manager, mocker
+    ):
         """Test typography export error handling."""
         # Create a mock VFS that raises an exception on write_file
         mock_vfs = mocker.AsyncMock()
