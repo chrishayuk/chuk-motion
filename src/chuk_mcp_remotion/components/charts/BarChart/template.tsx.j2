@@ -1,0 +1,275 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/BarChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface BarChartProps {
+  data?: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+  xlabel?: string;
+  ylabel?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const BarChart: React.FC<BarChartProps> = ({
+  data = [],
+  title,
+  xlabel,
+  ylabel,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  // Calculate bounds
+  const values = data.map(d => d.value);
+  const maxValue = Math.max(...values);
+
+  // Chart dimensions
+  const chartWidth = 900;
+  const chartHeight = 500;
+  const padding = 80;
+  const barWidth = (chartWidth - 2 * padding) / data.length * 0.7;
+  const barSpacing = (chartWidth - 2 * padding) / data.length;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.9, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Default colors
+  const defaultColors = [
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '#7B61FF', '#FF6B9D',
+    '#FFB800', '#00E5A0', '#FF4D4D', '#9D4EDD'
+  ];
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: 36,
+              fontWeight: 700,
+              color: '[[ colors.text.on_dark ]]',
+              marginBottom: 30,
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
+              letterSpacing: '-0.02em'
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <svg
+          width={chartWidth}
+          height={chartHeight}
+          style={{
+            borderRadius: 16,
+            padding: 20,
+            overflow: 'visible'
+          }}
+        >
+          <defs>
+            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
+              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Background */}
+          <rect
+            x="0"
+            y="0"
+            width={chartWidth}
+            height={chartHeight}
+            fill="url(#bgGradient)"
+            rx="16"
+          />
+
+          {/* Grid lines */}
+          <g stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1">
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+              const y = padding + ratio * (chartHeight - 2 * padding);
+              return (
+                <line
+                  key={`grid-${ratio}`}
+                  x1={padding}
+                  y1={y}
+                  x2={chartWidth - padding}
+                  y2={y}
+                />
+              );
+            })}
+          </g>
+
+          {/* Axes */}
+          <g stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
+            <line
+              x1={padding}
+              y1={padding}
+              x2={padding}
+              y2={chartHeight - padding}
+            />
+            <line
+              x1={padding}
+              y1={chartHeight - padding}
+              x2={chartWidth - padding}
+              y2={chartHeight - padding}
+            />
+          </g>
+
+          {/* Bars */}
+          {data.map((item, idx) => {
+            const barDelay = idx * 4;
+            const barProgress = spring({
+              frame: Math.max(0, relativeFrame - barDelay),
+              fps,
+              config: { damping: 150, mass: 0.5, stiffness: 200 }
+            });
+
+            const x = padding + idx * barSpacing + (barSpacing - barWidth) / 2;
+            const barHeight = (item.value / maxValue) * (chartHeight - 2 * padding);
+            const animatedHeight = barHeight * barProgress;
+            const y = chartHeight - padding - animatedHeight;
+
+            const color = item.color || defaultColors[idx % defaultColors.length];
+
+            return (
+              <g key={idx}>
+                {/* Bar */}
+                <rect
+                  x={x}
+                  y={y}
+                  width={barWidth}
+                  height={animatedHeight}
+                  fill={color}
+                  rx="4"
+                  filter="url(#glow)"
+                  opacity={barProgress}
+                />
+
+                {/* Value label */}
+                <text
+                  x={x + barWidth / 2}
+                  y={y - 10}
+                  textAnchor="middle"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="18"
+                  fontWeight="700"
+                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  opacity={barProgress}
+                >
+                  {item.value}
+                </text>
+
+                {/* Category label */}
+                <text
+                  x={x + barWidth / 2}
+                  y={chartHeight - padding + 25}
+                  textAnchor="middle"
+                  fill="rgba(255, 255, 255, 0.8)"
+                  fontSize="14"
+                  fontWeight="500"
+                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  opacity={barProgress}
+                >
+                  {item.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Axis labels */}
+          {xlabel && (
+            <text
+              x={chartWidth / 2}
+              y={chartHeight - 10}
+              textAnchor="middle"
+              fill="rgba(255, 255, 255, 0.6)"
+              fontSize="16"
+              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+            >
+              {xlabel}
+            </text>
+          )}
+
+          {ylabel && (
+            <text
+              x={20}
+              y={chartHeight / 2}
+              textAnchor="middle"
+              fill="rgba(255, 255, 255, 0.6)"
+              fontSize="16"
+              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              transform={`rotate(-90 20 ${chartHeight / 2})`}
+            >
+              {ylabel}
+            </text>
+          )}
+        </svg>
+      </div>
+    </AbsoluteFill>
+  );
+};

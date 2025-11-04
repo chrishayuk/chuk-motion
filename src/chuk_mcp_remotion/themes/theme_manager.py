@@ -11,17 +11,13 @@ The theme system provides:
 - Export/import for sharing
 """
 
-from typing import Dict, Any, Optional, List, TYPE_CHECKING
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from chuk_virtual_fs import AsyncVirtualFileSystem
 
 from .youtube_themes import YOUTUBE_THEMES
-from ..tokens.colors import COLOR_TOKENS
-from ..tokens.typography import TYPOGRAPHY_TOKENS
-from ..tokens.motion import MOTION_TOKENS
 
 
 class Theme:
@@ -36,10 +32,10 @@ class Theme:
         self,
         name: str,
         description: str,
-        colors: Dict[str, Any],
-        typography: Dict[str, Any],
-        motion: Dict[str, Any],
-        use_cases: Optional[List[str]] = None
+        colors: dict[str, Any],
+        typography: dict[str, Any],
+        motion: dict[str, Any],
+        use_cases: list[str] | None = None,
     ):
         """
         Initialize a theme.
@@ -59,7 +55,7 @@ class Theme:
         self.motion = motion
         self.use_cases = use_cases or []
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert theme to dictionary."""
         return {
             "name": self.name,
@@ -67,11 +63,11 @@ class Theme:
             "colors": self.colors,
             "typography": self.typography,
             "motion": self.motion,
-            "use_cases": self.use_cases
+            "use_cases": self.use_cases,
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Theme":
+    def from_dict(cls, data: dict[str, Any]) -> "Theme":
         """Create theme from dictionary."""
         return cls(
             name=data["name"],
@@ -79,7 +75,7 @@ class Theme:
             colors=data["colors"],
             typography=data["typography"],
             motion=data["motion"],
-            use_cases=data.get("use_cases", [])
+            use_cases=data.get("use_cases", []),
         )
 
 
@@ -97,8 +93,8 @@ class ThemeManager:
             vfs: Virtual filesystem for file operations
         """
         self.vfs = vfs
-        self.themes: Dict[str, Theme] = {}
-        self.current_theme: Optional[str] = None
+        self.themes: dict[str, Theme] = {}
+        self.current_theme: str | None = None
         self._register_builtin_themes()
 
     def _register_builtin_themes(self):
@@ -110,7 +106,7 @@ class ThemeManager:
                 colors=theme_data["colors"],
                 typography=theme_data["typography"],
                 motion=theme_data["motion"],
-                use_cases=theme_data.get("use_cases", [])
+                use_cases=theme_data.get("use_cases", []),
             )
             self.themes[theme_key] = theme
 
@@ -124,7 +120,7 @@ class ThemeManager:
         """
         self.themes[theme_key] = theme
 
-    def list_themes(self) -> List[str]:
+    def list_themes(self) -> list[str]:
         """
         List all registered theme keys.
 
@@ -133,7 +129,7 @@ class ThemeManager:
         """
         return list(self.themes.keys())
 
-    def get_theme(self, theme_key: str) -> Optional[Theme]:
+    def get_theme(self, theme_key: str) -> Theme | None:
         """
         Get a theme by key.
 
@@ -145,7 +141,7 @@ class ThemeManager:
         """
         return self.themes.get(theme_key)
 
-    def get_theme_info(self, theme_key: str) -> Optional[Dict[str, Any]]:
+    def get_theme_info(self, theme_key: str) -> dict[str, Any] | None:
         """
         Get detailed information about a theme.
 
@@ -168,20 +164,20 @@ class ThemeManager:
                 "gradient": theme.colors.get("gradient", ""),
                 "background": theme.colors.get("background", {}),
                 "text": theme.colors.get("text", {}),
-                "semantic": theme.colors.get("semantic", {})
+                "semantic": theme.colors.get("semantic", {}),
             },
             "typography": {
                 "primary_font": theme.typography.get("primary_font", {}),
                 "body_font": theme.typography.get("body_font", {}),
                 "code_font": theme.typography.get("code_font", {}),
-                "default_resolution": theme.typography.get("default_resolution", "video_1080p")
+                "default_resolution": theme.typography.get("default_resolution", "video_1080p"),
             },
             "motion": {
                 "default_spring": theme.motion.get("default_spring", {}),
                 "default_easing": theme.motion.get("default_easing", {}),
-                "default_duration": theme.motion.get("default_duration", {})
+                "default_duration": theme.motion.get("default_duration", {}),
             },
-            "use_cases": theme.use_cases
+            "use_cases": theme.use_cases,
         }
 
     def set_current_theme(self, theme_key: str) -> bool:
@@ -199,7 +195,7 @@ class ThemeManager:
         self.current_theme = theme_key
         return True
 
-    def get_current_theme(self) -> Optional[str]:
+    def get_current_theme(self) -> str | None:
         """
         Get the currently active theme key.
 
@@ -208,7 +204,7 @@ class ThemeManager:
         """
         return self.current_theme
 
-    def compare_themes(self, theme_key1: str, theme_key2: str) -> Dict[str, Any]:
+    def compare_themes(self, theme_key1: str, theme_key2: str) -> dict[str, Any]:
         """
         Compare two themes side by side.
 
@@ -232,24 +228,18 @@ class ThemeManager:
                 "descriptions": [theme1.description, theme2.description],
                 "primary_colors": [
                     theme1.colors.get("primary", []),
-                    theme2.colors.get("primary", [])
+                    theme2.colors.get("primary", []),
                 ],
-                "accent_colors": [
-                    theme1.colors.get("accent", []),
-                    theme2.colors.get("accent", [])
-                ],
+                "accent_colors": [theme1.colors.get("accent", []), theme2.colors.get("accent", [])],
                 "motion_feel": [
                     theme1.motion.get("default_spring", {}).get("name", "Unknown"),
-                    theme2.motion.get("default_spring", {}).get("name", "Unknown")
+                    theme2.motion.get("default_spring", {}).get("name", "Unknown"),
                 ],
-                "use_cases": [
-                    theme1.use_cases,
-                    theme2.use_cases
-                ]
-            }
+                "use_cases": [theme1.use_cases, theme2.use_cases],
+            },
         }
 
-    def search_themes(self, query: str) -> List[str]:
+    def search_themes(self, query: str) -> list[str]:
         """
         Search themes by name, description, or use case.
 
@@ -281,7 +271,7 @@ class ThemeManager:
 
         return matches
 
-    def get_themes_by_category(self, category: str) -> List[str]:
+    def get_themes_by_category(self, category: str) -> list[str]:
         """
         Get themes suitable for a content category.
 
@@ -293,7 +283,7 @@ class ThemeManager:
         """
         return self.search_themes(category)
 
-    def validate_theme(self, theme_data: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_theme(self, theme_data: dict[str, Any]) -> dict[str, Any]:
         """
         Validate theme data structure.
 
@@ -309,7 +299,7 @@ class ThemeManager:
         if missing_keys:
             return {
                 "valid": False,
-                "errors": [f"Missing required key: {key}" for key in missing_keys]
+                "errors": [f"Missing required key: {key}" for key in missing_keys],
             }
 
         errors = []
@@ -337,7 +327,7 @@ class ThemeManager:
 
         return {"valid": True, "errors": []}
 
-    async def export_theme(self, theme_key: str, file_path: Optional[str] = None) -> str:
+    async def export_theme(self, theme_key: str, file_path: str | None = None) -> str:
         """
         Export theme to JSON file.
 
@@ -362,7 +352,7 @@ class ThemeManager:
         except Exception as e:
             return f"Error exporting theme: {str(e)}"
 
-    async def import_theme(self, file_path: str, theme_key: Optional[str] = None) -> str:
+    async def import_theme(self, file_path: str, theme_key: str | None = None) -> str:
         """
         Import theme from JSON file.
 
@@ -398,10 +388,10 @@ class ThemeManager:
         self,
         name: str,
         description: str,
-        base_theme: Optional[str] = None,
-        color_overrides: Optional[Dict[str, Any]] = None,
-        typography_overrides: Optional[Dict[str, Any]] = None,
-        motion_overrides: Optional[Dict[str, Any]] = None
+        base_theme: str | None = None,
+        color_overrides: dict[str, Any] | None = None,
+        typography_overrides: dict[str, Any] | None = None,
+        motion_overrides: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a custom theme, optionally based on an existing theme.
@@ -438,11 +428,7 @@ class ThemeManager:
 
         # Create theme
         theme = Theme(
-            name=name,
-            description=description,
-            colors=colors,
-            typography=typography,
-            motion=motion
+            name=name, description=description, colors=colors, typography=typography, motion=motion
         )
 
         # Validate

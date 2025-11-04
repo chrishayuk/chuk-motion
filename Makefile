@@ -100,7 +100,7 @@ format-check: ## Check code formatting without changes
 
 typecheck: ## Run type checking with mypy
 	@echo "$(BLUE)Running type checks...$(NC)"
-	$(UV) run $(MYPY) src/$(PROJECT_NAME)
+	$(UV) run $(MYPY) src/chuk_mcp_remotion
 	@echo "$(GREEN)✓ Type checking passed$(NC)"
 
 quality: lint format-check typecheck ## Run all quality checks

@@ -1,0 +1,274 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/PieChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface PieChartProps {
+  data?: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const PieChart: React.FC<PieChartProps> = ({
+  data = [],
+  title,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  // Calculate total
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+
+  // Chart dimensions
+  const chartSize = 500;
+  const radius = 200;
+  const centerX = chartSize / 2;
+  const centerY = chartSize / 2;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.5, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Default colors from theme
+  const defaultColors = [
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] if colors.primary|length > 1 else colors.accent[1] ]]', '[[ colors.accent[1] if colors.accent|length > 1 else colors.primary[0] ]]',
+    '[[ colors.semantic.warning ]]', '[[ colors.semantic.success ]]', '[[ colors.semantic.error ]]', '[[ colors.primary[2] if colors.primary|length > 2 else colors.accent[0] ]]'
+  ];
+
+  // Calculate slice paths
+  const slices = [];
+  let currentAngle = -90; // Start at top
+
+  data.forEach((item, idx) => {
+    const percentage = (item.value / total);
+    const sliceAngle = percentage * 360;
+
+    slices.push({
+      ...item,
+      percentage,
+      startAngle: currentAngle,
+      endAngle: currentAngle + sliceAngle,
+      color: item.color || defaultColors[idx % defaultColors.length]
+    });
+
+    currentAngle += sliceAngle;
+  });
+
+  // Function to create SVG arc path
+  const createArcPath = (startAngle: number, endAngle: number, r: number) => {
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+
+    const x1 = centerX + r * Math.cos(startRad);
+    const y1 = centerY + r * Math.sin(startRad);
+    const x2 = centerX + r * Math.cos(endRad);
+    const y2 = centerY + r * Math.sin(endRad);
+
+    const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+    return `M ${centerX} ${centerY} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 40
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: '[[ typography.font_sizes[typography.default_resolution].lg ]]',
+              fontWeight: '[[ typography.font_weights.bold ]]',
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]',
+              margin: 0
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 60 }}>
+          {/* Pie chart */}
+          <svg
+            width={chartSize}
+            height={chartSize}
+            style={{
+              filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))'
+            }}
+          >
+            <defs>
+              <filter id="glowPie">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            {slices.map((slice, idx) => {
+              const sliceDelay = idx * 3;
+              const sliceProgress = spring({
+                frame: Math.max(0, relativeFrame - sliceDelay),
+                fps,
+                config: { damping: 150, mass: 0.5, stiffness: 200 }
+              });
+
+              const animatedEndAngle = slice.startAngle + (slice.endAngle - slice.startAngle) * sliceProgress;
+              const path = createArcPath(slice.startAngle, animatedEndAngle, radius);
+
+              // Label position
+              const midAngle = (slice.startAngle + animatedEndAngle) / 2;
+              const labelRadius = radius * 0.7;
+              const labelX = centerX + labelRadius * Math.cos(midAngle * Math.PI / 180);
+              const labelY = centerY + labelRadius * Math.sin(midAngle * Math.PI / 180);
+
+              return (
+                <g key={idx}>
+                  <path
+                    d={path}
+                    fill={slice.color}
+                    stroke="rgba(255, 255, 255, 0.1)"
+                    strokeWidth="2"
+                    filter="url(#glowPie)"
+                    opacity={sliceProgress}
+                  />
+                  {sliceProgress > 0.5 && (
+                    <text
+                      x={labelX}
+                      y={labelY}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="[[ colors.text.on_dark ]]"
+                      fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                      fontWeight="[[ typography.font_weights.bold ]]"
+                      fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                      opacity={interpolate(sliceProgress, [0.5, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}
+                    >
+                      {Math.round(slice.percentage * 100)}%
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+
+          {/* Legend */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+            {slices.map((slice, idx) => {
+              const legendDelay = idx * 3 + 10;
+              const legendProgress = spring({
+                frame: Math.max(0, relativeFrame - legendDelay),
+                fps,
+                config: { damping: 150, mass: 0.5, stiffness: 200 }
+              });
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    opacity: legendProgress,
+                    transform: `translateX(${interpolate(legendProgress, [0, 1], [20, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: 6,
+                      backgroundColor: slice.color,
+                      flexShrink: 0
+                    }}
+                  />
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div
+                      style={{
+                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontWeight: '[[ typography.font_weights.semibold ]]',
+                        color: '[[ colors.text.on_dark ]]',
+                        lineHeight: '[[ typography.line_heights.tight ]]'
+                      }}
+                    >
+                      {slice.label}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontWeight: '[[ typography.font_weights.regular ]]',
+                        color: '[[ colors.text.subdued ]]'
+                      }}
+                    >
+                      {slice.value} ({Math.round(slice.percentage * 100)}%)
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};

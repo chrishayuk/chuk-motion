@@ -1,9 +1,11 @@
+# chuk-mcp-remotion/tests/test_token_manager.py
 """
 Tests for TokenManager - token import/export functionality.
 """
 
-import pytest
 import json
+
+import pytest
 
 
 class TestTokenManagerInit:
@@ -25,8 +27,7 @@ class TestTypographyTokenExportImport:
     async def test_export_all_typography_tokens(self, token_manager):
         """Test exporting all typography tokens."""
         result = await token_manager.export_typography_tokens(
-            file_path="test_typography.json",
-            include_all=True
+            file_path="test_typography.json", include_all=True
         )
 
         assert result == "test_typography.json"
@@ -43,9 +44,7 @@ class TestTypographyTokenExportImport:
     async def test_export_font_families_only(self, token_manager):
         """Test exporting only font families."""
         result = await token_manager.export_typography_tokens(
-            file_path="fonts_only.json",
-            include_all=False,
-            font_families_only=True
+            file_path="fonts_only.json", include_all=False, font_families_only=True
         )
 
         assert result == "fonts_only.json"
@@ -60,9 +59,7 @@ class TestTypographyTokenExportImport:
     async def test_export_text_styles_only(self, token_manager):
         """Test exporting only text styles."""
         result = await token_manager.export_typography_tokens(
-            file_path="styles_only.json",
-            include_all=False,
-            text_styles_only=True
+            file_path="styles_only.json", include_all=False, text_styles_only=True
         )
 
         assert result == "styles_only.json"
@@ -79,9 +76,7 @@ class TestTypographyTokenExportImport:
         # Add custom tokens
         token_manager.custom_typography_tokens = {"custom_key": "custom_value"}
 
-        result = await token_manager.export_typography_tokens(
-            file_path="with_custom.json"
-        )
+        await token_manager.export_typography_tokens(file_path="with_custom.json")
 
         content = await token_manager.vfs.read_text("with_custom.json")
         data = json.loads(content)
@@ -94,13 +89,10 @@ class TestTypographyTokenExportImport:
         """Test importing typography tokens."""
         # Create a file to import
         await token_manager.vfs.write_file(
-            "import_typography.json",
-            json.dumps(sample_typography_tokens)
+            "import_typography.json", json.dumps(sample_typography_tokens)
         )
 
-        result = await token_manager.import_typography_tokens(
-            file_path="import_typography.json"
-        )
+        result = await token_manager.import_typography_tokens(file_path="import_typography.json")
 
         assert "Successfully imported" in result
         assert token_manager.custom_typography_tokens == sample_typography_tokens
@@ -113,13 +105,11 @@ class TestTypographyTokenExportImport:
 
         # Create a file to import
         await token_manager.vfs.write_file(
-            "import_typography.json",
-            json.dumps(sample_typography_tokens)
+            "import_typography.json", json.dumps(sample_typography_tokens)
         )
 
         result = await token_manager.import_typography_tokens(
-            file_path="import_typography.json",
-            merge=True
+            file_path="import_typography.json", merge=True
         )
 
         assert "Successfully imported" in result
@@ -134,13 +124,11 @@ class TestTypographyTokenExportImport:
 
         # Create a file to import
         await token_manager.vfs.write_file(
-            "import_typography.json",
-            json.dumps(sample_typography_tokens)
+            "import_typography.json", json.dumps(sample_typography_tokens)
         )
 
         result = await token_manager.import_typography_tokens(
-            file_path="import_typography.json",
-            merge=False
+            file_path="import_typography.json", merge=False
         )
 
         assert "Successfully imported" in result
@@ -151,14 +139,9 @@ class TestTypographyTokenExportImport:
     async def test_import_invalid_typography_tokens(self, token_manager):
         """Test importing invalid typography tokens."""
         # Create invalid file
-        await token_manager.vfs.write_file(
-            "invalid_typography.json",
-            json.dumps("not a dict")
-        )
+        await token_manager.vfs.write_file("invalid_typography.json", json.dumps("not a dict"))
 
-        result = await token_manager.import_typography_tokens(
-            file_path="invalid_typography.json"
-        )
+        result = await token_manager.import_typography_tokens(file_path="invalid_typography.json")
 
         assert "Error" in result
 
@@ -169,9 +152,7 @@ class TestColorTokenExportImport:
     @pytest.mark.asyncio
     async def test_export_all_color_tokens(self, token_manager):
         """Test exporting all color tokens."""
-        result = await token_manager.export_color_tokens(
-            file_path="test_colors.json"
-        )
+        result = await token_manager.export_color_tokens(file_path="test_colors.json")
 
         assert result == "test_colors.json"
 
@@ -186,8 +167,7 @@ class TestColorTokenExportImport:
     async def test_export_specific_theme_colors(self, token_manager):
         """Test exporting specific theme colors."""
         result = await token_manager.export_color_tokens(
-            file_path="tech_colors.json",
-            theme_name="tech"
+            file_path="tech_colors.json", theme_name="tech"
         )
 
         assert result == "tech_colors.json"
@@ -202,8 +182,7 @@ class TestColorTokenExportImport:
     async def test_export_nonexistent_theme(self, token_manager):
         """Test exporting nonexistent theme."""
         result = await token_manager.export_color_tokens(
-            file_path="invalid_theme.json",
-            theme_name="nonexistent"
+            file_path="invalid_theme.json", theme_name="nonexistent"
         )
 
         assert "Error" in result
@@ -213,14 +192,9 @@ class TestColorTokenExportImport:
     async def test_import_color_tokens(self, token_manager, sample_color_tokens):
         """Test importing color tokens."""
         # Create a file to import
-        await token_manager.vfs.write_file(
-            "import_colors.json",
-            json.dumps(sample_color_tokens)
-        )
+        await token_manager.vfs.write_file("import_colors.json", json.dumps(sample_color_tokens))
 
-        result = await token_manager.import_color_tokens(
-            file_path="import_colors.json"
-        )
+        result = await token_manager.import_color_tokens(file_path="import_colors.json")
 
         assert "Successfully imported" in result
         assert token_manager.custom_color_tokens == sample_color_tokens
@@ -230,12 +204,10 @@ class TestColorTokenExportImport:
         """Test importing invalid color tokens."""
         await token_manager.vfs.write_file(
             "invalid_colors.json",
-            json.dumps([1, 2, 3])  # Not a dict
+            json.dumps([1, 2, 3]),  # Not a dict
         )
 
-        result = await token_manager.import_color_tokens(
-            file_path="invalid_colors.json"
-        )
+        result = await token_manager.import_color_tokens(file_path="invalid_colors.json")
 
         assert "Error" in result
 
@@ -246,9 +218,7 @@ class TestMotionTokenExportImport:
     @pytest.mark.asyncio
     async def test_export_all_motion_tokens(self, token_manager):
         """Test exporting all motion tokens."""
-        result = await token_manager.export_motion_tokens(
-            file_path="test_motion.json"
-        )
+        result = await token_manager.export_motion_tokens(file_path="test_motion.json")
 
         assert result == "test_motion.json"
 
@@ -263,8 +233,7 @@ class TestMotionTokenExportImport:
     async def test_export_springs_only(self, token_manager):
         """Test exporting only spring configs."""
         result = await token_manager.export_motion_tokens(
-            file_path="springs_only.json",
-            springs_only=True
+            file_path="springs_only.json", springs_only=True
         )
 
         assert result == "springs_only.json"
@@ -279,8 +248,7 @@ class TestMotionTokenExportImport:
     async def test_export_easings_only(self, token_manager):
         """Test exporting only easing curves."""
         result = await token_manager.export_motion_tokens(
-            file_path="easings_only.json",
-            easings_only=True
+            file_path="easings_only.json", easings_only=True
         )
 
         assert result == "easings_only.json"
@@ -295,8 +263,7 @@ class TestMotionTokenExportImport:
     async def test_export_presets_only(self, token_manager):
         """Test exporting only animation presets."""
         result = await token_manager.export_motion_tokens(
-            file_path="presets_only.json",
-            presets_only=True
+            file_path="presets_only.json", presets_only=True
         )
 
         assert result == "presets_only.json"
@@ -310,14 +277,9 @@ class TestMotionTokenExportImport:
     @pytest.mark.asyncio
     async def test_import_motion_tokens(self, token_manager, sample_motion_tokens):
         """Test importing motion tokens."""
-        await token_manager.vfs.write_file(
-            "import_motion.json",
-            json.dumps(sample_motion_tokens)
-        )
+        await token_manager.vfs.write_file("import_motion.json", json.dumps(sample_motion_tokens))
 
-        result = await token_manager.import_motion_tokens(
-            file_path="import_motion.json"
-        )
+        result = await token_manager.import_motion_tokens(file_path="import_motion.json")
 
         assert "Successfully imported" in result
         assert token_manager.custom_motion_tokens == sample_motion_tokens
@@ -329,9 +291,7 @@ class TestExportAllTokens:
     @pytest.mark.asyncio
     async def test_export_all_tokens(self, token_manager):
         """Test exporting all token types to directory."""
-        result = await token_manager.export_all_tokens(
-            output_dir="all_tokens"
-        )
+        result = await token_manager.export_all_tokens(output_dir="all_tokens")
 
         assert "typography" in result
         assert "colors" in result
@@ -363,9 +323,7 @@ class TestTokenGetters:
     async def test_get_typography_token_from_custom(self, token_manager):
         """Test getting typography token from custom tokens."""
         token_manager.custom_typography_tokens = {
-            "font_families": {
-                "custom": {"name": "Custom Font"}
-            }
+            "font_families": {"custom": {"name": "Custom Font"}}
         }
 
         result = token_manager.get_typography_token("font_families", use_custom=True)

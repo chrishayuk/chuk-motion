@@ -1,11 +1,11 @@
+# chuk-mcp-remotion/tests/test_tokens.py
 """
 Tests for design tokens (colors, typography, motion).
 """
 
-import pytest
 from chuk_mcp_remotion.tokens.colors import COLOR_TOKENS
-from chuk_mcp_remotion.tokens.typography import TYPOGRAPHY_TOKENS
 from chuk_mcp_remotion.tokens.motion import MOTION_TOKENS
+from chuk_mcp_remotion.tokens.typography import TYPOGRAPHY_TOKENS
 
 
 class TestColorTokens:
@@ -19,13 +19,30 @@ class TestColorTokens:
 
     def test_all_themes_present(self):
         """Test that all expected themes are present."""
-        expected_themes = ["tech", "finance", "education", "lifestyle", "gaming", "minimal", "business"]
+        expected_themes = [
+            "tech",
+            "finance",
+            "education",
+            "lifestyle",
+            "gaming",
+            "minimal",
+            "business",
+        ]
         for theme in expected_themes:
             assert theme in COLOR_TOKENS, f"Theme '{theme}' not found"
 
     def test_theme_structure(self):
         """Test that each theme has required color categories."""
-        required_keys = ["name", "description", "primary", "accent", "gradient", "background", "text", "semantic"]
+        required_keys = [
+            "name",
+            "description",
+            "primary",
+            "accent",
+            "gradient",
+            "background",
+            "text",
+            "semantic",
+        ]
 
         for theme_key, theme in COLOR_TOKENS.items():
             for key in required_keys:
@@ -46,7 +63,8 @@ class TestColorTokens:
     def test_hex_color_format(self):
         """Test that colors are in valid hex format."""
         import re
-        hex_pattern = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+        hex_pattern = re.compile(r"^#[0-9A-Fa-f]{6}$")
 
         for theme_key, theme in COLOR_TOKENS.items():
             # Check primary colors
@@ -110,7 +128,14 @@ class TestTypographyTokens:
 
     def test_required_categories(self):
         """Test that all required typography categories exist."""
-        required = ["font_families", "font_sizes", "font_weights", "line_heights", "letter_spacing", "text_styles"]
+        required = [
+            "font_families",
+            "font_sizes",
+            "font_weights",
+            "line_heights",
+            "letter_spacing",
+            "text_styles",
+        ]
         for category in required:
             assert category in TYPOGRAPHY_TOKENS, f"Missing category: {category}"
 
@@ -154,7 +179,7 @@ class TestTypographyTokens:
             "semibold": 600,
             "bold": 700,
             "extrabold": 800,
-            "black": 900
+            "black": 900,
         }
 
         for weight, value in expected_weights.items():
@@ -182,7 +207,15 @@ class TestTypographyTokens:
     def test_text_styles(self):
         """Test text style presets."""
         styles = TYPOGRAPHY_TOKENS["text_styles"]
-        expected_styles = ["hero_title", "title", "heading", "subheading", "body", "caption", "small"]
+        expected_styles = [
+            "hero_title",
+            "title",
+            "heading",
+            "subheading",
+            "body",
+            "caption",
+            "small",
+        ]
 
         for style in expected_styles:
             assert style in styles, f"Missing text style: {style}"
@@ -216,7 +249,13 @@ class TestMotionTokens:
 
     def test_required_categories(self):
         """Test that all required motion categories exist."""
-        required = ["spring_configs", "easing_curves", "durations", "animation_presets", "youtube_optimizations"]
+        required = [
+            "spring_configs",
+            "easing_curves",
+            "durations",
+            "animation_presets",
+            "youtube_optimizations",
+        ]
         for category in required:
             assert category in MOTION_TOKENS, f"Missing category: {category}"
 
@@ -243,7 +282,14 @@ class TestMotionTokens:
     def test_easing_curves(self):
         """Test easing curve structure."""
         easings = MOTION_TOKENS["easing_curves"]
-        expected_easings = ["linear", "ease_in", "ease_out", "ease_in_out", "ease_in_back", "ease_out_back"]
+        expected_easings = [
+            "linear",
+            "ease_in",
+            "ease_out",
+            "ease_in_out",
+            "ease_in_back",
+            "ease_out_back",
+        ]
 
         for easing in expected_easings:
             assert easing in easings, f"Missing easing: {easing}"
@@ -258,7 +304,16 @@ class TestMotionTokens:
     def test_durations(self):
         """Test duration preset structure."""
         durations = MOTION_TOKENS["durations"]
-        expected_durations = ["instant", "ultra_fast", "fast", "normal", "moderate", "slow", "very_slow", "dramatic"]
+        expected_durations = [
+            "instant",
+            "ultra_fast",
+            "fast",
+            "normal",
+            "moderate",
+            "slow",
+            "very_slow",
+            "dramatic",
+        ]
 
         for duration in expected_durations:
             assert duration in durations, f"Missing duration: {duration}"
@@ -278,13 +333,21 @@ class TestMotionTokens:
             # Calculate expected seconds from frames (30fps)
             expected_seconds = dur["frames"] / 30
             # Allow small floating point difference
-            assert abs(dur["seconds"] - expected_seconds) < 0.01, \
+            assert abs(dur["seconds"] - expected_seconds) < 0.01, (
                 f"{key}: seconds doesn't match frames at 30fps"
+            )
 
     def test_animation_presets(self):
         """Test animation preset structure."""
         presets = MOTION_TOKENS["animation_presets"]
-        expected_presets = ["fade_in", "fade_out", "slide_up", "slide_down", "scale_in", "bounce_in"]
+        expected_presets = [
+            "fade_in",
+            "fade_out",
+            "slide_up",
+            "slide_down",
+            "scale_in",
+            "bounce_in",
+        ]
 
         for preset in expected_presets:
             assert preset in presets, f"Missing preset: {preset}"
@@ -309,7 +372,7 @@ class TestMotionTokens:
 
     def test_spring_values_are_numeric(self):
         """Test that spring config values are numeric."""
-        for spring_name, spring in MOTION_TOKENS["spring_configs"].items():
+        for _spring_name, spring in MOTION_TOKENS["spring_configs"].items():
             config = spring["config"]
             assert isinstance(config["damping"], (int, float))
             assert isinstance(config["mass"], (int, float))
@@ -337,7 +400,7 @@ class TestTokenIntegration:
 
     def test_all_themes_have_all_tokens(self):
         """Test that all themes have complete token sets."""
-        for theme_key in COLOR_TOKENS.keys():
+        for theme_key in COLOR_TOKENS:
             theme = COLOR_TOKENS[theme_key]
 
             # Should have all required color categories
@@ -359,8 +422,7 @@ class TestTokenIntegration:
             val_4k = int(sizes_4k[size_key].rstrip("px"))
 
             # Higher resolutions should have larger sizes
-            assert val_720p < val_1080p < val_4k, \
-                f"{size_key}: sizes should scale with resolution"
+            assert val_720p < val_1080p < val_4k, f"{size_key}: sizes should scale with resolution"
 
     def test_no_missing_references(self):
         """Test that text styles reference valid tokens."""
@@ -370,9 +432,11 @@ class TestTokenIntegration:
 
         for style_name, style in text_styles.items():
             # Font family should exist
-            assert style["fontFamily"] in font_families, \
+            assert style["fontFamily"] in font_families, (
                 f"{style_name} references unknown font family: {style['fontFamily']}"
+            )
 
             # Line height should exist
-            assert style["lineHeight"] in line_heights, \
+            assert style["lineHeight"] in line_heights, (
                 f"{style_name} references unknown line height: {style['lineHeight']}"
+            )

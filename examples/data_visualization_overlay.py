@@ -6,6 +6,7 @@ Demonstrates animated line charts with transparent backgrounds,
 perfect for overlaying on top of video content.
 """
 import asyncio
+import shutil
 import sys
 from pathlib import Path
 
@@ -24,11 +25,18 @@ async def main():
 
     # Initialize project manager
     manager = ProjectManager()
+    project_name = "data_viz_overlay"
+
+    # Clean up existing project if it exists
+    project_path = manager.workspace_dir / project_name
+    if project_path.exists():
+        print(f"\n🔄 Removing existing project: {project_name}")
+        shutil.rmtree(project_path)
 
     # Step 1: Create project with transparent background
-    print("\n📊 Step 1: Creating transparent overlay project...")
+    print(f"\n📊 Step 1: Creating {project_name} project...")
     project = manager.create_project(
-        name="data_viz_overlay",
+        name=project_name,
         theme="tech",
         fps=30,
         width=1920,
