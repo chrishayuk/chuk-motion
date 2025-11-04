@@ -18,7 +18,7 @@ def register_tool(mcp, project_manager):
         animation: str | None = None,
         duration_seconds: float = 3.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add TitleScene to the composition.
@@ -65,7 +65,9 @@ def register_tool(mcp, project_manager):
 
                 return OverlayComponentResponse(
                     component="TitleScene",
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration_seconds,
                 ).model_dump_json()
             except Exception as e:

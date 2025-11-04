@@ -292,4 +292,3 @@ class TestGridToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid items JSON" in result_data["error"]
-

@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 from .colors import COLOR_TOKENS
 from .motion import MOTION_TOKENS
+from .spacing import SPACING_TOKENS
 from .typography import TYPOGRAPHY_TOKENS
 
 
@@ -38,6 +39,7 @@ class TokenManager:
         self.custom_typography_tokens: dict[str, Any] = {}
         self.custom_color_tokens: dict[str, Any] = {}
         self.custom_motion_tokens: dict[str, Any] = {}
+        self.custom_spacing_tokens: dict[str, Any] = {}
 
     # ========================================================================
     # TYPOGRAPHY TOKEN MANAGEMENT
@@ -403,6 +405,119 @@ class TokenManager:
         if token_type == "motion" or token_type is None:
             self.custom_motion_tokens = {}
 
+        if token_type == "spacing" or token_type is None:
+            self.custom_spacing_tokens = {}
+
+    # ========================================================================
+    # SPACING TOKEN MANAGEMENT
+    # ========================================================================
+
+    async def export_spacing_tokens(
+        self,
+        file_path: str | None = None,
+        spacing_only: bool = False,
+        safe_margins_only: bool = False,
+    ) -> str:
+        """
+        Export spacing tokens to JSON file.
+
+        Args:
+            file_path: Output file path (default: spacing_tokens.json)
+            spacing_only: Export only spacing scale
+            safe_margins_only: Export only safe margin definitions
+
+        Returns:
+            Path to exported file or error message
+        """
+        if not file_path:
+            file_path = "spacing_tokens.json"
+
+        try:
+            # Build export data
+            export_data = {}
+
+            if spacing_only:
+                export_data["spacing"] = SPACING_TOKENS["spacing"]
+            elif safe_margins_only:
+                export_data["safe_margins"] = SPACING_TOKENS["safe_margins"]
+            else:
+                # Export all
+                export_data = SPACING_TOKENS.copy()
+
+            # Add custom tokens if any
+            if self.custom_spacing_tokens:
+                export_data["custom"] = self.custom_spacing_tokens
+
+            json_content = json.dumps(export_data, indent=2)
+
+            # Write to virtual filesystem
+            await self.vfs.write_file(file_path, json_content)
+            return file_path
+
+        except Exception as e:
+            return f"Error exporting spacing tokens: {str(e)}"
+
+    async def import_spacing_tokens(self, file_path: str, merge: bool = True) -> str:
+        """
+        Import spacing tokens from JSON file.
+
+        Args:
+            file_path: Path to JSON file
+            merge: Merge with existing custom tokens (default: True)
+
+        Returns:
+            Success message or error
+        """
+        try:
+            # Read from virtual filesystem
+            json_content = await self.vfs.read_text(file_path)
+            imported_data = json.loads(json_content)
+
+            # Validate structure
+            if not isinstance(imported_data, dict):
+                return "Error: Invalid spacing token format"
+
+            if merge:
+                self.custom_spacing_tokens.update(imported_data)
+            else:
+                self.custom_spacing_tokens = imported_data
+
+            return f"Successfully imported spacing tokens from {file_path}"
+
+        except Exception as e:
+            return f"Error importing spacing tokens: {str(e)}"
+
+    def get_spacing_token(
+        self, token_type: str, key: str | None = None, use_custom: bool = True
+    ) -> Any | None:
+        """
+        Get a spacing token value.
+
+        Args:
+            token_type: Token type (spacing, safe_margins, border_radius, etc.)
+            key: Optional specific key within the type
+            use_custom: Check custom tokens first (default: True)
+
+        Returns:
+            Token value or None
+        """
+        # Check custom tokens first
+        if use_custom and token_type in self.custom_spacing_tokens:
+            custom_tokens = self.custom_spacing_tokens[token_type]
+            if key:
+                return custom_tokens.get(key)
+            return custom_tokens
+
+        # Fall back to default tokens
+        if token_type not in SPACING_TOKENS:
+            return None
+
+        tokens = SPACING_TOKENS[token_type]
+        if key:
+            return tokens.get(key)
+
+        return tokens
+
     async def export_all_tokens(self, output_dir: str) -> dict[str, str]:
         """
         Export all token types to separate files.
@@ -424,6 +539,7 @@ class TokenManager:
             ),
             "colors": await self.export_color_tokens(f"{output_dir}/color_tokens.json"),
             "motion": await self.export_motion_tokens(f"{output_dir}/motion_tokens.json"),
+            "spacing": await self.export_spacing_tokens(f"{output_dir}/spacing_tokens.json"),
         }
 
         return results

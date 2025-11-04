@@ -6,7 +6,7 @@ Handles project scaffolding, file generation, and project state.
 
 import shutil
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from jinja2 import Template
 

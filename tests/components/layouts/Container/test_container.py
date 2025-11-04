@@ -169,4 +169,3 @@ class TestContainerToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Test error" in result_data["error"]
-

@@ -73,10 +73,10 @@ export const PieChart: React.FC<PieChartProps> = ({
     extrapolateRight: 'clamp'
   });
 
-  // Default colors
+  // Default colors from theme
   const defaultColors = [
-    '#0066FF', '#00D9FF', '#7B61FF', '#FF6B9D',
-    '#FFB800', '#00E5A0', '#FF4D4D', '#9D4EDD'
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] if colors.primary|length > 1 else colors.accent[1] ]]', '[[ colors.accent[1] if colors.accent|length > 1 else colors.primary[0] ]]',
+    '[[ colors.semantic.warning ]]', '[[ colors.semantic.success ]]', '[[ colors.semantic.error ]]', '[[ colors.primary[2] if colors.primary|length > 2 else colors.accent[0] ]]'
   ];
 
   // Calculate slice paths
@@ -122,7 +122,7 @@ export const PieChart: React.FC<PieChartProps> = ({
           left: '50%',
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
-          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -132,13 +132,13 @@ export const PieChart: React.FC<PieChartProps> = ({
         {title && (
           <h3
             style={{
-              fontSize: 40,
-              fontWeight: 700,
-              color: '#FFFFFF',
+              fontSize: '[[ typography.font_sizes[typography.default_resolution].lg ]]',
+              fontWeight: '[[ typography.font_weights.bold ]]',
+              color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
-              letterSpacing: '-0.02em',
+              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]',
               margin: 0
             }}
           >
@@ -198,10 +198,10 @@ export const PieChart: React.FC<PieChartProps> = ({
                       y={labelY}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fill="#FFFFFF"
-                      fontSize="18"
-                      fontWeight="700"
-                      fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fill="[[ colors.text.on_dark ]]"
+                      fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                      fontWeight="[[ typography.font_weights.bold ]]"
+                      fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                       opacity={interpolate(sliceProgress, [0.5, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}
                     >
                       {Math.round(slice.percentage * 100)}%
@@ -245,19 +245,19 @@ export const PieChart: React.FC<PieChartProps> = ({
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div
                       style={{
-                        fontSize: 18,
-                        fontWeight: 600,
-                        color: '#FFFFFF',
-                        lineHeight: 1.2
+                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontWeight: '[[ typography.font_weights.semibold ]]',
+                        color: '[[ colors.text.on_dark ]]',
+                        lineHeight: '[[ typography.line_heights.tight ]]'
                       }}
                     >
                       {slice.label}
                     </div>
                     <div
                       style={{
-                        fontSize: 14,
-                        fontWeight: 400,
-                        color: 'rgba(255, 255, 255, 0.6)'
+                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontWeight: '[[ typography.font_weights.regular ]]',
+                        color: '[[ colors.text.subdued ]]'
                       }}
                     >
                       {slice.value} ({Math.round(slice.percentage * 100)}%)

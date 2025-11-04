@@ -97,7 +97,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           left: '50%',
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
-          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
           filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
         }}
       >
@@ -106,7 +106,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
             style={{
               fontSize: 40,
               fontWeight: 700,
-              color: '#FFFFFF',
+              color: '[[ colors.text.on_dark ]]',
               marginBottom: 30,
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
@@ -225,7 +225,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   y={y + barHeight / 2}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill={rank <= 3 ? '#000000' : '#FFFFFF'}
+                  fill={rank <= 3 ? '#000000' : '[[ colors.text.on_dark ]]'}
                   fontSize="16"
                   fontWeight="900"
                   fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
@@ -266,7 +266,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   x={x + animatedWidth + 15}
                   y={y + barHeight / 2}
                   dominantBaseline="middle"
-                  fill="#FFFFFF"
+                  fill="[[ colors.text.on_dark ]]"
                   fontSize="20"
                   fontWeight="700"
                   fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"

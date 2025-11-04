@@ -45,14 +45,14 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     const progress = spring({
       frame: relativeFrame,
       fps,
-      config: { damping: 200, mass: 0.5, stiffness: 200 }
+      config: { damping: [[ motion.default_spring.config.damping ]], mass: [[ motion.default_spring.config.mass ]], stiffness: [[ motion.default_spring.config.stiffness ]] }
     });
     opacity = progress;
   } else if (animation === 'slide_up') {
     const progress = spring({
       frame: relativeFrame,
       fps,
-      config: { damping: 200, mass: 0.5, stiffness: 200 }
+      config: { damping: [[ motion.default_spring.config.damping ]], mass: [[ motion.default_spring.config.mass ]], stiffness: [[ motion.default_spring.config.stiffness ]] }
     });
     opacity = progress;
     translateY = interpolate(progress, [0, 1], [50, 0]);
@@ -60,7 +60,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     const progress = spring({
       frame: relativeFrame,
       fps,
-      config: { damping: 200, mass: 0.5, stiffness: 200 }
+      config: { damping: [[ motion.default_spring.config.damping ]], mass: [[ motion.default_spring.config.mass ]], stiffness: [[ motion.default_spring.config.stiffness ]] }
     });
     opacity = progress;
     scale = interpolate(progress, [0, 1], [0.9, 1]);
@@ -68,7 +68,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     const progress = spring({
       frame: relativeFrame,
       fps,
-      config: { damping: 200, mass: 0.5, stiffness: 200 }
+      config: { damping: [[ motion.default_spring.config.damping ]], mass: [[ motion.default_spring.config.mass ]], stiffness: [[ motion.default_spring.config.stiffness ]] }
     });
     opacity = progress;
     blur = interpolate(progress, [0, 1], [10, 0]);

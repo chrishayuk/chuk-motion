@@ -133,21 +133,21 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           left: '50%',
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
-          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
           filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
         }}
       >
         {title && (
           <h3
             style={{
-              fontSize: 36,
-              fontWeight: 700,
-              color: '#FFFFFF',
-              marginBottom: 30,
+              fontSize: '[[ typography.font_sizes[typography.default_resolution].xl ]]',
+              fontWeight: '[[ typography.font_weights.bold ]]',
+              color: '[[ colors.text.on_dark ]]',
+              marginBottom: '[[ spacing.spacing.lg ]]',
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
-              letterSpacing: '-0.02em'
+              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {title}
@@ -169,13 +169,13 @@ export const AreaChart: React.FC<AreaChartProps> = ({
               <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
             </linearGradient>
             <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#0066FF" stopOpacity="0.8" />
-              <stop offset="50%" stopColor="#00D9FF" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#00D9FF" stopOpacity="0.05" />
+              <stop offset="0%" stopColor="[[ colors.primary[0] ]]" stopOpacity="0.8" />
+              <stop offset="50%" stopColor="[[ colors.accent[0] ]]" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="[[ colors.accent[0] ]]" stopOpacity="0.05" />
             </linearGradient>
             <linearGradient id="lineGradientArea" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#0066FF" />
-              <stop offset="100%" stopColor="#00D9FF" />
+              <stop offset="0%" stopColor="[[ colors.primary[0] ]]" />
+              <stop offset="100%" stopColor="[[ colors.accent[0] ]]" />
             </linearGradient>
             <filter id="glowArea">
               <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -266,15 +266,15 @@ export const AreaChart: React.FC<AreaChartProps> = ({
                   cx={x}
                   cy={y}
                   r={12 * pulseScale}
-                  fill="#00D9FF"
+                  fill="[[ colors.accent[0] ]]"
                   opacity={0.2}
                 />
                 <circle
                   cx={x}
                   cy={y}
                   r="8"
-                  fill="#00D9FF"
-                  stroke="#0A0E1A"
+                  fill="[[ colors.accent[0] ]]"
+                  stroke="[[ colors.background.dark ]]"
                   strokeWidth="2"
                   filter="url(#glowArea)"
                 />

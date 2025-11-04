@@ -17,32 +17,33 @@ def register_tool(mcp, project_manager):
         title: str | None = None,
         xlabel: str | None = None,
         ylabel: str | None = None,
-        duration: float = 4.0,
+        duration: float | str = 4.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
-        Add an animated bar chart to the composition.
+        Add an animated pie chart to the composition.
 
-        Animated vertical bar chart for comparing categories.
+        Animated pie chart for showing proportions and percentages.
 
         Args:
-            data: JSON array of data points
+            data: JSON array of data points with label and value
             title: Optional chart title
-            xlabel: Optional x-axis label
-            ylabel: Optional y-axis label
-            duration: How long to animate (seconds)
+            xlabel: Optional x-axis label (not typically used for pie charts)
+            ylabel: Optional y-axis label (not typically used for pie charts)
+            duration: How long to animate (seconds or time string like "2s", "500ms")
             track: Track name (default: "main")
-            gap_before: Gap before component in seconds
+            gap_before: Gap before component (seconds or time string like "1s", "500ms")
 
         Returns:
             JSON with component info
 
         Example:
             await remotion_add_pie_chart(
-                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}]',
-                title="Example Chart",
-                duration=4.0
+                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 30}]',
+                title="Market Share",
+                duration=4.0,
+                gap_before="1s"
             )
         """
 
@@ -79,7 +80,9 @@ def register_tool(mcp, project_manager):
                     component="PieChart",
                     data_points=len(data_parsed),
                     title=title,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

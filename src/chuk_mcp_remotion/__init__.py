@@ -15,6 +15,7 @@ from .themes.youtube_themes import YOUTUBE_THEMES
 # Export design tokens
 from .tokens.colors import COLOR_TOKENS
 from .tokens.motion import MOTION_TOKENS
+from .tokens.spacing import SPACING_TOKENS
 from .tokens.typography import TYPOGRAPHY_TOKENS
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "COLOR_TOKENS",
     "TYPOGRAPHY_TOKENS",
     "MOTION_TOKENS",
+    "SPACING_TOKENS",
     "COMPONENT_REGISTRY",
     "YOUTUBE_THEMES",
 ]

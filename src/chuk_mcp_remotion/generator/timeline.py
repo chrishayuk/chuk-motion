@@ -7,7 +7,7 @@ or layer on top of each other.
 """
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, cast
 
 from .composition_builder import ComponentInstance
 
@@ -83,8 +83,8 @@ class Timeline:
         for name, config in track_config.items():
             self.tracks[name] = Track(
                 name=name,
-                layer=config["layer"],
-                default_gap=config.get("default_gap", 0),
+                layer=cast(int, config["layer"]),
+                default_gap=cast(float, config.get("default_gap", 0)),
                 cursor=0,
                 components=[],
             )
@@ -156,11 +156,11 @@ class Timeline:
     def add_component(
         self,
         component: ComponentInstance,
-        duration: float,
+        duration: float | str,
         track: str | None = None,
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
         align_to: str | None = None,
-        offset: float = 0,
+        offset: float | str = 0,
         start_frame: int | None = None,
     ) -> ComponentInstance:
         """
@@ -168,11 +168,11 @@ class Timeline:
 
         Args:
             component: Component to add
-            duration: Duration in seconds
+            duration: Duration in seconds (float) or time string (e.g., "2s", "500ms")
             track: Track name (defaults to active_track)
-            gap_before: Gap before component in seconds (overrides track default)
+            gap_before: Gap before component in seconds or time string (overrides track default)
             align_to: Align to another track's cursor instead of this track's
-            offset: Offset in seconds from alignment point
+            offset: Offset in seconds or time string from alignment point
             start_frame: Explicit start frame (overrides auto-stacking)
 
         Returns:
@@ -181,7 +181,7 @@ class Timeline:
         track_name = track if track is not None else self.active_track
         track_obj = self.get_track(track_name)
 
-        # Calculate gap
+        # Calculate gap (handle both string and float inputs)
         gap = gap_before if gap_before is not None else track_obj.default_gap
         gap_frames = self.seconds_to_frames(gap)
 
@@ -197,7 +197,7 @@ class Timeline:
             # Use this track's cursor
             calculated_start = track_obj.cursor + gap_frames
 
-        # Calculate duration
+        # Calculate duration (handle both string and float inputs)
         duration_frames = self.seconds_to_frames(duration)
 
         # Update component with calculated values
@@ -239,9 +239,39 @@ class Timeline:
         """Get total duration of the timeline in seconds."""
         return self.frames_to_seconds(self.get_total_duration_frames())
 
-    def seconds_to_frames(self, seconds: float) -> int:
-        """Convert seconds to frames."""
-        return int(seconds * self.fps)
+    def seconds_to_frames(self, seconds: float | str) -> int:
+        """
+        Convert seconds to frames.
+
+        Args:
+            seconds: Time in seconds (as float) or time string with units (e.g., "1s", "500ms")
+
+        Returns:
+            Frame count
+        """
+        # Handle string inputs with units
+        if isinstance(seconds, str):
+            seconds_str = seconds.strip().lower()
+
+            # Parse time string with units
+            if seconds_str.endswith("ms"):
+                # Milliseconds
+                value = float(seconds_str[:-2])
+                seconds_float = value / 1000.0
+            elif seconds_str.endswith("s"):
+                # Seconds
+                seconds_float = float(seconds_str[:-1])
+            elif seconds_str.endswith("m"):
+                # Minutes
+                value = float(seconds_str[:-1])
+                seconds_float = value * 60.0
+            else:
+                # No unit, assume seconds
+                seconds_float = float(seconds_str)
+        else:
+            seconds_float = float(seconds)
+
+        return int(seconds_float * self.fps)
 
     def frames_to_seconds(self, frames: int) -> float:
         """Convert frames to seconds."""

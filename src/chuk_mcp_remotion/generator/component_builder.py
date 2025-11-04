@@ -10,6 +10,7 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader
 
 from ..themes.youtube_themes import YOUTUBE_THEMES
+from ..tokens.spacing import SPACING_TOKENS
 from ..tokens.typography import TYPOGRAPHY_TOKENS
 
 
@@ -126,13 +127,24 @@ class ComponentBuilder:
         resolution = theme["typography"].get("default_resolution", "video_1080p")
         font_sizes = TYPOGRAPHY_TOKENS["font_sizes"][resolution]
 
+        # Build complete typography context with font_sizes
+        typography_context = {
+            **theme["typography"],
+            "font_sizes": TYPOGRAPHY_TOKENS["font_sizes"],
+            "font_weights": TYPOGRAPHY_TOKENS["font_weights"],
+            "line_heights": TYPOGRAPHY_TOKENS["line_heights"],
+            "letter_spacing": TYPOGRAPHY_TOKENS["letter_spacing"],
+            "default_resolution": resolution,
+        }
+
         # Render template
         tsx_code = template.render(
             config=config,
             theme=theme,
             colors=theme["colors"],
-            typography=theme["typography"],
+            typography=typography_context,
             motion=theme["motion"],
+            spacing=SPACING_TOKENS,
             font_sizes=font_sizes,
         )
 

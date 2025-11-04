@@ -461,7 +461,11 @@ async def remotion_get_track_cursor(track_name: str) -> str:
             cursor_frames = project_manager.current_timeline.get_track_cursor(track_name)
             cursor_seconds = project_manager.current_timeline.frames_to_seconds(cursor_frames)
             return json.dumps(
-                {"track": track_name, "cursor_frames": cursor_frames, "cursor_seconds": cursor_seconds},
+                {
+                    "track": track_name,
+                    "cursor_frames": cursor_frames,
+                    "cursor_seconds": cursor_seconds,
+                },
                 indent=2,
             )
         except Exception as e:

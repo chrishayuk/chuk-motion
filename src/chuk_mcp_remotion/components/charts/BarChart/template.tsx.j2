@@ -81,7 +81,7 @@ export const BarChart: React.FC<BarChartProps> = ({
 
   // Default colors
   const defaultColors = [
-    '#0066FF', '#00D9FF', '#7B61FF', '#FF6B9D',
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '#7B61FF', '#FF6B9D',
     '#FFB800', '#00E5A0', '#FF4D4D', '#9D4EDD'
   ];
 
@@ -94,7 +94,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           left: '50%',
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
-          fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'",
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
           filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
         }}
       >
@@ -103,7 +103,7 @@ export const BarChart: React.FC<BarChartProps> = ({
             style={{
               fontSize: 36,
               fontWeight: 700,
-              color: '#FFFFFF',
+              color: '[[ colors.text.on_dark ]]',
               marginBottom: 30,
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
@@ -215,7 +215,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                   x={x + barWidth / 2}
                   y={y - 10}
                   textAnchor="middle"
-                  fill="#FFFFFF"
+                  fill="[[ colors.text.on_dark ]]"
                   fontSize="18"
                   fontWeight="700"
                   fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"

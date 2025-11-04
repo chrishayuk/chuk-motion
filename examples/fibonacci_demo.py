@@ -133,8 +133,7 @@ print()
         duration_frames=0,
         props={
             "cta_text": "Try it yourself — link in description",
-            "thumbnail_url": "https://example.com/thumbnail.png",
-            "variant": "classic"
+            "variant": "gradient"  # gradient variant handles missing thumbnail gracefully
         },
         layer=0
     )

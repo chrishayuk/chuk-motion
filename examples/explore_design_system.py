@@ -17,6 +17,7 @@ from chuk_mcp_remotion import (
     COLOR_TOKENS,
     TYPOGRAPHY_TOKENS,
     MOTION_TOKENS,
+    SPACING_TOKENS,
     COMPONENT_REGISTRY,
     YOUTUBE_THEMES
 )
@@ -98,6 +99,15 @@ async def explore_tokens():
     print(f"  Easing Curves: {len(easings)}")
     print(f"  Duration Presets: {len(durations)}")
 
+    # Spacing tokens
+    print(f"\n📏 Spacing:")
+    spacing = SPACING_TOKENS['spacing']
+    safe_margins = SPACING_TOKENS['safe_margins']
+    print(f"  Spacing Scale: {len(spacing)} steps ({', '.join(list(spacing.keys())[:5])}...)")
+    print(f"  Safe Margins: {len(safe_margins)} platforms ({', '.join(list(safe_margins.keys())[:3])}...)")
+    print(f"  Border Radius: {len(SPACING_TOKENS['border_radius'])} variants")
+    print(f"  Layout Presets: {len(SPACING_TOKENS['layout_widths'])} widths, {len(SPACING_TOKENS['layout_heights'])} heights")
+
 
 async def show_component_example():
     """Show a detailed component example."""
@@ -144,8 +154,11 @@ async def main():
     print(f"  Color Palettes: {len(COLOR_TOKENS)}")
     print(f"  Spring Configs: {len(MOTION_TOKENS['spring_configs'])}")
     print(f"  Easing Curves: {len(MOTION_TOKENS['easing_curves'])}")
+    print(f"  Spacing Tokens: {len(SPACING_TOKENS)} categories")
+    print(f"  Safe Margin Platforms: {len(SPACING_TOKENS['safe_margins'])}")
     print("\n" + "="*70)
-    print("\n✨ Ready to create amazing videos with AI!\n")
+    print("\n✨ Ready to create amazing videos with AI!")
+    print("📱 Now with platform-specific safe margins for LinkedIn, TikTok, Instagram & more!\n")
 
 
 if __name__ == "__main__":

@@ -16,9 +16,9 @@ def register_tool(mcp, project_manager):
         animation: str | None = None,
         position: str | None = None,
         custom_text: str | None = None,
-        duration: float = 3.0,
+        duration: float | str = 3.0,
         track: str = "overlay",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add SubscribeButton to the composition.
@@ -64,7 +64,9 @@ def register_tool(mcp, project_manager):
 
                 return OverlayComponentResponse(
                     component="SubscribeButton",
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

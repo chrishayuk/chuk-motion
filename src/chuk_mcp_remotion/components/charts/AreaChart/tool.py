@@ -17,9 +17,9 @@ def register_tool(mcp, project_manager):
         title: str | None = None,
         xlabel: str | None = None,
         ylabel: str | None = None,
-        duration: float = 4.0,
+        duration: float | str = 4.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add an animated bar chart to the composition.
@@ -79,7 +79,9 @@ def register_tool(mcp, project_manager):
                     component="AreaChart",
                     data_points=len(data_parsed),
                     title=title,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

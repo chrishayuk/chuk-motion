@@ -18,9 +18,9 @@ def register_tool(mcp, project_manager):
         suffix: str | None = None,
         decimals: int = 0,
         animation: str | None = None,
-        duration: float = 2.0,
+        duration: float | str = 2.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add Counter to the composition.
@@ -72,7 +72,9 @@ def register_tool(mcp, project_manager):
                     component="Counter",
                     start_value=start_value,
                     end_value=end_value,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

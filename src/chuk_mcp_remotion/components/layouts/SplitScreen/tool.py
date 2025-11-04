@@ -15,9 +15,9 @@ def register_tool(mcp, project_manager):
         orientation: str | None = None,
         layout: str | None = None,
         gap: float = 20,
-        duration: float = 5.0,
+        duration: float | str = 5.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add SplitScreen to the composition.
@@ -63,7 +63,9 @@ def register_tool(mcp, project_manager):
                 return LayoutComponentResponse(
                     component="SplitScreen",
                     layout=layout_desc,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

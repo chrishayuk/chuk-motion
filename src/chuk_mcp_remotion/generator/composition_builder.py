@@ -4,15 +4,14 @@ Composition Builder - Combines components into complete video compositions.
 Manages the timeline, layering, and sequencing of video components.
 """
 
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
 
 def snake_to_camel(snake_str: str) -> str:
     """Convert snake_case to camelCase."""
-    components = snake_str.split('_')
-    return components[0] + ''.join(x.title() for x in components[1:])
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
 
 
 @dataclass
@@ -1638,8 +1637,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
         if isinstance(value, str):
             # Use template literals for strings (supports multiline and quotes)
             # Escape backticks and ${} in the string
-            escaped = value.replace('\\', '\\\\').replace('`', '\\`').replace('${', '\\${')
-            return '{`' + escaped + '`}'
+            escaped = value.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${")
+            return "{`" + escaped + "`}"
         elif isinstance(value, bool):
             return "{" + str(value).lower() + "}"
         elif isinstance(value, (int, float)):

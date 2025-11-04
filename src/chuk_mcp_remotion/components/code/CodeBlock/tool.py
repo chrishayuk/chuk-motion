@@ -18,9 +18,9 @@ def register_tool(mcp, project_manager):
         variant: str | None = None,
         animation: str | None = None,
         show_line_numbers: bool = True,
-        duration: float = 5.0,
+        duration: float | str = 5.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add CodeBlock to the composition.
@@ -73,7 +73,9 @@ def register_tool(mcp, project_manager):
                     component="CodeBlock",
                     language=language or "text",
                     lines=lines,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

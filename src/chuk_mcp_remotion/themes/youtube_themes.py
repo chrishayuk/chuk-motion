@@ -9,6 +9,7 @@ from typing import Any
 
 from ..tokens.colors import COLOR_TOKENS
 from ..tokens.motion import MOTION_TOKENS
+from ..tokens.spacing import SPACING_TOKENS
 from ..tokens.typography import TYPOGRAPHY_TOKENS
 
 YOUTUBE_THEMES: dict[str, Any] = {
@@ -27,6 +28,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_out"],
             "default_duration": MOTION_TOKENS["durations"]["normal"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Tech reviews",
             "Coding tutorials",
@@ -50,6 +52,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_in_out"],
             "default_duration": MOTION_TOKENS["durations"]["normal"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Stock market analysis",
             "Investing advice",
@@ -73,6 +76,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_out_back"],
             "default_duration": MOTION_TOKENS["durations"]["moderate"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Educational content",
             "Explainer videos",
@@ -96,6 +100,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_in_out"],
             "default_duration": MOTION_TOKENS["durations"]["slow"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Vlogs",
             "Lifestyle content",
@@ -119,6 +124,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_out_back"],
             "default_duration": MOTION_TOKENS["durations"]["fast"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Gaming videos",
             "Esports highlights",
@@ -142,6 +148,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_in_out"],
             "default_duration": MOTION_TOKENS["durations"]["normal"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Professional content",
             "Corporate videos",
@@ -165,6 +172,7 @@ YOUTUBE_THEMES: dict[str, Any] = {
             "default_easing": MOTION_TOKENS["easing_curves"]["ease_in_out"],
             "default_duration": MOTION_TOKENS["durations"]["normal"],
         },
+        "spacing": SPACING_TOKENS,
         "use_cases": [
             "Corporate videos",
             "Business presentations",

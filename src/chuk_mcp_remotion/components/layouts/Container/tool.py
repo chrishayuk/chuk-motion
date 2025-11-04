@@ -16,9 +16,9 @@ def register_tool(mcp, project_manager):
         width: str | None = None,
         height: str | None = None,
         padding: float = 40,
-        duration: float = 5.0,
+        duration: float | str = 5.0,
         track: str = "main",
-        gap_before: float | None = None,
+        gap_before: float | str | None = None,
     ) -> str:
         """
         Add Container to the composition.
@@ -65,7 +65,9 @@ def register_tool(mcp, project_manager):
                 return LayoutComponentResponse(
                     component="Container",
                     layout=position or "center",
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:
