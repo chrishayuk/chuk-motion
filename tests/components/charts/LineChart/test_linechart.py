@@ -312,19 +312,20 @@ class TestLineChartToolRegistration:
         from unittest.mock import Mock
 
         from chuk_mcp_remotion.components.charts.LineChart.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
-        composition.add_line_chart = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(data="[[0, 10], [1, 20]]", start_time=0.0))
+        result = asyncio.run(tool_func(data='[{"label": "A", "value": 10}]', duration=4.0))
 
-        assert composition.add_line_chart.called
+        # Check component was added
+        assert len(timeline.get_all_components()) >= 1
         result_data = json.loads(result)
         assert result_data["component"] == "LineChart"
 
@@ -338,12 +339,12 @@ class TestLineChartToolRegistration:
 
         mcp = Mock()
         project_manager = Mock()
-        project_manager.current_composition = None  # No project
+        project_manager.current_timeline = None  # No project
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(data="[[0, 10], [1, 20]]", start_time=0.0))
+        result = asyncio.run(tool_func(data='[{"label": "A", "value": 10}]', duration=4.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
@@ -353,20 +354,22 @@ class TestLineChartToolRegistration:
         """Test tool execution handles exceptions."""
         import asyncio
         import json
-        from unittest.mock import Mock
+        from unittest.mock import Mock, patch
 
         from chuk_mcp_remotion.components.charts.LineChart.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
-        composition.add_line_chart = Mock(side_effect=Exception("Test error"))
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(data="[[0, 10], [1, 20]]", start_time=0.0))
+        # Mock add_component to raise exception
+        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(data='[{"label": "A", "value": 10}]', duration=4.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
@@ -379,17 +382,19 @@ class TestLineChartToolRegistration:
         from unittest.mock import Mock
 
         from chuk_mcp_remotion.components.charts.LineChart.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(data="invalid json {[}", title="Test", start_time=0.0))
+        result = asyncio.run(tool_func(data="invalid json {[}", title="Test", duration=4.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid data JSON" in result_data["error"]
+

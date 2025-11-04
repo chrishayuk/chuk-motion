@@ -11,10 +11,8 @@ from typing import TYPE_CHECKING, Any
 from jinja2 import Template
 
 from ..generator.component_builder import ComponentBuilder
-from ..generator.composition_builder import CompositionBuilder
-
-if TYPE_CHECKING:
-    from ..generator.composition_builder import ComponentInstance
+from ..generator.composition_builder import ComponentInstance
+from ..generator.timeline import Timeline
 
 
 class ProjectManager:
@@ -35,7 +33,7 @@ class ProjectManager:
 
         self.component_builder = ComponentBuilder()
         self.current_project: str | None = None
-        self.current_composition: CompositionBuilder | None = None
+        self.current_timeline: Timeline | None = None
 
     def create_project(
         self, name: str, theme: str = "tech", fps: int = 30, width: int = 1920, height: int = 1080
@@ -95,10 +93,9 @@ class ProjectManager:
 
         shutil.copy(template_dir / "src" / "index.ts", project_dir / "src" / "index.ts")
 
-        # Create initial composition
+        # Create timeline (track-based system)
         self.current_project = name
-        self.current_composition = CompositionBuilder(fps=fps, width=width, height=height)
-        self.current_composition.theme = theme
+        self.current_timeline = Timeline(fps=fps, width=width, height=height, theme=theme)
 
         return {
             "name": name,
@@ -158,7 +155,7 @@ class ProjectManager:
 
     def generate_composition(self) -> str:
         """
-        Generate the complete video composition from the composition builder.
+        Generate the complete video composition from the timeline.
 
         Returns:
             Path to generated VideoComposition.tsx file
@@ -166,20 +163,23 @@ class ProjectManager:
         if not self.current_project:
             raise ValueError("No active project")
 
-        if not self.current_composition:
-            raise ValueError("No composition created")
+        if not self.current_timeline:
+            raise ValueError("No timeline created")
+
+        composition_tsx = self.current_timeline.generate_composition_tsx()
+        duration_frames = self.current_timeline.get_total_duration_frames()
+        fps = self.current_timeline.fps
+        width = self.current_timeline.width
+        height = self.current_timeline.height
+        theme = self.current_timeline.theme
 
         project_dir = self.workspace_dir / self.current_project
-
-        # Generate composition TSX
-        composition_tsx = self.current_composition.generate_composition_tsx()
 
         # Write composition file
         composition_file = project_dir / "src" / "VideoComposition.tsx"
         composition_file.write_text(composition_tsx)
 
         # Update Root.tsx with correct duration
-        duration_frames = self.current_composition.get_total_duration_frames()
         root_file = project_dir / "src" / "Root.tsx"
 
         # Remotion composition IDs can only contain a-z, A-Z, 0-9, and hyphens
@@ -191,10 +191,10 @@ class ProjectManager:
             {
                 "composition_id": composition_id,
                 "duration_in_frames": duration_frames,
-                "fps": self.current_composition.fps,
-                "width": self.current_composition.width,
-                "height": self.current_composition.height,
-                "theme": self.current_composition.theme,
+                "fps": fps,
+                "width": width,
+                "height": height,
+                "theme": theme,
             },
         )
 
@@ -202,13 +202,16 @@ class ProjectManager:
 
     def get_project_info(self) -> dict:
         """Get information about the current project."""
-        if not self.current_project or not self.current_composition:
+        if not self.current_project:
             return {"error": "No active project"}
+
+        if not self.current_timeline:
+            return {"error": "No timeline"}
 
         return {
             "name": self.current_project,
             "path": str(self.workspace_dir / self.current_project),
-            "composition": self.current_composition.to_dict(),
+            "composition": self.current_timeline.to_dict(),
         }
 
     def list_projects(self) -> list:
@@ -247,10 +250,8 @@ class ProjectManager:
                 "durationInFrames": 90
             }
         """
-        if not self.current_project or not self.current_composition:
+        if not self.current_project or not self.current_timeline:
             raise ValueError("No active project. Create a project first.")
-
-        from ..generator.composition_builder import ComponentInstance
 
         project_dir = self.workspace_dir / self.current_project
         components_dir = project_dir / "src" / "components"
@@ -281,7 +282,8 @@ class ProjectManager:
             # Handle nested children recursively
             self._process_nested_children(scene, component_instance, component_types_needed)
 
-            self.current_composition.components.append(component_instance)
+            # Add to main track (legacy scenes don't specify tracks)
+            self.current_timeline.tracks["main"].components.append(component_instance)
 
         # Generate TSX files for all unique component types
         for component_type in component_types_needed:
@@ -310,7 +312,7 @@ class ProjectManager:
             "composition_file": composition_file,
             "component_files": generated_files,
             "component_types": list(component_types_needed),
-            "total_frames": self.current_composition.get_total_duration_frames(),
+            "total_frames": self.current_timeline.get_total_duration_frames(),
         }
 
     def _process_nested_children(

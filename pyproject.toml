@@ -10,12 +10,12 @@ readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Chris Hay" }]
 dependencies = [
-    "chuk-mcp-server>=0.4.4",
-    "chuk-virtual-fs>=0.1.0",
     "pydantic>=2.11.7",
     "aiofiles>=23.0.0",
     "jinja2>=3.1.0",
     "pyyaml>=6.0.0",
+    "chuk-mcp-server>=0.6",
+    "chuk-virtual-fs>=0.2.2",
 ]
 
 [project.optional-dependencies]

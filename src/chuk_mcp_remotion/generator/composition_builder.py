@@ -4,8 +4,15 @@ Composition Builder - Combines components into complete video compositions.
 Manages the timeline, layering, and sequencing of video components.
 """
 
+import re
 from dataclasses import dataclass, field
 from typing import Any
+
+
+def snake_to_camel(snake_str: str) -> str:
+    """Convert snake_case to camelCase."""
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])
 
 
 @dataclass
@@ -1344,10 +1351,12 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
         spaces = " " * indent
 
         # Format props (exclude children-related props)
+        # Convert snake_case keys to camelCase for TypeScript
         props_lines = []
         for key, value in comp.props.items():
             if key not in ["children", "left", "right", "top", "bottom"] and value is not None:
-                props_lines.append(f"{spaces}  {key}={self._format_prop_value(value)}")
+                camel_key = snake_to_camel(key)
+                props_lines.append(f"{spaces}  {camel_key}={self._format_prop_value(value)}")
         props_str = "\n".join(props_lines) if props_lines else ""
 
         if props_str:

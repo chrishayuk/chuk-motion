@@ -239,25 +239,25 @@ async def remotion_generate_video() -> str:
         if not project_manager.current_project:
             return json.dumps({"error": "No active project. Create a project first."})
 
-        if not project_manager.current_composition:
-            return json.dumps({"error": "No composition created. Add components first."})
+        if not project_manager.current_timeline:
+            return json.dumps({"error": "No timeline created. Add components first."})
 
         try:
             # Generate components
-            theme = project_manager.current_composition.theme
+            theme = project_manager.current_timeline.theme
 
-            # Get unique component types
+            # Get unique component types from all tracks
             component_types = {
-                c.component_type for c in project_manager.current_composition.components
+                c.component_type for c in project_manager.current_timeline.get_all_components()
             }
 
             generated_files = []
 
             for comp_type in component_types:
-                # Get a sample config from the composition
+                # Get a sample config from the timeline
                 sample_component = next(
                     c
-                    for c in project_manager.current_composition.components
+                    for c in project_manager.current_timeline.get_all_components()
                     if c.component_type == comp_type
                 )
 
@@ -335,6 +335,139 @@ async def remotion_list_projects() -> str:
         return json.dumps(projects, indent=2)
 
     return await asyncio.get_event_loop().run_in_executor(None, _list)
+
+
+# ============================================================================
+# TRACK MANAGEMENT TOOLS
+# ============================================================================
+
+
+@mcp.tool  # type: ignore[arg-type]
+async def remotion_add_track(
+    name: str, layer: int, default_gap: float = 0, description: str = ""
+) -> str:
+    """
+    Add a new track to the timeline.
+
+    Args:
+        name: Track name (unique identifier)
+        layer: Z-index for rendering (higher = on top)
+        default_gap: Default gap between components in seconds
+        description: Human-readable description
+
+    Returns:
+        JSON with track information
+
+    Example:
+        result = await remotion_add_track(
+            name="subtitles",
+            layer=15,
+            default_gap=0,
+            description="Subtitle overlays"
+        )
+    """
+
+    def _add():
+        if not project_manager.current_timeline:
+            return json.dumps({"error": "No active project. Create a project first."})
+
+        try:
+            project_manager.current_timeline.add_track(name, layer, default_gap, description)
+            return json.dumps(
+                {
+                    "status": "success",
+                    "track": {"name": name, "layer": layer, "default_gap": default_gap},
+                },
+                indent=2,
+            )
+        except Exception as e:
+            return json.dumps({"error": str(e)})
+
+    return await asyncio.get_event_loop().run_in_executor(None, _add)
+
+
+@mcp.tool  # type: ignore[arg-type]
+async def remotion_list_tracks() -> str:
+    """
+    List all tracks in the timeline.
+
+    Returns:
+        JSON array of tracks with their properties
+
+    Example:
+        tracks = await remotion_list_tracks()
+        # Returns tracks sorted by layer (highest first)
+    """
+
+    def _list():
+        if not project_manager.current_timeline:
+            return json.dumps({"error": "No active project"})
+
+        tracks = project_manager.current_timeline.list_tracks()
+        return json.dumps(tracks, indent=2)
+
+    return await asyncio.get_event_loop().run_in_executor(None, _list)
+
+
+@mcp.tool  # type: ignore[arg-type]
+async def remotion_set_active_track(name: str) -> str:
+    """
+    Set the default track for component additions.
+
+    Args:
+        name: Track name to set as active
+
+    Returns:
+        JSON with status
+
+    Example:
+        result = await remotion_set_active_track(name="overlay")
+        # Subsequent component additions will use the overlay track by default
+    """
+
+    def _set():
+        if not project_manager.current_timeline:
+            return json.dumps({"error": "No active project"})
+
+        try:
+            project_manager.current_timeline.set_active_track(name)
+            return json.dumps({"status": "success", "active_track": name}, indent=2)
+        except Exception as e:
+            return json.dumps({"error": str(e)})
+
+    return await asyncio.get_event_loop().run_in_executor(None, _set)
+
+
+@mcp.tool  # type: ignore[arg-type]
+async def remotion_get_track_cursor(track_name: str) -> str:
+    """
+    Get the current cursor position for a track.
+
+    Args:
+        track_name: Track name
+
+    Returns:
+        JSON with cursor position in frames and seconds
+
+    Example:
+        cursor = await remotion_get_track_cursor(track_name="main")
+    """
+
+    def _get():
+        if not project_manager.current_timeline:
+            return json.dumps({"error": "No active project"})
+
+        try:
+            cursor_frames = project_manager.current_timeline.get_track_cursor(track_name)
+            cursor_seconds = project_manager.current_timeline.frames_to_seconds(cursor_frames)
+            return json.dumps(
+                {"track": track_name, "cursor_frames": cursor_frames, "cursor_seconds": cursor_seconds},
+                indent=2,
+            )
+        except Exception as e:
+            return json.dumps({"error": str(e)})
+
+    return await asyncio.get_event_loop().run_in_executor(None, _get)
 
 
 # ============================================================================

@@ -207,19 +207,20 @@ class TestGridToolRegistration:
         from unittest.mock import Mock
 
         from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
-        composition.add_grid = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(items='["item1", "item2"]', start_time=0.0))
+        result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
 
-        assert composition.add_grid.called
+        # Check component was added
+        assert len(timeline.get_all_components()) >= 1
         result_data = json.loads(result)
         assert result_data["component"] == "Grid"
 
@@ -233,12 +234,12 @@ class TestGridToolRegistration:
 
         mcp = Mock()
         project_manager = Mock()
-        project_manager.current_composition = None  # No project
+        project_manager.current_timeline = None  # No project
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(items='["item1", "item2"]', start_time=0.0))
+        result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
@@ -248,43 +249,47 @@ class TestGridToolRegistration:
         """Test tool execution handles exceptions."""
         import asyncio
         import json
-        from unittest.mock import Mock
+        from unittest.mock import Mock, patch
 
         from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
-        composition.add_grid = Mock(side_effect=Exception("Test error"))
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(items='["item1", "item2"]', start_time=0.0))
+        # Mock add_component to raise exception
+        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Test error" in result_data["error"]
 
     def test_tool_execution_invalid_json(self):
-        """Test tool execution handles invalid JSON items."""
+        """Test tool execution handles invalid JSON data."""
         import asyncio
         import json
         from unittest.mock import Mock
 
         from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
-        composition = Mock()
-        project_manager.current_composition = composition
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(items="invalid json {[}", start_time=0.0))
+        result = asyncio.run(tool_func(items="invalid json {[}", duration=4.0))
 
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid items JSON" in result_data["error"]
+
