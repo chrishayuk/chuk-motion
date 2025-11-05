@@ -7,24 +7,23 @@ import json
 
 import pytest
 
-from chuk_mcp_remotion.themes.theme_manager import Theme, ThemeManager
+from chuk_mcp_remotion.themes.models import Theme
+from chuk_mcp_remotion.themes.theme_manager import ThemeManager
 
 
 class TestTheme:
-    """Test Theme class."""
+    """Test Theme class (Pydantic model)."""
 
-    def test_theme_creation(self, sample_theme_data):
-        """Test creating a theme from data."""
-        theme = Theme.from_dict(sample_theme_data)
-
-        assert theme.name == "Test Theme"
-        assert theme.description == "A test theme"
-        assert len(theme.colors["primary"]) == 3
-        assert len(theme.use_cases) == 2
+    def test_theme_creation(self, sample_theme):
+        """Test creating a theme from Pydantic models."""
+        assert sample_theme.name == "Test Theme"
+        assert sample_theme.description == "A test theme"
+        assert len(sample_theme.colors.primary) == 3
+        assert len(sample_theme.use_cases) == 2
 
     def test_theme_to_dict(self, sample_theme):
-        """Test converting theme to dictionary."""
-        theme_dict = sample_theme.to_dict()
+        """Test converting theme to dictionary using model_dump()."""
+        theme_dict = sample_theme.model_dump()
 
         assert isinstance(theme_dict, dict)
         assert "name" in theme_dict
@@ -33,15 +32,14 @@ class TestTheme:
         assert "typography" in theme_dict
         assert "motion" in theme_dict
 
-    def test_theme_roundtrip(self, sample_theme_data):
-        """Test that to_dict and from_dict are inverses."""
-        theme1 = Theme.from_dict(sample_theme_data)
-        theme_dict = theme1.to_dict()
-        theme2 = Theme.from_dict(theme_dict)
+    def test_theme_roundtrip(self, sample_theme):
+        """Test that model_dump and Theme(**dict) are inverses."""
+        theme_dict = sample_theme.model_dump()
+        theme2 = Theme(**theme_dict)
 
-        assert theme1.name == theme2.name
-        assert theme1.description == theme2.description
-        assert theme1.colors == theme2.colors
+        assert sample_theme.name == theme2.name
+        assert sample_theme.description == theme2.description
+        assert sample_theme.colors.primary == theme2.colors.primary
 
 
 class TestThemeManagerInit:
@@ -252,9 +250,11 @@ class TestThemeManagerSearch:
 class TestThemeManagerValidation:
     """Test theme validation."""
 
-    def test_validate_valid_theme(self, theme_manager, sample_theme_data):
+    def test_validate_valid_theme(self, theme_manager, sample_theme):
         """Test validating a valid theme."""
-        validation = theme_manager.validate_theme(sample_theme_data)
+        # Convert to dict for validation
+        theme_dict = sample_theme.model_dump()
+        validation = theme_manager.validate_theme(theme_dict)
 
         assert validation["valid"] is True
         assert len(validation["errors"]) == 0
@@ -264,7 +264,7 @@ class TestThemeManagerValidation:
         invalid_theme = {
             "name": "Test",
             "description": "Test theme",
-            # Missing colors, typography, motion
+            # Missing colors, typography, motion, spacing
         }
 
         validation = theme_manager.validate_theme(invalid_theme)
@@ -272,31 +272,31 @@ class TestThemeManagerValidation:
         assert validation["valid"] is False
         assert len(validation["errors"]) > 0
 
-    def test_validate_missing_color_tokens(self, theme_manager, sample_theme_data):
+    def test_validate_missing_color_tokens(self, theme_manager, sample_theme):
         """Test validating theme with incomplete color tokens."""
-        theme_data = sample_theme_data.copy()
-        del theme_data["colors"]["primary"]
+        theme_dict = sample_theme.model_dump()
+        del theme_dict["colors"]["primary"]
 
-        validation = theme_manager.validate_theme(theme_data)
+        validation = theme_manager.validate_theme(theme_dict)
 
         assert validation["valid"] is False
         assert any("primary" in error for error in validation["errors"])
 
-    def test_validate_missing_typography_tokens(self, theme_manager, sample_theme_data):
+    def test_validate_missing_typography_tokens(self, theme_manager, sample_theme):
         """Test validating theme with incomplete typography tokens."""
-        theme_data = sample_theme_data.copy()
-        del theme_data["typography"]["primary_font"]
+        theme_dict = sample_theme.model_dump()
+        del theme_dict["typography"]["primary_font"]
 
-        validation = theme_manager.validate_theme(theme_data)
+        validation = theme_manager.validate_theme(theme_dict)
 
         assert validation["valid"] is False
 
-    def test_validate_missing_motion_tokens(self, theme_manager, sample_theme_data):
+    def test_validate_missing_motion_tokens(self, theme_manager, sample_theme):
         """Test validating theme with incomplete motion tokens."""
-        theme_data = sample_theme_data.copy()
-        del theme_data["motion"]["default_spring"]
+        theme_dict = sample_theme.model_dump()
+        del theme_dict["motion"]["default_spring"]
 
-        validation = theme_manager.validate_theme(theme_data)
+        validation = theme_manager.validate_theme(theme_dict)
 
         assert validation["valid"] is False
 
@@ -329,10 +329,11 @@ class TestThemeManagerExportImport:
         assert "Error" in result
 
     @pytest.mark.asyncio
-    async def test_import_theme(self, theme_manager, sample_theme_data):
+    async def test_import_theme(self, theme_manager, sample_theme):
         """Test importing a theme from file."""
-        # Create a file in vfs
-        await theme_manager.vfs.write_file("test_theme.json", json.dumps(sample_theme_data))
+        # Create a file in vfs with properly formatted theme
+        theme_dict = sample_theme.model_dump()
+        await theme_manager.vfs.write_file("test_theme.json", json.dumps(theme_dict))
 
         result = await theme_manager.import_theme("test_theme.json", "imported")
 
@@ -378,41 +379,15 @@ class TestThemeManagerCustomThemes:
     """Test custom theme creation."""
 
     def test_create_custom_theme_from_scratch(self, theme_manager):
-        """Test creating custom theme without base."""
+        """Test creating custom theme requires base theme now."""
+        # With Pydantic models, we require a base_theme to ensure valid structure
         result = theme_manager.create_custom_theme(
             name="Custom",
             description="A custom theme",
-            color_overrides={
-                "primary": ["#FF0000", "#CC0000", "#990000"],
-                "accent": ["#00FF00", "#00CC00", "#009900"],
-                "gradient": "linear-gradient(135deg, #FF0000 0%, #00FF00 100%)",
-                "background": {"dark": "#000000", "light": "#FFFFFF", "glass": "rgba(0,0,0,0.8)"},
-                "text": {"on_dark": "#FFFFFF", "on_light": "#000000", "muted": "#808080"},
-                "semantic": {
-                    "success": "#00FF00",
-                    "warning": "#FFFF00",
-                    "error": "#FF0000",
-                    "info": "#0000FF",
-                },
-            },
-            typography_overrides={
-                "primary_font": {"name": "Display", "fonts": ["Arial"]},
-                "body_font": {"name": "Body", "fonts": ["Arial"]},
-                "default_resolution": "video_1080p",
-            },
-            motion_overrides={
-                "default_spring": {
-                    "name": "Smooth",
-                    "config": {"damping": 200, "mass": 0.5, "stiffness": 200},
-                },
-                "default_easing": {"name": "Ease", "curve": [0, 0, 1, 1]},
-                "default_duration": {"frames": 20, "seconds": 0.667},
-            },
         )
 
-        assert "Error" not in result
-        assert result == "custom"
-        assert "custom" in theme_manager.list_themes()
+        # Should error without base_theme
+        assert "Error" in result
 
     def test_create_custom_theme_from_base(self, theme_manager):
         """Test creating custom theme based on existing theme."""
@@ -430,15 +405,13 @@ class TestThemeManagerCustomThemes:
         assert theme_info["colors"]["primary"][0] == "#FF0000"
 
     def test_create_custom_theme_invalid(self, theme_manager):
-        """Test creating invalid custom theme."""
-        # Even without base theme or overrides, it defaults to "tech" so it succeeds
+        """Test creating invalid custom theme without base."""
         result = theme_manager.create_custom_theme(
-            name="Default Base", description="Uses default tech base"
+            name="No Base", description="No base theme provided"
         )
 
-        # Should succeed with default base theme
-        assert "Error" not in result
-        assert result == "default_base"
+        # Should fail without base theme
+        assert "Error" in result
 
     def test_custom_theme_key_format(self, theme_manager):
         """Test that custom theme keys are formatted correctly."""
@@ -468,6 +441,7 @@ class TestThemeManagerEdgeCases:
             colors=sample_theme.colors,
             typography=sample_theme.typography,
             motion=sample_theme.motion,
+            spacing=sample_theme.spacing,
         )
         theme_manager.register_theme("custom", new_theme)
 

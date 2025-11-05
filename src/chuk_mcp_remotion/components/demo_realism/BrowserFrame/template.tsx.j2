@@ -1,0 +1,406 @@
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+
+interface TabConfig {
+  title: string;
+  active: boolean;
+}
+
+interface BrowserFrameProps {
+  startFrame: number;
+  durationInFrames: number;
+  url: string;
+  theme: 'light' | 'dark' | 'chrome' | 'firefox' | 'safari' | 'arc';
+  tabs?: TabConfig[] | string;
+  showStatus: boolean;
+  statusText: string;
+  content: string;
+  width: number;
+  height: number;
+  position: string;
+  shadow: boolean;
+}
+
+export const BrowserFrame: React.FC<BrowserFrameProps> = ({
+  startFrame,
+  durationInFrames,
+  url = 'https://example.com',
+  theme = 'chrome',
+  tabs,
+  showStatus = false,
+  statusText = '',
+  content = '',
+  width = 1200,
+  height = 800,
+  position = 'center',
+  shadow = true,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Visibility check
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const relativeFrame = frame - startFrame;
+
+  // Parse tabs if it's a string
+  const parsedTabs: TabConfig[] = typeof tabs === 'string' ? JSON.parse(tabs) : (tabs || []);
+
+  // Theme configurations
+  const themeStyles = {
+    light: {
+      bg: '#f5f5f5',
+      chrome: '#e8e8e8',
+      text: '#333',
+      urlBg: '#fff',
+      tabActive: '#fff',
+      tabInactive: '#d8d8d8',
+      button: '#d0d0d0',
+    },
+    dark: {
+      bg: '#1e1e1e',
+      chrome: '#2d2d2d',
+      text: '#e0e0e0',
+      urlBg: '#3a3a3a',
+      tabActive: '#3a3a3a',
+      tabInactive: '#252525',
+      button: '#404040',
+    },
+    chrome: {
+      bg: '#202124',
+      chrome: '#292a2d',
+      text: '#e8eaed',
+      urlBg: '#303134',
+      tabActive: '#35363a',
+      tabInactive: '#202124',
+      button: '#35363a',
+    },
+    firefox: {
+      bg: '#1c1b22',
+      chrome: '#2b2a33',
+      text: '#fbfbfe',
+      urlBg: '#42414d',
+      tabActive: '#42414d',
+      tabInactive: '#1c1b22',
+      button: '#52525e',
+    },
+    safari: {
+      bg: '#f6f6f6',
+      chrome: '#ececec',
+      text: '#333',
+      urlBg: '#fff',
+      tabActive: '#fff',
+      tabInactive: '#e0e0e0',
+      button: '#d8d8d8',
+    },
+    arc: {
+      bg: '#1a1a1a',
+      chrome: '#2a2a2a',
+      text: '#ffffff',
+      urlBg: '#363636',
+      tabActive: '#404040',
+      tabInactive: '#252525',
+      button: '#363636',
+    },
+  };
+
+  const currentTheme = themeStyles[theme];
+
+  // Default tabs if none provided
+  const defaultTabs: TabConfig[] = parsedTabs.length > 0 ? parsedTabs : [
+    { title: 'Documentation', active: false },
+    { title: 'Dashboard', active: true },
+    { title: 'Settings', active: false },
+  ];
+
+  // Position mappings
+  const positionMap: Record<string, { top?: string; left?: string; right?: string; bottom?: string; transform?: string }> = {
+    center: {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+    },
+    'top-left': { top: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'top-center': { top: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'top-right': { top: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+    'center-left': { top: '50%', left: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'center-right': { top: '50%', right: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'bottom-left': { bottom: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'bottom-center': { bottom: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-right': { bottom: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+  };
+
+  // Entrance animation
+  const entrance = spring({
+    frame: relativeFrame,
+    fps: fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]],
+      mass: [[ motion.default_spring.config.mass ]],
+    },
+  });
+
+  const opacity = interpolate(relativeFrame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const scaleAnimation = interpolate(entrance, [0, 1], [0.95, 1]);
+
+  const chromeHeight = 120;
+  const statusHeight = showStatus ? 28 : 0;
+  const contentHeight = height - chromeHeight - statusHeight;
+
+  return (
+    <AbsoluteFill
+      style={{
+        ...positionMap[position],
+        width,
+        height,
+        opacity,
+        transform: `${positionMap[position].transform || ''} scale(${scaleAnimation})`,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          background: currentTheme.bg,
+          borderRadius: '[[ spacing.border_radius.lg ]]',
+          overflow: 'hidden',
+          filter: shadow ? 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))' : 'none',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Chrome/Title bar */}
+        <div
+          style={{
+            height: `${chromeHeight}px`,
+            background: currentTheme.chrome,
+            borderBottom: `1px solid ${currentTheme.button}`,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {/* Window controls and tabs */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '[[ spacing.spacing.sm ]] [[ spacing.spacing.md ]] 0',
+              gap: '[[ spacing.spacing.sm ]]',
+            }}
+          >
+            {/* Window controls */}
+            <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.sm ]]' }}>
+              {theme === 'safari' || theme === 'arc' ? (
+                <>
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} />
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
+                </>
+              ) : (
+                <>
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
+                </>
+              )}
+            </div>
+
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: '2px', flex: 1 }}>
+              {defaultTabs.map((tab, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: tab.active ? currentTheme.tabActive : currentTheme.tabInactive,
+                    padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
+                    borderRadius: '[[ spacing.border_radius.sm ]] [[ spacing.border_radius.sm ]] 0 0',
+                    color: currentTheme.text,
+                    fontSize: 28,
+                    fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+                    minWidth: '120px',
+                    maxWidth: '200px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    opacity: tab.active ? 1 : 0.7,
+                  }}
+                >
+                  {tab.title}
+                </div>
+              ))}
+            </div>
+
+            {/* New tab button */}
+            <div
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: '[[ spacing.border_radius.sm ]]',
+                background: currentTheme.button,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: currentTheme.text,
+                fontSize: 18,
+              }}
+            >
+              +
+            </div>
+          </div>
+
+          {/* URL bar */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              padding: '[[ spacing.spacing.sm ]] [[ spacing.spacing.md ]]',
+              gap: '[[ spacing.spacing.sm ]]',
+            }}
+          >
+            {/* Navigation buttons */}
+            <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]' }}>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '[[ spacing.border_radius.sm ]]',
+                  background: currentTheme.button,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: currentTheme.text,
+                  fontSize: 16,
+                }}
+              >
+                ←
+              </div>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '[[ spacing.border_radius.sm ]]',
+                  background: currentTheme.button,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: currentTheme.text,
+                  fontSize: 16,
+                }}
+              >
+                →
+              </div>
+              <div
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '[[ spacing.border_radius.sm ]]',
+                  background: currentTheme.button,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: currentTheme.text,
+                  fontSize: 16,
+                }}
+              >
+                ↻
+              </div>
+            </div>
+
+            {/* Address bar */}
+            <div
+              style={{
+                flex: 1,
+                height: 36,
+                background: currentTheme.urlBg,
+                borderRadius: '[[ spacing.border_radius.full ]]',
+                display: 'flex',
+                alignItems: 'center',
+                padding: '0 [[ spacing.spacing.md ]]',
+                color: currentTheme.text,
+                fontSize: 28,
+                fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+              }}
+            >
+              <span style={{ opacity: 0.6, marginRight: '[[ spacing.spacing.xs ]]' }}>🔒</span>
+              <span>{url}</span>
+            </div>
+
+            {/* Menu button */}
+            <div
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '[[ spacing.border_radius.sm ]]',
+                background: currentTheme.button,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: currentTheme.text,
+                fontSize: 16,
+              }}
+            >
+              ⋮
+            </div>
+          </div>
+        </div>
+
+        {/* Content area */}
+        <div
+          style={{
+            flex: 1,
+            background: currentTheme.bg,
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {content && (
+            content.match(/\.(png|jpg|jpeg|gif|webp)$/i) ? (
+              <img
+                src={content}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  color: currentTheme.text,
+                  fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+                  fontSize: 36,
+                  padding: '[[ spacing.spacing.lg ]]',
+                }}
+              >
+                {content}
+              </div>
+            )
+          )}
+        </div>
+
+        {/* Status bar */}
+        {showStatus && (
+          <div
+            style={{
+              height: `${statusHeight}px`,
+              background: currentTheme.chrome,
+              borderTop: `1px solid ${currentTheme.button}`,
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0 [[ spacing.spacing.md ]]',
+              color: currentTheme.text,
+              fontSize: 24,
+              fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+              opacity: 0.8,
+            }}
+          >
+            {statusText}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

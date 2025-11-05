@@ -155,7 +155,7 @@ class ProjectManager:
 
     def generate_composition(self) -> str:
         """
-        Generate the complete video composition from the timeline.
+        Generate the complete video composition from the timeline or composition builder.
 
         Returns:
             Path to generated VideoComposition.tsx file
@@ -163,17 +163,44 @@ class ProjectManager:
         if not self.current_project:
             raise ValueError("No active project")
 
-        if not self.current_timeline:
-            raise ValueError("No timeline created")
+        # Support both Timeline and CompositionBuilder
+        # Prefer CompositionBuilder if it exists and has components
+        if self.current_composition and hasattr(self.current_composition, 'components') and self.current_composition.components:
+            builder = self.current_composition
+        elif self.current_timeline:
+            builder = self.current_timeline
+        else:
+            raise ValueError("No timeline or composition created")
 
-        composition_tsx = self.current_timeline.generate_composition_tsx()
-        duration_frames = self.current_timeline.get_total_duration_frames()
-        fps = self.current_timeline.fps
-        width = self.current_timeline.width
-        height = self.current_timeline.height
-        theme = self.current_timeline.theme
+        composition_tsx = builder.generate_composition_tsx()
+        duration_frames = builder.get_total_duration_frames()
+        fps = builder.fps
+        width = builder.width
+        height = builder.height
+        theme = getattr(builder, 'theme', 'tech')
 
         project_dir = self.workspace_dir / self.current_project
+        components_dir = project_dir / "src" / "components"
+
+        # Generate component TSX files for all unique component types
+        if hasattr(builder, 'components'):
+            component_types = builder._find_all_component_types(builder.components)
+            for component_type in component_types:
+                try:
+                    # Generate component code using the component builder
+                    tsx_code = self.component_builder.build_component(
+                        component_type,
+                        {},  # Empty config - templates handle props from VideoComposition
+                        theme,
+                    )
+
+                    # Write component file
+                    component_file = components_dir / f"{component_type}.tsx"
+                    component_file.write_text(tsx_code)
+                    print(f"  ✓ Generated {component_type}.tsx")
+
+                except Exception as e:
+                    print(f"  ⚠️  Warning: Could not generate {component_type}: {e}")
 
         # Write composition file
         composition_file = project_dir / "src" / "VideoComposition.tsx"

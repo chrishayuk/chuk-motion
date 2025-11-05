@@ -1,0 +1,316 @@
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+
+interface CommandBlock {
+  command: string;
+  output: string;
+  typeOn: boolean;
+}
+
+interface TerminalProps {
+  startFrame: number;
+  durationInFrames: number;
+  commands: CommandBlock[] | string;
+  prompt: 'bash' | 'zsh' | 'powershell' | 'custom';
+  customPrompt: string;
+  title: string;
+  theme: 'dark' | 'light' | 'dracula' | 'monokai' | 'nord' | 'solarized';
+  width: number;
+  height: number;
+  position: string;
+  showCursor: boolean;
+  typeSpeed: number;
+}
+
+export const Terminal: React.FC<TerminalProps> = ({
+  startFrame,
+  durationInFrames,
+  commands = [],
+  prompt = 'bash',
+  customPrompt = '$',
+  title = 'Terminal',
+  theme = 'dark',
+  width = 900,
+  height = 600,
+  position = 'center',
+  showCursor = true,
+  typeSpeed = 0.05,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Visibility check
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const relativeFrame = frame - startFrame;
+
+  // Parse commands if it's a string
+  const parsedCommands: CommandBlock[] = typeof commands === 'string' ? JSON.parse(commands) : commands;
+
+  // Theme configurations
+  const themeStyles = {
+    dark: {
+      bg: '#1e1e1e',
+      chrome: '#2d2d2d',
+      text: '#e0e0e0',
+      promptColor: '#4ec9b0',
+      outputColor: '#ce9178',
+      cursorColor: '#aeafad',
+    },
+    light: {
+      bg: '#ffffff',
+      chrome: '#f3f3f3',
+      text: '#333333',
+      promptColor: '#0070c1',
+      outputColor: '#098658',
+      cursorColor: '#000000',
+    },
+    dracula: {
+      bg: '#282a36',
+      chrome: '#44475a',
+      text: '#f8f8f2',
+      promptColor: '#50fa7b',
+      outputColor: '#8be9fd',
+      cursorColor: '#f8f8f2',
+    },
+    monokai: {
+      bg: '#272822',
+      chrome: '#3e3d32',
+      text: '#f8f8f2',
+      promptColor: '#a6e22e',
+      outputColor: '#66d9ef',
+      cursorColor: '#f8f8f0',
+    },
+    nord: {
+      bg: '#2e3440',
+      chrome: '#3b4252',
+      text: '#d8dee9',
+      promptColor: '#88c0d0',
+      outputColor: '#a3be8c',
+      cursorColor: '#d8dee9',
+    },
+    solarized: {
+      bg: '#002b36',
+      chrome: '#073642',
+      text: '#839496',
+      promptColor: '#859900',
+      outputColor: '#2aa198',
+      cursorColor: '#93a1a1',
+    },
+  };
+
+  const currentTheme = themeStyles[theme];
+
+  // Prompt variants
+  const promptStrings: Record<string, string> = {
+    bash: '$ ',
+    zsh: '❯ ',
+    powershell: 'PS> ',
+    custom: customPrompt + ' ',
+  };
+
+  const promptStr = promptStrings[prompt];
+
+  // Position mappings
+  const positionMap: Record<string, { top?: string; left?: string; right?: string; bottom?: string; transform?: string }> = {
+    center: {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+    },
+    'top-left': { top: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'top-center': { top: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'top-right': { top: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+    'center-left': { top: '50%', left: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'center-right': { top: '50%', right: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'bottom-left': { bottom: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'bottom-center': { bottom: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-right': { bottom: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+  };
+
+  // Entrance animation
+  const entrance = spring({
+    frame: relativeFrame,
+    fps: fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]],
+      mass: [[ motion.default_spring.config.mass ]],
+    },
+  });
+
+  const opacity = interpolate(relativeFrame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const scaleAnimation = interpolate(entrance, [0, 1], [0.95, 1]);
+
+  // Typing animation helper
+  const getTypedText = (text: string, startFrame: number, speed: number): string => {
+    const charsToShow = Math.floor((relativeFrame - startFrame) / (fps * speed));
+    return text.slice(0, Math.max(0, charsToShow));
+  };
+
+  // Calculate frame timing for each command
+  let currentFrameOffset = 20; // Start after entrance animation
+  const commandTimings: Array<{ cmdStartFrame: number; cmdEndFrame: number; outputStartFrame: number }> = [];
+
+  parsedCommands.forEach((cmd) => {
+    const cmdStartFrame = currentFrameOffset;
+    const typingDuration = cmd.typeOn ? cmd.command.length * fps * typeSpeed : 0;
+    const cmdEndFrame = cmdStartFrame + typingDuration;
+    const outputStartFrame = cmdEndFrame + 5; // Small pause before output
+
+    commandTimings.push({ cmdStartFrame, cmdEndFrame, outputStartFrame });
+
+    // Move offset for next command
+    currentFrameOffset = outputStartFrame + 30; // Pause after output
+  });
+
+  // Cursor blinking
+  const cursorVisible = showCursor && Math.floor(relativeFrame / 15) % 2 === 0;
+
+  return (
+    <AbsoluteFill
+      style={{
+        ...positionMap[position],
+        width,
+        height,
+        opacity,
+        transform: `${positionMap[position].transform || ''} scale(${scaleAnimation})`,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          background: currentTheme.bg,
+          borderRadius: '[[ spacing.border_radius.lg ]]',
+          overflow: 'hidden',
+          filter: 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Terminal header */}
+        <div
+          style={{
+            height: '40px',
+            background: currentTheme.chrome,
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 [[ spacing.spacing.md ]]',
+            borderBottom: `1px solid ${currentTheme.bg}`,
+          }}
+        >
+          {/* Window controls */}
+          <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.md ]]' }}>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} />
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
+          </div>
+
+          {/* Title */}
+          <div
+            style={{
+              color: currentTheme.text,
+              fontSize: 28,
+              fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+              opacity: 0.8,
+            }}
+          >
+            {title}
+          </div>
+        </div>
+
+        {/* Terminal content */}
+        <div
+          style={{
+            flex: 1,
+            padding: '[[ spacing.spacing.md ]]',
+            fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
+            fontSize: 28,
+            lineHeight: 1.6,
+            overflow: 'auto',
+          }}
+        >
+          {parsedCommands.map((cmd, index) => {
+            const timing = commandTimings[index];
+            const showCommand = relativeFrame >= timing.cmdStartFrame;
+            const commandComplete = relativeFrame >= timing.cmdEndFrame;
+            const showOutput = relativeFrame >= timing.outputStartFrame;
+
+            if (!showCommand) return null;
+
+            const displayedCommand = cmd.typeOn
+              ? getTypedText(cmd.command, timing.cmdStartFrame, typeSpeed)
+              : cmd.command;
+
+            const showCommandCursor = !commandComplete && cursorVisible;
+
+            return (
+              <div key={index} style={{ marginBottom: '[[ spacing.spacing.sm ]]' }}>
+                {/* Command line */}
+                <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                  <span style={{ color: currentTheme.promptColor, marginRight: '[[ spacing.spacing.xs ]]' }}>
+                    {promptStr}
+                  </span>
+                  <span style={{ color: currentTheme.text }}>
+                    {displayedCommand}
+                    {showCommandCursor && (
+                      <span
+                        style={{
+                          background: currentTheme.cursorColor,
+                          width: '8px',
+                          height: '1em',
+                          display: 'inline-block',
+                          marginLeft: '2px',
+                          verticalAlign: 'text-bottom',
+                        }}
+                      />
+                    )}
+                  </span>
+                </div>
+
+                {/* Output */}
+                {showOutput && cmd.output && (
+                  <div
+                    style={{
+                      color: currentTheme.outputColor,
+                      marginTop: '[[ spacing.spacing.xs ]]',
+                      marginLeft: '[[ spacing.spacing.md ]]',
+                      whiteSpace: 'pre-wrap',
+                      opacity: 0.9,
+                    }}
+                  >
+                    {cmd.output}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Final cursor (after all commands) */}
+          {parsedCommands.length > 0 &&
+            relativeFrame >= commandTimings[parsedCommands.length - 1].outputStartFrame + 30 && (
+              <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                <span style={{ color: currentTheme.promptColor, marginRight: '[[ spacing.spacing.xs ]]' }}>
+                  {promptStr}
+                </span>
+                {cursorVisible && (
+                  <span
+                    style={{
+                      background: currentTheme.cursorColor,
+                      width: '8px',
+                      height: '1em',
+                      display: 'inline-block',
+                      verticalAlign: 'text-bottom',
+                    }}
+                  />
+                )}
+              </div>
+            )}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};

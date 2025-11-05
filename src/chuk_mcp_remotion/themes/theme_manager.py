@@ -17,66 +17,8 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from chuk_virtual_fs import AsyncVirtualFileSystem
 
+from .models import Theme
 from .youtube_themes import YOUTUBE_THEMES
-
-
-class Theme:
-    """
-    Represents a video theme with design tokens.
-
-    A theme combines colors, typography, and motion design into a cohesive
-    visual language optimized for video content.
-    """
-
-    def __init__(
-        self,
-        name: str,
-        description: str,
-        colors: dict[str, Any],
-        typography: dict[str, Any],
-        motion: dict[str, Any],
-        use_cases: list[str] | None = None,
-    ):
-        """
-        Initialize a theme.
-
-        Args:
-            name: Theme name (e.g., "tech", "finance")
-            description: Human-readable description
-            colors: Color token dictionary
-            typography: Typography token dictionary
-            motion: Motion design token dictionary
-            use_cases: List of recommended use cases
-        """
-        self.name = name
-        self.description = description
-        self.colors = colors
-        self.typography = typography
-        self.motion = motion
-        self.use_cases = use_cases or []
-
-    def to_dict(self) -> dict[str, Any]:
-        """Convert theme to dictionary."""
-        return {
-            "name": self.name,
-            "description": self.description,
-            "colors": self.colors,
-            "typography": self.typography,
-            "motion": self.motion,
-            "use_cases": self.use_cases,
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Theme":
-        """Create theme from dictionary."""
-        return cls(
-            name=data["name"],
-            description=data["description"],
-            colors=data["colors"],
-            typography=data["typography"],
-            motion=data["motion"],
-            use_cases=data.get("use_cases", []),
-        )
 
 
 class ThemeManager:
@@ -99,15 +41,8 @@ class ThemeManager:
 
     def _register_builtin_themes(self):
         """Register all built-in YouTube-optimized themes."""
-        for theme_key, theme_data in YOUTUBE_THEMES.items():
-            theme = Theme(
-                name=theme_data["name"],
-                description=theme_data["description"],
-                colors=theme_data["colors"],
-                typography=theme_data["typography"],
-                motion=theme_data["motion"],
-                use_cases=theme_data.get("use_cases", []),
-            )
+        # YOUTUBE_THEMES is now a ThemeCollection with Pydantic Theme models
+        for theme_key, theme in YOUTUBE_THEMES.items():
             self.themes[theme_key] = theme
 
     def register_theme(self, theme_key: str, theme: Theme) -> None:
@@ -155,30 +90,8 @@ class ThemeManager:
         if not theme:
             return None
 
-        return {
-            "name": theme.name,
-            "description": theme.description,
-            "colors": {
-                "primary": theme.colors.get("primary", []),
-                "accent": theme.colors.get("accent", []),
-                "gradient": theme.colors.get("gradient", ""),
-                "background": theme.colors.get("background", {}),
-                "text": theme.colors.get("text", {}),
-                "semantic": theme.colors.get("semantic", {}),
-            },
-            "typography": {
-                "primary_font": theme.typography.get("primary_font", {}),
-                "body_font": theme.typography.get("body_font", {}),
-                "code_font": theme.typography.get("code_font", {}),
-                "default_resolution": theme.typography.get("default_resolution", "video_1080p"),
-            },
-            "motion": {
-                "default_spring": theme.motion.get("default_spring", {}),
-                "default_easing": theme.motion.get("default_easing", {}),
-                "default_duration": theme.motion.get("default_duration", {}),
-            },
-            "use_cases": theme.use_cases,
-        }
+        # Use model_dump() to convert Pydantic models to dicts
+        return theme.model_dump()
 
     def set_current_theme(self, theme_key: str) -> bool:
         """
@@ -227,13 +140,13 @@ class ThemeManager:
                 "names": [theme1.name, theme2.name],
                 "descriptions": [theme1.description, theme2.description],
                 "primary_colors": [
-                    theme1.colors.get("primary", []),
-                    theme2.colors.get("primary", []),
+                    theme1.colors.primary,
+                    theme2.colors.primary,
                 ],
-                "accent_colors": [theme1.colors.get("accent", []), theme2.colors.get("accent", [])],
+                "accent_colors": [theme1.colors.accent, theme2.colors.accent],
                 "motion_feel": [
-                    theme1.motion.get("default_spring", {}).get("name", "Unknown"),
-                    theme2.motion.get("default_spring", {}).get("name", "Unknown"),
+                    theme1.motion.default_spring.feel,
+                    theme2.motion.default_spring.feel,
                 ],
                 "use_cases": [theme1.use_cases, theme2.use_cases],
             },
@@ -285,7 +198,7 @@ class ThemeManager:
 
     def validate_theme(self, theme_data: dict[str, Any]) -> dict[str, Any]:
         """
-        Validate theme data structure.
+        Validate theme data structure using Pydantic model.
 
         Args:
             theme_data: Theme dictionary to validate
@@ -293,39 +206,12 @@ class ThemeManager:
         Returns:
             Dictionary with validation results
         """
-        required_keys = ["name", "description", "colors", "typography", "motion"]
-        missing_keys = [key for key in required_keys if key not in theme_data]
-
-        if missing_keys:
-            return {
-                "valid": False,
-                "errors": [f"Missing required key: {key}" for key in missing_keys],
-            }
-
-        errors = []
-
-        # Validate colors
-        required_color_keys = ["primary", "accent", "background", "text", "semantic"]
-        for key in required_color_keys:
-            if key not in theme_data["colors"]:
-                errors.append(f"Missing color token: {key}")
-
-        # Validate typography
-        required_typo_keys = ["primary_font", "body_font"]
-        for key in required_typo_keys:
-            if key not in theme_data["typography"]:
-                errors.append(f"Missing typography token: {key}")
-
-        # Validate motion
-        required_motion_keys = ["default_spring", "default_easing", "default_duration"]
-        for key in required_motion_keys:
-            if key not in theme_data["motion"]:
-                errors.append(f"Missing motion token: {key}")
-
-        if errors:
-            return {"valid": False, "errors": errors}
-
-        return {"valid": True, "errors": []}
+        try:
+            # Pydantic will validate the structure
+            Theme(**theme_data)
+            return {"valid": True, "errors": []}
+        except Exception as e:
+            return {"valid": False, "errors": [str(e)]}
 
     async def export_theme(self, theme_key: str, file_path: str | None = None) -> str:
         """
@@ -346,7 +232,8 @@ class ThemeManager:
             file_path = f"{theme_key}_theme.json"
 
         try:
-            json_content = json.dumps(theme.to_dict(), indent=2)
+            # Use model_dump_json() for direct JSON serialization
+            json_content = theme.model_dump_json(indent=2)
             await self.vfs.write_file(file_path, json_content)
             return file_path
         except Exception as e:
@@ -367,13 +254,8 @@ class ThemeManager:
             json_content = await self.vfs.read_text(file_path)
             theme_data = json.loads(json_content)
 
-            # Validate theme
-            validation = self.validate_theme(theme_data)
-            if not validation["valid"]:
-                return f"Error: Invalid theme - {', '.join(validation['errors'])}"
-
-            # Create theme
-            theme = Theme.from_dict(theme_data)
+            # Validate and create theme using Pydantic
+            theme = Theme(**theme_data)
 
             # Register theme
             key = theme_key or theme.name.lower().replace(" ", "_")
@@ -407,37 +289,36 @@ class ThemeManager:
         Returns:
             Theme key of created theme or error message
         """
-        # Start with base theme or default structure
-        if base_theme and base_theme in self.themes:
-            base = self.themes[base_theme]
-            colors = base.colors.copy()
-            typography = base.typography.copy()
-            motion = base.motion.copy()
-        else:
-            colors = {"primary": [], "accent": [], "background": {}, "text": {}, "semantic": {}}
-            typography = {"primary_font": {}, "body_font": {}, "default_resolution": "video_1080p"}
-            motion = {"default_spring": {}, "default_easing": {}, "default_duration": {}}
+        try:
+            # Start with base theme or use defaults
+            if base_theme and base_theme in self.themes:
+                base = self.themes[base_theme]
+                # Use model_copy for Pydantic models
+                theme_dict = base.model_dump()
 
-        # Apply overrides
-        if color_overrides:
-            colors.update(color_overrides)
-        if typography_overrides:
-            typography.update(typography_overrides)
-        if motion_overrides:
-            motion.update(motion_overrides)
+                # Apply overrides
+                if color_overrides:
+                    theme_dict["colors"].update(color_overrides)
+                if typography_overrides:
+                    theme_dict["typography"].update(typography_overrides)
+                if motion_overrides:
+                    theme_dict["motion"].update(motion_overrides)
 
-        # Create theme
-        theme = Theme(
-            name=name, description=description, colors=colors, typography=typography, motion=motion
-        )
+                # Update name and description
+                theme_dict["name"] = name
+                theme_dict["description"] = description
 
-        # Validate
-        validation = self.validate_theme(theme.to_dict())
-        if not validation["valid"]:
-            return f"Error: Invalid theme - {', '.join(validation['errors'])}"
+                # Create new theme from modified dict
+                theme = Theme(**theme_dict)
+            else:
+                # Create minimal theme (will fail validation, user must provide all required fields)
+                return "Error: Must provide a base_theme or all required token overrides"
 
-        # Register
-        theme_key = name.lower().replace(" ", "_")
-        self.register_theme(theme_key, theme)
+            # Register
+            theme_key = name.lower().replace(" ", "_")
+            self.register_theme(theme_key, theme)
 
-        return theme_key
+            return theme_key
+
+        except Exception as e:
+            return f"Error creating custom theme: {str(e)}"

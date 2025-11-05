@@ -256,9 +256,9 @@ class TestMotionTokenTools:
 
         data = json.loads(result)
         assert "spring_configs" in data
-        assert "easing_curves" in data
-        assert "durations" in data
-        assert "animation_presets" in data
+        assert "easing" in data
+        assert "duration" in data
+        assert "enter" in data
 
     @pytest.mark.asyncio
     async def test_get_spring_configs(self, mcp_with_token_tools):
@@ -298,8 +298,8 @@ class TestMotionTokenTools:
         result = await tool()
 
         data = json.loads(result)
-        assert "easing_curves" in data
-        assert "ease_out" in data["easing_curves"]
+        assert "easing" in data
+        assert "ease_out" in data["easing"]
 
     @pytest.mark.asyncio
     async def test_get_easing_curve(self, mcp_with_token_tools):
@@ -328,8 +328,8 @@ class TestMotionTokenTools:
         result = await tool()
 
         data = json.loads(result)
-        assert "durations" in data
-        assert "normal" in data["durations"]
+        assert "duration" in data
+        assert "normal" in data["duration"]
 
     @pytest.mark.asyncio
     async def test_get_duration(self, mcp_with_token_tools):
@@ -340,7 +340,7 @@ class TestMotionTokenTools:
         data = json.loads(result)
         assert data["duration_name"] == "normal"
         assert "duration" in data
-        assert "frames" in data["duration"]
+        assert "frames_30fps" in data["duration"] or "frames_60fps" in data["duration"]
 
     @pytest.mark.asyncio
     async def test_get_duration_invalid(self, mcp_with_token_tools):
@@ -358,8 +358,8 @@ class TestMotionTokenTools:
         result = await tool()
 
         data = json.loads(result)
-        assert "animation_presets" in data
-        assert "fade_in" in data["animation_presets"]
+        assert "enter" in data
+        assert "fade_in" in data["enter"]
 
     @pytest.mark.asyncio
     async def test_get_animation_preset(self, mcp_with_token_tools):
@@ -389,8 +389,8 @@ class TestMotionTokenTools:
 
         data = json.loads(result)
         assert "youtube_optimizations" in data
-        assert "hook_timing" in data["youtube_optimizations"]
-        assert "pattern_interrupt" in data["youtube_optimizations"]
+        # Check for platform-specific timings
+        assert "tiktok" in data["youtube_optimizations"] or "youtube_shorts" in data["youtube_optimizations"]
 
 
 class TestTokenImportExportTools:

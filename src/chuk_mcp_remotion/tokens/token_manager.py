@@ -72,12 +72,12 @@ class TokenManager:
             export_data = {}
 
             if include_all:
-                export_data = TYPOGRAPHY_TOKENS.copy()
+                export_data = TYPOGRAPHY_TOKENS.model_dump()
             else:
                 if font_families_only:
-                    export_data["font_families"] = TYPOGRAPHY_TOKENS["font_families"]
+                    export_data["font_families"] = TYPOGRAPHY_TOKENS.font_families.model_dump()
                 if text_styles_only:
-                    export_data["text_styles"] = TYPOGRAPHY_TOKENS["text_styles"]
+                    export_data["text_styles"] = TYPOGRAPHY_TOKENS.text_styles.model_dump()
 
             # Add custom tokens if any
             if self.custom_typography_tokens:
@@ -146,10 +146,17 @@ class TokenManager:
             return custom_value
 
         # Fall back to default tokens
-        if category not in TYPOGRAPHY_TOKENS:
+        if not hasattr(TYPOGRAPHY_TOKENS, category):
             return None
 
-        value = TYPOGRAPHY_TOKENS[category]
+        value = getattr(TYPOGRAPHY_TOKENS, category)
+        # Convert Pydantic model to dict for consistent access
+        if hasattr(value, 'model_dump'):
+            value_dict = value.model_dump()
+            if key:
+                return value_dict.get(key)
+            return value_dict
+
         if key and isinstance(value, dict):
             return value.get(key)
 
@@ -178,11 +185,11 @@ class TokenManager:
         try:
             # Build export data
             if theme_name:
-                if theme_name not in COLOR_TOKENS:
+                if not hasattr(COLOR_TOKENS, theme_name):
                     return f"Error: Theme '{theme_name}' not found"
-                export_data = {theme_name: COLOR_TOKENS[theme_name]}
+                export_data = {theme_name: getattr(COLOR_TOKENS, theme_name).model_dump()}
             else:
-                export_data = COLOR_TOKENS.copy()
+                export_data = COLOR_TOKENS.model_dump()
 
             # Add custom tokens if any
             if self.custom_color_tokens:
@@ -249,14 +256,15 @@ class TokenManager:
             return custom_theme
 
         # Fall back to default tokens
-        if theme_name not in COLOR_TOKENS:
+        if not hasattr(COLOR_TOKENS, theme_name):
             return None
 
-        theme = COLOR_TOKENS[theme_name]
+        theme = getattr(COLOR_TOKENS, theme_name)
+        theme_dict = theme.model_dump()
         if color_type:
-            return theme.get(color_type)
+            return theme_dict.get(color_type)
 
-        return theme
+        return theme_dict
 
     # ========================================================================
     # MOTION TOKEN MANAGEMENT
@@ -285,18 +293,21 @@ class TokenManager:
             file_path = "motion_tokens.json"
 
         try:
-            # Build export data
+            # Build export data from Pydantic model
             export_data = {}
 
             if springs_only:
-                export_data["spring_configs"] = MOTION_TOKENS["spring_configs"]
+                export_data["spring_configs"] = MOTION_TOKENS.model_dump()["spring_configs"]
             elif easings_only:
-                export_data["easing_curves"] = MOTION_TOKENS["easing_curves"]
+                export_data["easing"] = MOTION_TOKENS.model_dump()["easing"]
             elif presets_only:
-                export_data["animation_presets"] = MOTION_TOKENS["animation_presets"]
+                # Get enter and exit transitions (animation presets)
+                motion_dict = MOTION_TOKENS.model_dump()
+                export_data["enter"] = motion_dict["enter"]
+                export_data["exit"] = motion_dict["exit"]
             else:
-                # Export all
-                export_data = MOTION_TOKENS.copy()
+                # Export all - convert Pydantic model to dict
+                export_data = MOTION_TOKENS.model_dump()
 
             # Add custom tokens if any
             if self.custom_motion_tokens:
@@ -362,11 +373,12 @@ class TokenManager:
                 return custom_value.get(key)
             return custom_value
 
-        # Fall back to default tokens
-        if category not in MOTION_TOKENS:
+        # Fall back to default tokens - use model_dump() to convert Pydantic model to dict
+        motion_dict = MOTION_TOKENS.model_dump()
+        if category not in motion_dict:
             return None
 
-        value = MOTION_TOKENS[category]
+        value = motion_dict[category]
         if key and isinstance(value, dict):
             return value.get(key)
 
@@ -433,16 +445,16 @@ class TokenManager:
             file_path = "spacing_tokens.json"
 
         try:
-            # Build export data
+            # Build export data from Pydantic model
             export_data = {}
 
             if spacing_only:
-                export_data["spacing"] = SPACING_TOKENS["spacing"]
+                export_data["spacing"] = SPACING_TOKENS.model_dump()["spacing"]
             elif safe_margins_only:
-                export_data["safe_margins"] = SPACING_TOKENS["safe_margins"]
+                export_data["safe_area"] = SPACING_TOKENS.model_dump()["safe_area"]
             else:
-                # Export all
-                export_data = SPACING_TOKENS.copy()
+                # Export all - convert Pydantic model to dict
+                export_data = SPACING_TOKENS.model_dump()
 
             # Add custom tokens if any
             if self.custom_spacing_tokens:
@@ -508,11 +520,12 @@ class TokenManager:
                 return custom_tokens.get(key)
             return custom_tokens
 
-        # Fall back to default tokens
-        if token_type not in SPACING_TOKENS:
+        # Fall back to default tokens - use model_dump() to convert Pydantic model to dict
+        spacing_dict = SPACING_TOKENS.model_dump()
+        if token_type not in spacing_dict:
             return None
 
-        tokens = SPACING_TOKENS[token_type]
+        tokens = spacing_dict[token_type]
         if key:
             return tokens.get(key)
 

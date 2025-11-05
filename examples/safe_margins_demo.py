@@ -73,7 +73,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 2: LinkedIn Feed Margins")
 
-    linkedin_margins = SPACING_TOKENS['safe_margins']['linkedin_feed']
+    linkedin_margins = SPACING_TOKENS.safe_area['linkedin_feed']
 
     linkedin_lower = ComponentInstance(
         component_type="LowerThird",
@@ -114,7 +114,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 3: Instagram Stories (9:16)")
 
-    instagram_margins = SPACING_TOKENS['safe_margins']['instagram_story']
+    instagram_margins = SPACING_TOKENS.safe_area['instagram_story']
 
     instagram_lower = ComponentInstance(
         component_type="LowerThird",
@@ -155,7 +155,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 4: TikTok Margins")
 
-    tiktok_margins = SPACING_TOKENS['safe_margins']['tiktok']
+    tiktok_margins = SPACING_TOKENS.safe_area['tiktok']
 
     tiktok_lower = ComponentInstance(
         component_type="LowerThird",
@@ -196,7 +196,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 5: YouTube Standard")
 
-    youtube_margins = SPACING_TOKENS['safe_margins']['youtube_standard']
+    youtube_margins = SPACING_TOKENS.safe_area['youtube_standard']
 
     youtube_lower = ComponentInstance(
         component_type="LowerThird",
@@ -336,7 +336,7 @@ async def create_safe_margins_demo():
     print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
     print(f"📐 Resolution: 1920x1080 @ 30fps")
     print("\n📱 Platform Safe Margins Covered:")
-    for platform, margins in SPACING_TOKENS['safe_margins'].items():
+    for platform, margins in SPACING_TOKENS.safe_area.items():
         print(f"   • {platform.replace('_', ' ').title()}")
         if 'all' in margins:
             print(f"     → {margins['all']} all sides")

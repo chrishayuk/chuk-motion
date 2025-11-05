@@ -1,0 +1,382 @@
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+
+interface BeforeAfterSliderProps {
+  startFrame: number;
+  durationInFrames: number;
+  beforeImage: string;
+  afterImage: string;
+  beforeLabel: string;
+  afterLabel: string;
+  orientation: 'horizontal' | 'vertical';
+  sliderPosition: number;
+  animateSlider: boolean;
+  sliderStartPosition: number;
+  sliderEndPosition: number;
+  showLabels: boolean;
+  labelPosition: 'top' | 'bottom' | 'overlay';
+  handleStyle: 'default' | 'arrow' | 'circle' | 'bar';
+  width: number;
+  height: number;
+  position: string;
+  borderRadius: number;
+}
+
+export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
+  startFrame,
+  durationInFrames,
+  beforeImage,
+  afterImage,
+  beforeLabel = 'Before',
+  afterLabel = 'After',
+  orientation = 'horizontal',
+  sliderPosition = 50,
+  animateSlider = true,
+  sliderStartPosition = 0,
+  sliderEndPosition = 100,
+  showLabels = true,
+  labelPosition = 'overlay',
+  handleStyle = 'default',
+  width = 1200,
+  height = 800,
+  position = 'center',
+  borderRadius = 12,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Visibility check
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const relativeFrame = frame - startFrame;
+
+  // Position mappings
+  const positionMap: Record<string, { top?: string; left?: string; right?: string; bottom?: string; transform?: string }> = {
+    center: {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+    },
+    'top-left': { top: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'top-center': { top: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'top-right': { top: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+    'center-left': { top: '50%', left: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'center-right': { top: '50%', right: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'bottom-left': { bottom: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'bottom-center': { bottom: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-right': { bottom: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+  };
+
+  // Entrance animation
+  const entrance = spring({
+    frame: relativeFrame,
+    fps: fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]],
+      mass: [[ motion.default_spring.config.mass ]],
+    },
+  });
+
+  const opacity = interpolate(relativeFrame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
+  const scaleAnimation = interpolate(entrance, [0, 1], [0.95, 1]);
+
+  // Slider animation
+  const animationStartFrame = 30;
+  const animationDuration = durationInFrames - 60; // Leave time for entrance and exit
+
+  const currentSliderPosition = animateSlider
+    ? interpolate(
+        relativeFrame,
+        [animationStartFrame, animationStartFrame + animationDuration],
+        [sliderStartPosition, sliderEndPosition],
+        { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+      )
+    : sliderPosition;
+
+  // Calculate clip values based on orientation
+  const clipValue = orientation === 'horizontal' ? currentSliderPosition : currentSliderPosition;
+
+  // Render handle based on style
+  const renderHandle = () => {
+    const handleSize = 48;
+    const lineThickness = 4;
+
+    const baseHandleStyle: React.CSSProperties = {
+      position: 'absolute',
+      zIndex: 20,
+      pointerEvents: 'none',
+    };
+
+    if (orientation === 'horizontal') {
+      baseHandleStyle.left = `${currentSliderPosition}%`;
+      baseHandleStyle.top = '50%';
+      baseHandleStyle.transform = 'translate(-50%, -50%)';
+    } else {
+      baseHandleStyle.top = `${currentSliderPosition}%`;
+      baseHandleStyle.left = '50%';
+      baseHandleStyle.transform = 'translate(-50%, -50%)';
+    }
+
+    switch (handleStyle) {
+      case 'arrow':
+        return (
+          <div style={baseHandleStyle}>
+            <div
+              style={{
+                width: handleSize,
+                height: handleSize,
+                background: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <span style={{ fontSize: 24, color: '#333' }}>
+                {orientation === 'horizontal' ? '⟷' : '⇕'}
+              </span>
+            </div>
+          </div>
+        );
+
+      case 'circle':
+        return (
+          <div style={baseHandleStyle}>
+            <div
+              style={{
+                width: handleSize,
+                height: handleSize,
+                background: 'white',
+                borderRadius: '50%',
+                border: '4px solid [[ colors.primary[0] ]]',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            />
+          </div>
+        );
+
+      case 'bar':
+        return (
+          <div style={baseHandleStyle}>
+            <div
+              style={{
+                width: orientation === 'horizontal' ? lineThickness : handleSize,
+                height: orientation === 'horizontal' ? handleSize : lineThickness,
+                background: 'white',
+                borderRadius: '[[ spacing.border_radius.sm ]]',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            />
+          </div>
+        );
+
+      default: // 'default'
+        return (
+          <div style={baseHandleStyle}>
+            <div
+              style={{
+                width: handleSize,
+                height: handleSize,
+                background: 'white',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              <div
+                style={{
+                  width: lineThickness,
+                  height: handleSize * 0.6,
+                  background: '[[ colors.primary[0] ]]',
+                  borderRadius: '[[ spacing.border_radius.xs ]]',
+                  transform: orientation === 'horizontal' ? 'none' : 'rotate(90deg)',
+                }}
+              />
+            </div>
+          </div>
+        );
+    }
+  };
+
+  // Label styling
+  const labelStyle: React.CSSProperties = {
+    background: 'rgba(0, 0, 0, 0.7)',
+    color: 'white',
+    padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
+    borderRadius: '[[ spacing.border_radius.md ]]',
+    fontSize: 32,
+    fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+    fontWeight: [[ typography.font_weights.semibold ]],
+    backdropFilter: 'blur(10px)',
+  };
+
+  const contentHeight = showLabels && labelPosition !== 'overlay' ? height - 50 : height;
+  const imageContainerTop = showLabels && labelPosition === 'top' ? 50 : 0;
+
+  return (
+    <AbsoluteFill
+      style={{
+        ...positionMap[position],
+        width,
+        height,
+        opacity,
+        transform: `${positionMap[position].transform || ''} scale(${scaleAnimation})`,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: `${borderRadius}px`,
+          overflow: 'hidden',
+          filter: 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))',
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {/* Top labels */}
+        {showLabels && labelPosition === 'top' && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '[[ spacing.spacing.md ]]',
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={labelStyle}>{beforeLabel}</div>
+            <div style={labelStyle}>{afterLabel}</div>
+          </div>
+        )}
+
+        {/* Image container */}
+        <div
+          style={{
+            position: 'relative',
+            flex: 1,
+            width: '100%',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Before image (full) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+            }}
+          >
+            <img
+              src={beforeImage}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+
+          {/* After image (clipped) */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              clipPath:
+                orientation === 'horizontal'
+                  ? `inset(0 ${100 - clipValue}% 0 0)`
+                  : `inset(0 0 ${100 - clipValue}% 0)`,
+            }}
+          >
+            <img
+              src={afterImage}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          </div>
+
+          {/* Divider line */}
+          <div
+            style={{
+              position: 'absolute',
+              ...(orientation === 'horizontal'
+                ? {
+                    left: `${currentSliderPosition}%`,
+                    top: 0,
+                    bottom: 0,
+                    width: '4px',
+                    transform: 'translateX(-50%)',
+                  }
+                : {
+                    top: `${currentSliderPosition}%`,
+                    left: 0,
+                    right: 0,
+                    height: '4px',
+                    transform: 'translateY(-50%)',
+                  }),
+              background: 'white',
+              boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+              zIndex: 10,
+            }}
+          />
+
+          {/* Handle */}
+          {renderHandle()}
+
+          {/* Overlay labels */}
+          {showLabels && labelPosition === 'overlay' && (
+            <>
+              <div
+                style={{
+                  position: 'absolute',
+                  ...(orientation === 'horizontal'
+                    ? { top: '[[ spacing.spacing.md ]]', left: '[[ spacing.spacing.md ]]' }
+                    : { top: '[[ spacing.spacing.md ]]', left: '[[ spacing.spacing.md ]]' }),
+                  ...labelStyle,
+                }}
+              >
+                {beforeLabel}
+              </div>
+              <div
+                style={{
+                  position: 'absolute',
+                  ...(orientation === 'horizontal'
+                    ? { top: '[[ spacing.spacing.md ]]', right: '[[ spacing.spacing.md ]]' }
+                    : { bottom: '[[ spacing.spacing.md ]]', right: '[[ spacing.spacing.md ]]' }),
+                  ...labelStyle,
+                }}
+              >
+                {afterLabel}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Bottom labels */}
+        {showLabels && labelPosition === 'bottom' && (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              padding: '[[ spacing.spacing.md ]]',
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={labelStyle}>{beforeLabel}</div>
+            <div style={labelStyle}>{afterLabel}</div>
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

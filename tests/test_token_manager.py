@@ -226,8 +226,8 @@ class TestMotionTokenExportImport:
         data = json.loads(content)
 
         assert "spring_configs" in data
-        assert "easing_curves" in data
-        assert "durations" in data
+        assert "easing" in data
+        assert "duration" in data
 
     @pytest.mark.asyncio
     async def test_export_springs_only(self, token_manager):
@@ -256,7 +256,7 @@ class TestMotionTokenExportImport:
         content = await token_manager.vfs.read_text("easings_only.json")
         data = json.loads(content)
 
-        assert "easing_curves" in data
+        assert "easing" in data
         assert "spring_configs" not in data
 
     @pytest.mark.asyncio
@@ -271,7 +271,8 @@ class TestMotionTokenExportImport:
         content = await token_manager.vfs.read_text("presets_only.json")
         data = json.loads(content)
 
-        assert "animation_presets" in data
+        assert "enter" in data
+        assert "exit" in data
         assert "spring_configs" not in data
 
     @pytest.mark.asyncio
@@ -389,3 +390,177 @@ class TestUtilityMethods:
         assert token_manager.custom_typography_tokens == {}
         assert token_manager.custom_color_tokens == {}
         assert token_manager.custom_motion_tokens == {}
+
+
+class TestSpacingTokenExportImport:
+    """Test spacing token export and import."""
+
+    @pytest.mark.asyncio
+    async def test_export_all_spacing_tokens(self, token_manager):
+        """Test exporting all spacing tokens."""
+        result = await token_manager.export_spacing_tokens(file_path="test_spacing.json")
+
+        assert result == "test_spacing.json"
+
+        content = await token_manager.vfs.read_text("test_spacing.json")
+        data = json.loads(content)
+
+        assert "spacing" in data
+        assert "safe_area" in data
+
+    @pytest.mark.asyncio
+    async def test_export_spacing_only(self, token_manager):
+        """Test exporting only spacing scale."""
+        result = await token_manager.export_spacing_tokens(
+            file_path="spacing_only.json", spacing_only=True
+        )
+
+        assert result == "spacing_only.json"
+
+        content = await token_manager.vfs.read_text("spacing_only.json")
+        data = json.loads(content)
+
+        assert "spacing" in data
+        assert "safe_area" not in data
+
+    @pytest.mark.asyncio
+    async def test_export_safe_margins_only(self, token_manager):
+        """Test exporting only safe margins."""
+        result = await token_manager.export_spacing_tokens(
+            file_path="safe_margins_only.json", safe_margins_only=True
+        )
+
+        assert result == "safe_margins_only.json"
+
+        content = await token_manager.vfs.read_text("safe_margins_only.json")
+        data = json.loads(content)
+
+        assert "safe_area" in data
+        assert "spacing" not in data
+
+    @pytest.mark.asyncio
+    async def test_export_spacing_with_custom_tokens(self, token_manager):
+        """Test exporting includes custom spacing tokens."""
+        token_manager.custom_spacing_tokens = {"custom_spacing": "custom_value"}
+
+        await token_manager.export_spacing_tokens(file_path="with_custom_spacing.json")
+
+        content = await token_manager.vfs.read_text("with_custom_spacing.json")
+        data = json.loads(content)
+
+        assert "custom" in data
+        assert data["custom"]["custom_spacing"] == "custom_value"
+
+    @pytest.mark.asyncio
+    async def test_import_spacing_tokens(self, token_manager):
+        """Test importing spacing tokens."""
+        sample_spacing_tokens = {
+            "spacing": {"custom_xs": 4, "custom_sm": 8},
+            "safe_area": {"custom_margin": 20},
+        }
+
+        await token_manager.vfs.write_file(
+            "import_spacing.json", json.dumps(sample_spacing_tokens)
+        )
+
+        result = await token_manager.import_spacing_tokens(file_path="import_spacing.json")
+
+        assert "Successfully imported" in result
+        assert token_manager.custom_spacing_tokens == sample_spacing_tokens
+
+    @pytest.mark.asyncio
+    async def test_import_spacing_tokens_merge(self, token_manager):
+        """Test importing spacing tokens with merge."""
+        token_manager.custom_spacing_tokens = {"existing_key": "existing_value"}
+
+        sample_spacing_tokens = {"spacing": {"custom_xs": 4}}
+
+        await token_manager.vfs.write_file(
+            "import_spacing.json", json.dumps(sample_spacing_tokens)
+        )
+
+        result = await token_manager.import_spacing_tokens(
+            file_path="import_spacing.json", merge=True
+        )
+
+        assert "Successfully imported" in result
+        assert "existing_key" in token_manager.custom_spacing_tokens
+        assert "spacing" in token_manager.custom_spacing_tokens
+
+    @pytest.mark.asyncio
+    async def test_import_spacing_tokens_replace(self, token_manager):
+        """Test importing spacing tokens without merge."""
+        token_manager.custom_spacing_tokens = {"existing_key": "existing_value"}
+
+        sample_spacing_tokens = {"spacing": {"custom_xs": 4}}
+
+        await token_manager.vfs.write_file(
+            "import_spacing.json", json.dumps(sample_spacing_tokens)
+        )
+
+        result = await token_manager.import_spacing_tokens(
+            file_path="import_spacing.json", merge=False
+        )
+
+        assert "Successfully imported" in result
+        assert "existing_key" not in token_manager.custom_spacing_tokens
+        assert token_manager.custom_spacing_tokens == sample_spacing_tokens
+
+    @pytest.mark.asyncio
+    async def test_import_invalid_spacing_tokens(self, token_manager):
+        """Test importing invalid spacing tokens."""
+        await token_manager.vfs.write_file("invalid_spacing.json", json.dumps("not a dict"))
+
+        result = await token_manager.import_spacing_tokens(file_path="invalid_spacing.json")
+
+        assert "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_get_spacing_token_from_default(self, token_manager):
+        """Test getting spacing token from defaults."""
+        result = token_manager.get_spacing_token("spacing", "xs")
+
+        assert result is not None
+        # Spacing tokens can be strings like "8px" or numbers
+        assert isinstance(result, (int, float, str))
+
+    @pytest.mark.asyncio
+    async def test_get_spacing_token_from_custom(self, token_manager):
+        """Test getting spacing token from custom tokens."""
+        token_manager.custom_spacing_tokens = {"spacing": {"custom_xl": 64}}
+
+        result = token_manager.get_spacing_token("spacing", use_custom=True)
+
+        assert result is not None
+        assert "custom_xl" in result
+
+    @pytest.mark.asyncio
+    async def test_get_spacing_token_category_only(self, token_manager):
+        """Test getting entire spacing category."""
+        result = token_manager.get_spacing_token("spacing")
+
+        assert result is not None
+        assert isinstance(result, dict)
+        assert "xs" in result or "sm" in result
+
+    @pytest.mark.asyncio
+    async def test_clear_spacing_tokens(self, token_manager):
+        """Test clearing spacing tokens."""
+        token_manager.custom_spacing_tokens = {"key": "value"}
+
+        token_manager.clear_custom_tokens("spacing")
+
+        assert token_manager.custom_spacing_tokens == {}
+
+    @pytest.mark.asyncio
+    async def test_export_all_tokens_includes_spacing(self, token_manager):
+        """Test that export_all_tokens includes spacing tokens."""
+        result = await token_manager.export_all_tokens(output_dir="all_tokens_with_spacing")
+
+        assert "spacing" in result
+        assert "all_tokens_with_spacing/spacing_tokens.json" in result["spacing"]
+
+        # Verify the spacing file was created
+        spacing_content = await token_manager.vfs.read_text(result["spacing"])
+        spacing_data = json.loads(spacing_content)
+        assert "spacing" in spacing_data or "safe_area" in spacing_data
