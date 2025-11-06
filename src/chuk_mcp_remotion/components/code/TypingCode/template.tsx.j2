@@ -80,7 +80,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
     hacker: {
       background: 'rgba(0, 0, 0, 0.95)',
       borderRadius: 8,
-      border: '1px solid #00D9FF',
+      border: '1px solid [[ colors.accent[0] ]]',
       padding: 30,
       boxShadow: '0 0 30px [[ colors.accent[0] ]]66'
     }
@@ -94,21 +94,21 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
       display: 'inline-block',
       width: '0.6em',
       height: '1.2em',
-      background: '#00D9FF',
+      background: '[[ colors.accent[0] ]]',
       marginLeft: 2
     },
     line: {
       display: 'inline-block',
       width: 2,
       height: '1.2em',
-      background: '#00D9FF',
+      background: '[[ colors.accent[0] ]]',
       marginLeft: 2
     },
     underline: {
       display: 'inline-block',
       width: '0.6em',
       height: 2,
-      background: '#00D9FF',
+      background: '[[ colors.accent[0] ]]',
       marginLeft: 2,
       verticalAlign: 'bottom'
     },
@@ -215,7 +215,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                     style={{
                       fontSize: 24,
                       fontWeight: 600,
-                      color: '#FFFFFF',
+                      color: '[[ colors.text.on_dark ]]',
                       marginBottom: 20,
                       fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
                     }}

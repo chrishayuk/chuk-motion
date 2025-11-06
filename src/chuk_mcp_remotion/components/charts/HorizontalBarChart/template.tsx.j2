@@ -84,8 +84,8 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
 
   // Default colors with gradients
   const defaultColors = [
-    '#FFB800', '#FF9500', '#FF6B00', '#FF4D00',
-    '#E63900', '#CC2900', '#B31900', '#990000'
+    '[[ colors.primary[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[2] ]]', '[[ colors.accent[3] ]]',
+    '[[ colors.primary[4] ]]', '[[ colors.accent[4] ]]', '[[ colors.primary[5] ]]', '[[ colors.accent[5] ]]'
   ];
 
   return (
@@ -216,7 +216,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   cx={paddingLeft - 140}
                   cy={y + barHeight / 2}
                   r="22"
-                  fill={rank === 1 ? '#FFB800' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : '[[ colors.border.light ]]'}
+                  fill={rank === 1 ? '[[ colors.primary[2] ]]' : rank === 2 ? '[[ colors.border.medium ]]' : rank === 3 ? '[[ colors.accent[3] ]]' : '[[ colors.border.light ]]'}
                   opacity={barProgress}
                   filter="url(#glowH)"
                 />
@@ -225,7 +225,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   y={y + barHeight / 2}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill={rank <= 3 ? '#000000' : '[[ colors.text.on_dark ]]'}
+                  fill={rank <= 3 ? '[[ colors.background.dark ]]' : '[[ colors.text.on_dark ]]'}
                   fontSize="16"
                   fontWeight="900"
                   fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
