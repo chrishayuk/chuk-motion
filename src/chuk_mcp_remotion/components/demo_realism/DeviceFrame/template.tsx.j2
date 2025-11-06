@@ -100,7 +100,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
           position: 'relative',
           width: '100%',
           height: '100%',
-          filter: shadow ? 'drop-shadow(0 20px 60px rgba(0, 0, 0, 0.3))' : 'none',
+          filter: shadow ? 'drop-shadow(0 20px 60px [[ colors.background.overlay ]])' : 'none',
         }}
       >
         {/* Device bezel/frame */}
@@ -174,7 +174,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: 0,
                     right: 0,
                     height: '50%',
-                    background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%)',
+                    background: 'linear-gradient(180deg, [[ colors.border.light ]] 0%, transparent 100%)',
                     pointerEvents: 'none',
                   }}
                 />
@@ -185,7 +185,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: '15%',
                     width: '30%',
                     height: '40%',
-                    background: 'radial-gradient(ellipse at center, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 70%)',
+                    background: 'radial-gradient(ellipse at center, [[ colors.border.light ]] 0%, transparent 70%)',
                     transform: 'rotate(-25deg)',
                     pointerEvents: 'none',
                   }}

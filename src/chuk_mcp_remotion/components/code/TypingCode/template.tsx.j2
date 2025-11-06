@@ -61,28 +61,28 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
       borderRadius: 12,
       border: 'none',
       padding: 30,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+      boxShadow: '0 10px 40px [[ colors.background.overlay ]]'
     },
     terminal: {
       background: 'rgba(20, 20, 20, 0.98)',
       borderRadius: 8,
       border: '1px solid rgba(255, 255, 255, 0.1)',
       padding: 30,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
+      boxShadow: '0 10px 40px [[ colors.background.dark ]]'
     },
     editor: {
       background: 'rgba(26, 31, 46, 0.98)',
       borderRadius: 12,
       border: '1px solid rgba(255, 255, 255, 0.05)',
       padding: 0,
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
+      boxShadow: '0 20px 60px [[ colors.background.overlay ]]'
     },
     hacker: {
       background: 'rgba(0, 0, 0, 0.95)',
       borderRadius: 8,
       border: '1px solid #00D9FF',
       padding: 30,
-      boxShadow: '0 0 30px rgba(0, 217, 255, 0.4)'
+      boxShadow: '0 0 30px [[ colors.accent[0] ]]66'
     }
   };
 
@@ -141,11 +141,11 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
               <>
                 <div
                   style={{
-                    background: 'rgba(0, 0, 0, 0.3)',
+                    background: '[[ colors.background.overlay ]]',
                     padding: '12px 20px',
                     borderTopLeftRadius: 12,
                     borderTopRightRadius: 12,
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderBottom: '1px solid [[ colors.border.light ]]',
                     display: 'flex',
                     alignItems: 'center',
                     gap: 8
@@ -159,7 +159,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                   <div
                     style={{
                       fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.7)',
+                      color: '[[ colors.text.subdued ]]',
                       marginLeft: 12,
                       fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
                     }}
@@ -172,7 +172,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                     {show_line_numbers && (
                       <div
                         style={{
-                          color: 'rgba(255, 255, 255, 0.3)',
+                          color: '[[ colors.text.subdued ]]',
                           fontSize: 16,
                           lineHeight: 1.8,
                           textAlign: 'right',

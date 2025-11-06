@@ -1165,16 +1165,16 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 "ThreeRowLayout",
                 "ThreeByThreeGrid",
                 "AsymmetricLayout",
-                "OverTheShoulderLayout",
-                "DialogueFrameLayout",
-                "StackedReactionLayout",
-                "HUDStyleLayout",
-                "PerformanceMultiCamLayout",
-                "FocusStripLayout",
-                "PiPLayout",
-                "VerticalLayout",
-                "TimelineLayout",
-                "MosaicLayout",
+                "OverTheShoulder",
+                "DialogueFrame",
+                "StackedReaction",
+                "HUDStyle",
+                "PerformanceMultiCam",
+                "FocusStrip",
+                "PiP",
+                "Vertical",
+                "Timeline",
+                "Mosaic",
             ]
 
             if comp.component_type in layout_types:
@@ -1247,16 +1247,16 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "ThreeRowLayout",
             "ThreeByThreeGrid",
             "AsymmetricLayout",
-            "OverTheShoulderLayout",
-            "DialogueFrameLayout",
-            "StackedReactionLayout",
-            "HUDStyleLayout",
-            "PerformanceMultiCamLayout",
-            "FocusStripLayout",
-            "PiPLayout",
-            "VerticalLayout",
-            "TimelineLayout",
-            "MosaicLayout",
+            "OverTheShoulder",
+            "DialogueFrame",
+            "StackedReaction",
+            "HUDStyle",
+            "PerformanceMultiCam",
+            "FocusStrip",
+            "PiP",
+            "Vertical",
+            "Timeline",
+            "Mosaic",
         ]
 
         for comp in components:
@@ -1327,16 +1327,16 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "ThreeRowLayout",
             "ThreeByThreeGrid",
             "AsymmetricLayout",
-            "OverTheShoulderLayout",
-            "DialogueFrameLayout",
-            "StackedReactionLayout",
-            "HUDStyleLayout",
-            "PerformanceMultiCamLayout",
-            "FocusStripLayout",
-            "PiPLayout",
-            "VerticalLayout",
-            "TimelineLayout",
-            "MosaicLayout",
+            "OverTheShoulder",
+            "DialogueFrame",
+            "StackedReaction",
+            "HUDStyle",
+            "PerformanceMultiCam",
+            "FocusStrip",
+            "PiP",
+            "Vertical",
+            "Timeline",
+            "Mosaic",
         ]
         has_children = comp.component_type in layout_types
 
@@ -1375,7 +1375,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
         spaces = " " * indent
 
         # Format non-children props
-        # Exclude child component props from regular props
+        # Exclude child component props from regular props (using snake_case names to match templates)
         exclude_keys = [
             "children",
             "left",
@@ -1384,37 +1384,42 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "bottom",
             "center",
             "middle",
-            "mainFeed",
-            "demo1",
-            "demo2",
-            "overlay",  # AsymmetricLayout
-            "hostView",
-            "screenContent",  # OverTheShoulder
-            "characterA",
-            "characterB",  # DialogueFrame
-            "originalClip",
-            "reactorFace",  # StackedReaction
-            "gameplay",
-            "webcam",
-            "chatOverlay",  # HUDStyle
-            "frontCam",
-            "overheadCam",
-            "handCam",
-            "detailCam",  # PerformanceMultiCamLayout
-            "hostStrip",
-            "backgroundContent",  # FocusStrip
+            # AsymmetricLayout
+            "main",
+            "top_side",
+            "bottom_side",
+            # OverTheShoulder
+            "screen_content",
+            "shoulder_overlay",
+            # DialogueFrame
+            "left_speaker",
+            "right_speaker",
+            "center_content",
+            # StackedReaction
+            "original_content",
+            "reaction_content",
+            # HUDStyle
+            "main_content",
+            "top_left",
+            "top_right",
+            "bottom_left",
+            "bottom_right",
+            # PerformanceMultiCam
+            "primary_cam",
+            "secondary_cams",
+            # FocusStrip
+            "focus_content",
+            # PiP
             "mainContent",
-            "pipContent",  # PiPLayout
+            "pipContent",
+            # Vertical
             "topContent",
             "bottomContent",
-            "captionBar",  # VerticalLayout
-            "milestones",
-            "clips",  # TimelineLayout, MosaicLayout
-            "content",  # Container
-            "leftPanel",
-            "rightPanel",
-            "topPanel",
-            "bottomPanel",  # SplitScreen
+            "captionBar",
+            # Timeline / Mosaic
+            "clips",
+            # Container
+            "content",
         ]
         props_lines = []
         for key, value in comp.props.items():
@@ -1457,9 +1462,21 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 {spaces}</{comp.component_type}>"""
 
         elif comp.component_type == "Container":
-            child = comp.props.get("children")
-            if isinstance(child, ComponentInstance):
-                child_jsx = self._render_component_jsx(child, indent + 4)
+            children = comp.props.get("children")
+            # Handle single child or array of children
+            if isinstance(children, ComponentInstance):
+                child_jsx = self._render_component_jsx(children, indent + 4)
+            elif isinstance(children, list) and len(children) > 0:
+                # If array with single item, render it directly
+                if len(children) == 1 and isinstance(children[0], ComponentInstance):
+                    child_jsx = self._render_component_jsx(children[0], indent + 4)
+                else:
+                    # Multiple children - render them all
+                    children_jsxs = []
+                    for child_item in children:
+                        if isinstance(child_item, ComponentInstance):
+                            children_jsxs.append(self._render_component_jsx(child_item, indent + 4))
+                    child_jsx = "\n".join(children_jsxs)
             else:
                 child_jsx = ""
 
@@ -1559,37 +1576,37 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 
         # Handle specialized layouts (OverTheShoulder, DialogueFrame, ThreeColumn, ThreeRow, Asymmetric, etc.)
         elif comp.component_type in [
-            "OverTheShoulderLayout",
-            "DialogueFrameLayout",
-            "StackedReactionLayout",
-            "HUDStyleLayout",
-            "PerformanceMultiCamLayout",
-            "FocusStripLayout",
+            "OverTheShoulder",
+            "DialogueFrame",
+            "StackedReaction",
+            "HUDStyle",
+            "PerformanceMultiCam",
+            "FocusStrip",
             "ThreeColumnLayout",
             "ThreeRowLayout",
             "AsymmetricLayout",
             "ThreeByThreeGrid",
-            "PiPLayout",
-            "VerticalLayout",
-            "TimelineLayout",
-            "MosaicLayout",
+            "PiP",
+            "Vertical",
+            "Timeline",
+            "Mosaic",
         ]:
-            # Map layout types to their prop keys
+            # Map layout types to their prop keys (using snake_case names to match templates)
             layout_prop_keys = {
-                "OverTheShoulderLayout": ["hostView", "screenContent"],
-                "DialogueFrameLayout": ["characterA", "characterB"],
-                "StackedReactionLayout": ["originalClip", "reactorFace"],
-                "HUDStyleLayout": ["gameplay", "webcam", "chatOverlay"],
-                "PerformanceMultiCamLayout": ["frontCam", "overheadCam", "handCam", "detailCam"],
-                "FocusStripLayout": ["hostStrip", "backgroundContent"],
+                "OverTheShoulder": ["screen_content", "shoulder_overlay"],
+                "DialogueFrame": ["left_speaker", "center_content", "right_speaker"],
+                "StackedReaction": ["original_content", "reaction_content"],
+                "HUDStyle": ["main_content", "top_left", "top_right", "bottom_left", "bottom_right"],
+                "PerformanceMultiCam": ["primary_cam", "secondary_cams"],
+                "FocusStrip": ["main_content", "focus_content"],
                 "ThreeColumnLayout": ["left", "center", "right"],
                 "ThreeRowLayout": ["top", "middle", "bottom"],
-                "AsymmetricLayout": ["mainFeed", "demo1", "demo2", "overlay"],
+                "AsymmetricLayout": ["main", "top_side", "bottom_side"],
                 "ThreeByThreeGrid": ["children"],
-                "PiPLayout": ["mainContent", "pipContent"],
-                "VerticalLayout": ["topContent", "bottomContent", "captionBar"],
-                "TimelineLayout": ["mainContent", "milestones"],
-                "MosaicLayout": ["children"],
+                "PiP": ["mainContent", "pipContent"],
+                "Vertical": ["top", "bottom"],
+                "Timeline": ["main_content"],
+                "Mosaic": ["clips"],
             }
 
             prop_keys = layout_prop_keys.get(comp.component_type, [])
@@ -1600,8 +1617,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 if isinstance(child, ComponentInstance):
                     child_jsx = self._render_component_jsx(child, indent + 4)
                     child_props.append(f"{spaces}  {key}={{\n{child_jsx}\n{spaces}  }}")
-                elif isinstance(child, list) and key == "children":
-                    # Handle array of children (e.g., ThreeByThreeGrid)
+                elif isinstance(child, list):
+                    # Handle array of children (e.g., ThreeByThreeGrid, secondary_cams, clips)
                     children_jsx = []
                     for child_item in child:
                         if isinstance(child_item, ComponentInstance):

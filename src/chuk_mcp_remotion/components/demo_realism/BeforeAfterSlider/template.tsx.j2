@@ -153,7 +153,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
                 background: 'white',
                 borderRadius: '50%',
                 border: '4px solid [[ colors.primary[0] ]]',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 4px 12px [[ colors.background.overlay ]]',
               }}
             />
           </div>
@@ -168,7 +168,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
                 height: orientation === 'horizontal' ? handleSize : lineThickness,
                 background: 'white',
                 borderRadius: '[[ spacing.border_radius.sm ]]',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 4px 12px [[ colors.background.overlay ]]',
               }}
             />
           </div>
@@ -186,7 +186,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                boxShadow: '0 4px 12px [[ colors.background.overlay ]]',
               }}
             >
               <div
@@ -206,7 +206,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
 
   // Label styling
   const labelStyle: React.CSSProperties = {
-    background: 'rgba(0, 0, 0, 0.7)',
+    background: '[[ colors.background.dark ]]',
     color: 'white',
     padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
     borderRadius: '[[ spacing.border_radius.md ]]',
@@ -235,7 +235,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
           height: '100%',
           borderRadius: `${borderRadius}px`,
           overflow: 'hidden',
-          filter: 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))',
+          filter: 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])',
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
@@ -248,7 +248,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               padding: '[[ spacing.spacing.md ]]',
-              background: 'rgba(0, 0, 0, 0.5)',
+              background: '[[ colors.background.dark ]]',
               backdropFilter: 'blur(10px)',
             }}
           >
@@ -324,7 +324,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
                     transform: 'translateY(-50%)',
                   }),
               background: 'white',
-              boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 0 10px [[ colors.background.dark ]]',
               zIndex: 10,
             }}
           />
@@ -368,7 +368,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
               display: 'flex',
               justifyContent: 'space-between',
               padding: '[[ spacing.spacing.md ]]',
-              background: 'rgba(0, 0, 0, 0.5)',
+              background: '[[ colors.background.dark ]]',
               backdropFilter: 'blur(10px)',
             }}
           >

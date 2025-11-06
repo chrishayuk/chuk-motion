@@ -155,7 +155,7 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
   const getHeatmapColor = (heatLevel: number | undefined): string => {
     if (!showHeatmap || heatLevel === undefined) return 'transparent';
     const intensity = heatLevel / 100;
-    return `rgba(255, 100, 100, ${intensity * 0.3})`;
+    return `[[ colors.semantic.error ]]${Math.round(intensity * 0.3 * 255).toString(16).padStart(2, '0')}`;
   };
 
   // Diff symbol
@@ -397,7 +397,7 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           background: currentTheme.bg,
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
-          filter: 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))',
+          filter: 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])',
           display: 'flex',
           flexDirection: 'column',
           border: `1px solid ${currentTheme.border}`,

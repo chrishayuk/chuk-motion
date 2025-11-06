@@ -167,7 +167,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
           background: currentTheme.bg,
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
-          filter: shadow ? 'drop-shadow(0 10px 40px rgba(0, 0, 0, 0.3))' : 'none',
+          filter: shadow ? 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])' : 'none',
           display: 'flex',
           flexDirection: 'column',
         }}

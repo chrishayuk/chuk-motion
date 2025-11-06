@@ -1,0 +1,73 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/content/DemoBox/template.tsx.j2 */}
+import React from 'react';
+import { useCurrentFrame } from 'remotion';
+
+interface DemoBoxProps {
+  label: string;
+  color?: string;
+  startFrame?: number;
+  durationInFrames?: number;
+}
+
+export const DemoBox: React.FC<DemoBoxProps> = ({
+  label,
+  color = 'primary',
+  startFrame = 0,
+  durationInFrames = 150
+}) => {
+  const frame = useCurrentFrame();
+
+  // Don't render if outside the time range (when used as timed component)
+  if (startFrame > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+    return null;
+  }
+
+  // Color mapping
+  const colorMap: Record<string, { bg: string; border: string; text: string }> = {
+    primary: {
+      bg: '[[ colors.primary[0] ]]',
+      border: '[[ colors.primary[1] ]]',
+      text: '[[ colors.text.on_dark ]]'
+    },
+    accent: {
+      bg: '[[ colors.accent[0] ]]',
+      border: '[[ colors.accent[1] ]]',
+      text: '[[ colors.text.on_dark ]]'
+    },
+    secondary: {
+      bg: '[[ colors.background.light ]]',
+      border: '[[ colors.primary[0] ]]',
+      text: '[[ colors.text.on_light ]]'
+    }
+  };
+
+  const colors = colorMap[color] || colorMap.primary;
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: colors.bg,
+        border: `3px solid ${colors.border}`,
+        borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: parseInt('[[ spacing.spacing.xl ]]'),
+      }}
+    >
+      <div
+        style={{
+          color: colors.text,
+          fontSize: '[[ typography.font_sizes[typography.default_resolution].xl ]]',
+          fontWeight: '[[ typography.font_weights.bold ]]',
+          textAlign: 'center',
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+};

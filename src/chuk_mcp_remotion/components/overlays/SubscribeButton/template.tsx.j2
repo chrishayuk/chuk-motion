@@ -112,7 +112,7 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
       padding: '24px 60px',
       borderRadius: 16,
       boxShadow: `0 10px 40px [[ colors.primary[0] ]]80`,
-      border: '2px solid rgba(255, 255, 255, 0.3)'
+      border: '2px solid [[ colors.border.medium ]]'
     },
     '3d': {
       background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
@@ -121,7 +121,7 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
       boxShadow: `
         0 10px 40px [[ colors.primary[0] ]]80,
         0 4px 0 [[ colors.primary[1] ]],
-        0 8px 20px rgba(0, 0, 0, 0.3)
+        0 8px 20px [[ colors.background.overlay ]]
       `,
       transform: `${transform} translateY(-4px)`
     }

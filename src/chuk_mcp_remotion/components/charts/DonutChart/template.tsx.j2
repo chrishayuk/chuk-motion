@@ -149,7 +149,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
+              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
               letterSpacing: '-0.02em',
               margin: 0
             }}
@@ -165,7 +165,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
               width={chartSize}
               height={chartSize}
               style={{
-                filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))'
+                filter: 'drop-shadow(0 10px 30px [[ colors.background.dark ]])'
               }}
             >
               <defs>
@@ -194,7 +194,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                     key={idx}
                     d={path}
                     fill={slice.color}
-                    stroke="rgba(255, 255, 255, 0.1)"
+                    stroke="[[ colors.border.light ]]"
                     strokeWidth="2"
                     filter="url(#glowDonut)"
                     opacity={sliceProgress}
@@ -221,7 +221,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                     fontWeight: 900,
                     color: '[[ colors.text.on_dark ]]',
                     lineHeight: 1,
-                    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
+                    textShadow: '0 2px 10px [[ colors.background.dark ]]'
                   }}
                 >
                   {total}
@@ -230,7 +230,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                   style={{
                     fontSize: 16,
                     fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: '[[ colors.text.subdued ]]',
                     marginTop: 8
                   }}
                 >
@@ -285,7 +285,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                       style={{
                         fontSize: 14,
                         fontWeight: 400,
-                        color: 'rgba(255, 255, 255, 0.6)'
+                        color: '[[ colors.text.subdued ]]'
                       }}
                     >
                       {slice.value} ({Math.round(slice.percentage * 100)}%)

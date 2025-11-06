@@ -95,7 +95,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
+          filter: 'drop-shadow(0 20px 40px [[ colors.background.dark ]])'
         }}
       >
         {title && (
@@ -107,7 +107,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               marginBottom: 30,
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
+              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
               letterSpacing: '-0.02em'
             }}
           >
@@ -149,7 +149,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           />
 
           {/* Grid lines */}
-          <g stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1">
+          <g stroke="[[ colors.border.light ]]" strokeWidth="1">
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
               const y = padding + ratio * (chartHeight - 2 * padding);
               return (
@@ -165,7 +165,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           </g>
 
           {/* Axes */}
-          <g stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="2">
             <line
               x1={padding}
               y1={padding}
@@ -229,7 +229,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                   x={x + barWidth / 2}
                   y={chartHeight - padding + 25}
                   textAnchor="middle"
-                  fill="rgba(255, 255, 255, 0.8)"
+                  fill="[[ colors.text.on_dark ]]"
                   fontSize="14"
                   fontWeight="500"
                   fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
@@ -247,7 +247,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               x={chartWidth / 2}
               y={chartHeight - 10}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.6)"
+              fill="[[ colors.text.subdued ]]"
               fontSize="16"
               fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
             >
@@ -260,7 +260,7 @@ export const BarChart: React.FC<BarChartProps> = ({
               x={20}
               y={chartHeight / 2}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.6)"
+              fill="[[ colors.text.subdued ]]"
               fontSize="16"
               fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
               transform={`rotate(-90 20 ${chartHeight / 2})`}
