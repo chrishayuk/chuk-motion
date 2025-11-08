@@ -60,12 +60,12 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
 
   // Position based on runtime prop
   const positions: Record<string, any> = {
-    bottom_left: { bottom: 40, left: interpolate(slideIn, [0, 1], [-400, 40]) },
-    bottom_center: { bottom: 40, left: '50%', transform: `translateX(-50%) translateX(${interpolate(slideIn, [0, 1], [-400, 0])}px)` },
-    bottom_right: { bottom: 40, right: interpolate(slideIn, [0, 1], [-400, 40]) },
-    top_left: { top: 40, left: interpolate(slideIn, [0, 1], [-400, 40]) },
-    top_center: { top: 40, left: '50%', transform: `translateX(-50%) translateX(${interpolate(slideIn, [0, 1], [-400, 0])}px)` },
-    top_right: { top: 40, right: interpolate(slideIn, [0, 1], [-400, 40]) }
+    bottom_left: { bottom: parseInt('[[ spacing.spacing['2xl'] ]]'), left: interpolate(slideIn, [0, 1], [-400, parseInt('[[ spacing.spacing['2xl'] ]]')]) },
+    bottom_center: { bottom: parseInt('[[ spacing.spacing['2xl'] ]]'), left: '50%', transform: `translateX(-50%) translateX(${interpolate(slideIn, [0, 1], [-400, 0])}px)` },
+    bottom_right: { bottom: parseInt('[[ spacing.spacing['2xl'] ]]'), right: interpolate(slideIn, [0, 1], [-400, parseInt('[[ spacing.spacing['2xl'] ]]')]) },
+    top_left: { top: parseInt('[[ spacing.spacing['2xl'] ]]'), left: interpolate(slideIn, [0, 1], [-400, parseInt('[[ spacing.spacing['2xl'] ]]')]) },
+    top_center: { top: parseInt('[[ spacing.spacing['2xl'] ]]'), left: '50%', transform: `translateX(-50%) translateX(${interpolate(slideIn, [0, 1], [-400, 0])}px)` },
+    top_right: { top: parseInt('[[ spacing.spacing['2xl'] ]]'), right: interpolate(slideIn, [0, 1], [-400, parseInt('[[ spacing.spacing['2xl'] ]]')]) }
   };
 
   const positionStyle = positions[position] || positions.bottom_left;
@@ -75,37 +75,37 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
     minimal: {
       background: '[[ colors.background.dark ]]',
       backdropFilter: 'none',
-      padding: '16px 24px',
-      borderRadius: 8
+      padding: `${parseInt('[[ spacing.spacing.md ]]')}px ${parseInt('[[ spacing.spacing.lg ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]')
     },
     standard: {
       background: '[[ colors.background.dark ]]',
       backdropFilter: 'none',
-      padding: '20px 32px',
-      borderRadius: 12,
-      borderLeft: `4px solid [[ colors.primary[0] ]]`
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing.xl ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      borderLeft: `${parseInt('[[ spacing.border_width.thick ]]')}px solid [[ colors.primary[0] ]]`
     },
     glass: {
       background: '[[ colors.background.glass ]]',
       backdropFilter: 'blur(10px)',
-      padding: '20px 32px',
-      borderRadius: 12,
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing.xl ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
       border: '1px solid [[ colors.border.light ]]'
     },
     bold: {
       background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
       backdropFilter: 'none',
-      padding: '24px 40px',
-      borderRadius: 12,
-      boxShadow: '0 10px 40px [[ colors.background.overlay ]]'
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing['2xl'] ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      boxShadow: '0 10px 40px [[ colors.shadow.dark ]]'
     },
     animated: {
       background: '[[ colors.background.glass ]]',
       backdropFilter: 'blur(10px)',
-      padding: '20px 32px',
-      borderRadius: 12,
-      border: `2px solid [[ colors.accent[0] ]]`,
-      boxShadow: `0 0 20px [[ colors.accent[0] ]]80`
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing.xl ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      border: `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.accent[0] ]]`,
+      boxShadow: `0 0 ${parseInt('[[ spacing.spacing.lg ]]')}px [[ colors.accent[0] ]]80`
     }
   };
 
@@ -124,10 +124,10 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
       >
         <div
           style={{
-            fontSize: 32,
-            fontWeight: 700,
+            fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+            fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
             color: '[[ colors.text.on_dark ]]',
-            marginBottom: title ? 4 : 0,
+            marginBottom: title ? parseInt('[[ spacing.spacing.xxs ]]') : 0,
             lineHeight: 1.2
           }}
         >
@@ -136,8 +136,8 @@ export const LowerThird: React.FC<LowerThirdProps> = ({
         {title && (
           <div
             style={{
-              fontSize: 20,
-              fontWeight: 500,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.medium ]]'),
               color: '[[ colors.accent[0] ]]',
               lineHeight: 1.3
             }}

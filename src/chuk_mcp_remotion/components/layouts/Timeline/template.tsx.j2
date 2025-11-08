@@ -56,18 +56,18 @@ export const Timeline: React.FC<TimelineProps> = ({
         right: 0,
         height: height,
         backgroundColor: '[[ colors.background.dark ]]',
-        borderTop: position === 'bottom' ? `2px solid [[ colors.border.light ]]` : undefined,
-        borderBottom: position === 'top' ? `2px solid [[ colors.border.light ]]` : undefined,
+        borderTop: position === 'bottom' ? `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.border.light ]]` : undefined,
+        borderBottom: position === 'top' ? `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.border.light ]]` : undefined,
         display: 'flex',
         alignItems: 'center',
-        padding: '0 [[ spacing.spacing.xl ]]',
+        padding: `0 ${parseInt('[[ spacing.spacing.xl ]]')}px`,
         zIndex: 20,
       }}>
         {/* Progress bar */}
         <div style={{
           position: 'relative',
           width: '100%',
-          height: '8px',
+          height: parseInt('[[ spacing.spacing.xs ]]'),
           backgroundColor: '[[ colors.border.light ]]',
           borderRadius: '[[ spacing.border_radius.sm ]]',
           overflow: 'hidden',
@@ -95,15 +95,15 @@ export const Timeline: React.FC<TimelineProps> = ({
                   left: `${milestonePos}%`,
                   top: '50%',
                   transform: 'translate(-50%, -50%)',
-                  width: '16px',
-                  height: '16px',
+                  width: parseInt('[[ spacing.spacing.md ]]'),
+                  height: parseInt('[[ spacing.spacing.md ]]'),
                   borderRadius: '50%',
                   backgroundColor: milestonePos <= progress ? '[[ colors.accent[1] ]]' : '[[ colors.border.medium ]]',
-                  border: `2px solid [[ colors.text.on_dark ]]`,
+                  border: `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.text.on_dark ]]`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontSize: '10px',
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
                 title={milestone.label}
               >

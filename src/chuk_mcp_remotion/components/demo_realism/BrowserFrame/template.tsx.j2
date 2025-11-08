@@ -147,7 +147,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   const scaleAnimation = interpolate(entrance, [0, 1], [0.95, 1]);
 
   const chromeHeight = 120;
-  const statusHeight = showStatus ? 28 : 0;
+  const statusHeight = showStatus ? parseInt('[[ spacing.spacing.xl ]]') : 0;
   const contentHeight = height - chromeHeight - statusHeight;
 
   return (
@@ -167,7 +167,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
           background: currentTheme.bg,
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
-          filter: shadow ? 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])' : 'none',
+          filter: shadow ? 'drop-shadow(0 10px 40px '[[ colors.shadow.dark ]]')' : 'none',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -195,21 +195,21 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.sm ]]' }}>
               {theme === 'safari' || theme === 'arc' ? (
                 <>
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} />
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
                 </>
               ) : (
                 <>
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
-                  <div style={{ width: 12, height: 12, borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
                 </>
               )}
             </div>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '2px', flex: 1 }}>
+            <div style={{ display: 'flex', gap: `${parseInt('[[ spacing.border_width.medium ]]')}px`, flex: 1 }}>
               {defaultTabs.map((tab, index) => (
                 <div
                   key={index}
@@ -218,7 +218,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                     padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
                     borderRadius: '[[ spacing.border_radius.sm ]] [[ spacing.border_radius.sm ]] 0 0',
                     color: currentTheme.text,
-                    fontSize: 28,
+                    fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                     fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
                     minWidth: '120px',
                     maxWidth: '200px',
@@ -236,15 +236,15 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             {/* New tab button */}
             <div
               style={{
-                width: 24,
-                height: 24,
+                width: parseInt('[[ spacing.spacing.lg ]]'),
+                height: parseInt('[[ spacing.spacing.lg ]]'),
                 borderRadius: '[[ spacing.border_radius.sm ]]',
                 background: currentTheme.button,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: currentTheme.text,
-                fontSize: 18,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
               }}
             >
               +
@@ -264,45 +264,45 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]' }}>
               <div
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: parseInt('[[ spacing.spacing.xl ]]'),
+                  height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
                   background: currentTheme.button,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: currentTheme.text,
-                  fontSize: 16,
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
                 ←
               </div>
               <div
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: parseInt('[[ spacing.spacing.xl ]]'),
+                  height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
                   background: currentTheme.button,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: currentTheme.text,
-                  fontSize: 16,
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
                 →
               </div>
               <div
                 style={{
-                  width: 28,
-                  height: 28,
+                  width: parseInt('[[ spacing.spacing.xl ]]'),
+                  height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
                   background: currentTheme.button,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: currentTheme.text,
-                  fontSize: 16,
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
                 ↻
@@ -320,7 +320,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                 alignItems: 'center',
                 padding: '0 [[ spacing.spacing.md ]]',
                 color: currentTheme.text,
-                fontSize: 28,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                 fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               }}
             >
@@ -331,15 +331,15 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             {/* Menu button */}
             <div
               style={{
-                width: 28,
-                height: 28,
+                width: parseInt('[[ spacing.spacing.xl ]]'),
+                height: parseInt('[[ spacing.spacing.xl ]]'),
                 borderRadius: '[[ spacing.border_radius.sm ]]',
                 background: currentTheme.button,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: currentTheme.text,
-                fontSize: 16,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
               }}
             >
               ⋮
@@ -392,7 +392,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
               alignItems: 'center',
               padding: '0 [[ spacing.spacing.md ]]',
               color: currentTheme.text,
-              fontSize: 24,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               opacity: 0.8,
             }}

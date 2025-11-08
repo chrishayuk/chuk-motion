@@ -29,7 +29,7 @@ export const HUDStyle: React.FC<HUDStyleProps> = ({
   durationInFrames,
   overlay_size = 15,
   padding = parseInt('[[ spacing.spacing.xl ]]'),
-  border_width = 1,
+  border_width = parseInt('[[ spacing.border_width.thin ]]'),
   border_color = '[[ colors.accent[0] ]]',
   border_radius = parseInt('[[ spacing.border_radius.sm ]]')
 }) => {
@@ -46,7 +46,7 @@ export const HUDStyle: React.FC<HUDStyleProps> = ({
     overflow: 'hidden',
     border: `${border_width}px solid ${border_color}`,
     borderRadius: border_radius,
-    backgroundColor: '[[ colors.background.overlay ]]',
+    backgroundColor: '[[ colors.shadow.dark ]]',
   };
 
   return (

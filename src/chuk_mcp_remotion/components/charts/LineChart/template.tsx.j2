@@ -55,7 +55,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   // Chart dimensions
   const chartWidth = 800;
   const chartHeight = 400;
-  const padding = 60;
+  const padding = parseInt('[[ spacing.spacing['3xl'] ]]');
 
   // Entrance animation
   const entranceProgress = spring({
@@ -133,14 +133,14 @@ export const LineChart: React.FC<LineChartProps> = ({
         {title && (
           <h3
             style={{
-              fontSize: 32,
-              fontWeight: 700,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
-              marginBottom: 20,
+              marginBottom: parseInt('[[ spacing.spacing.lg ]]'),
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
-              letterSpacing: '-0.02em'
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {title}
@@ -151,15 +151,15 @@ export const LineChart: React.FC<LineChartProps> = ({
           width={chartWidth}
           height={chartHeight}
           style={{
-            borderRadius: 16,
-            padding: 20,
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
             overflow: 'visible'
           }}
         >
           <defs>
             <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
-              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
             </linearGradient>
             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="[[ colors.primary[0] ]]" />
@@ -181,11 +181,11 @@ export const LineChart: React.FC<LineChartProps> = ({
             width={chartWidth}
             height={chartHeight}
             fill="url(#bgGradient)"
-            rx="16"
+            rx="[[ spacing.border_radius.xl ]]"
           />
 
           {/* Grid lines */}
-          <g stroke="[[ colors.border.light ]]" strokeWidth="1">
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
               const y = padding + ratio * (chartHeight - 2 * padding);
               return (
@@ -201,7 +201,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           </g>
 
           {/* Axes */}
-          <g stroke="[[ colors.border.medium ]]" strokeWidth="2">
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
             <line
               x1={padding}
               y1={padding}
@@ -221,7 +221,7 @@ export const LineChart: React.FC<LineChartProps> = ({
             d={pathData}
             fill="none"
             stroke="url(#lineGradient)"
-            strokeWidth="5"
+            strokeWidth="[[ spacing.spacing.xxs ]]"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter="url(#glow)"
@@ -256,14 +256,14 @@ export const LineChart: React.FC<LineChartProps> = ({
                   r="7"
                   fill="[[ colors.accent[0] ]]"
                   stroke="[[ colors.background.dark ]]"
-                  strokeWidth="2"
+                  strokeWidth="[[ spacing.border_width.medium ]]"
                   filter="url(#glow)"
                 />
                 <circle
                   cx={x}
                   cy={y}
                   r="3"
-                  fill="[[ colors.text.subdued ]]"
+                  fill="[[ colors.text.muted ]]"
                 />
               </g>
             );
@@ -275,9 +275,9 @@ export const LineChart: React.FC<LineChartProps> = ({
               x={chartWidth / 2}
               y={chartHeight - 10}
               textAnchor="middle"
-              fill="[[ colors.text.subdued ]]"
-              fontSize="14"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
             >
               {xlabel}
             </text>
@@ -285,13 +285,13 @@ export const LineChart: React.FC<LineChartProps> = ({
 
           {ylabel && (
             <text
-              x={20}
+              x="[[ spacing.spacing.lg ]]"
               y={chartHeight / 2}
               textAnchor="middle"
-              fill="[[ colors.text.subdued ]]"
-              fontSize="14"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
-              transform={`rotate(-90 20 ${chartHeight / 2})`}
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+              transform={`rotate(-90 [[ spacing.spacing.lg ]] ${chartHeight / 2})`}
             >
               {ylabel}
             </text>

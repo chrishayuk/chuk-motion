@@ -85,10 +85,10 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
 
   // Position styles
   const positions: Record<string, any> = {
-    bottom_right: { bottom: 100, right: 100 },
-    bottom_center: { bottom: 100, left: '50%', transform: `${transform} translateX(-50%)` },
+    bottom_right: { bottom: parseInt('[[ spacing.spacing['5xl'] ]]'), right: parseInt('[[ spacing.spacing['5xl'] ]]') },
+    bottom_center: { bottom: parseInt('[[ spacing.spacing['5xl'] ]]'), left: '50%', transform: `${transform} translateX(-50%)` },
     center: { top: '50%', left: '50%', transform: `${transform} translate(-50%, -50%)` },
-    top_right: { top: 100, right: 100 }
+    top_right: { top: parseInt('[[ spacing.spacing['5xl'] ]]'), right: parseInt('[[ spacing.spacing['5xl'] ]]') }
   };
 
   const positionStyle = positions[position] || positions.bottom_right;
@@ -97,33 +97,33 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
   const variants: Record<string, any> = {
     minimal: {
       background: '[[ colors.background.dark ]]',
-      padding: '16px 40px',
-      borderRadius: 8,
-      border: `2px solid [[ colors.primary[0] ]]`
+      padding: `${parseInt('[[ spacing.spacing.md ]]')}px ${parseInt('[[ spacing.spacing['2xl'] ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
+      border: `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.primary[0] ]]`
     },
     standard: {
       background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-      padding: '20px 50px',
-      borderRadius: 12,
-      boxShadow: `0 8px 32px [[ colors.primary[0] ]]60`
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing['2xl'] ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      boxShadow: `0 ${parseInt('[[ spacing.spacing.xs ]]')}px ${parseInt('[[ spacing.spacing.xl ]]')}px [[ colors.primary[0] ]]60`
     },
     animated: {
       background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-      padding: '24px 60px',
-      borderRadius: 16,
-      boxShadow: `0 10px 40px [[ colors.primary[0] ]]80`,
-      border: '2px solid [[ colors.border.medium ]]'
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing['3xl'] ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      boxShadow: `0 10px ${parseInt('[[ spacing.spacing['2xl'] ]]')}px [[ colors.primary[0] ]]80`,
+      border: `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.border.medium ]]`
     },
     '3d': {
       background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-      padding: '24px 60px',
-      borderRadius: 16,
+      padding: `${parseInt('[[ spacing.spacing.lg ]]')}px ${parseInt('[[ spacing.spacing['3xl'] ]]')}px`,
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
       boxShadow: `
-        0 10px 40px [[ colors.primary[0] ]]80,
-        0 4px 0 [[ colors.primary[1] ]],
-        0 8px 20px [[ colors.background.overlay ]]
+        0 10px ${parseInt('[[ spacing.spacing['2xl'] ]]')}px [[ colors.primary[0] ]]80,
+        0 ${parseInt('[[ spacing.spacing.xxs ]]')}px 0 [[ colors.primary[1] ]],
+        0 ${parseInt('[[ spacing.spacing.xs ]]')}px ${parseInt('[[ spacing.spacing.lg ]]')}px [[ colors.shadow.dark ]]
       `,
-      transform: `${transform} translateY(-4px)`
+      transform: `${transform} translateY(-${parseInt('[[ spacing.spacing.xxs ]]')}px)`
     }
   };
 
@@ -131,6 +131,7 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
 
   // Glow effect for certain animations
   const glowIntensity = animation === 'glow' ? Math.sin((relativeFrame / 30) * Math.PI * 2) * 0.5 + 0.5 : 0;
+  const glowSize = parseInt('[[ spacing.spacing['2xl'] ]]');
 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
@@ -141,8 +142,8 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
           ...variantStyle,
           opacity: finalOpacity,
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          fontSize: 28,
-          fontWeight: 700,
+          fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+          fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
           color: '[[ colors.text.on_dark ]]',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
@@ -151,7 +152,7 @@ export const SubscribeButton: React.FC<SubscribeButtonProps> = ({
           ...(animation === 'glow' && {
             boxShadow: `
               ${variantStyle.boxShadow},
-              0 0 ${40 + glowIntensity * 40}px [[ colors.accent[0] ]]
+              0 0 ${glowSize + glowIntensity * glowSize}px [[ colors.accent[0] ]]
             `
           })
         }}

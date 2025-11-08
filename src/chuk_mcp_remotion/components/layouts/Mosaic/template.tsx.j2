@@ -31,7 +31,7 @@ export const Mosaic: React.FC<MosaicProps> = ({
   style = 'hero-corners',
   padding = parseInt('[[ spacing.spacing.xl ]]'),
   gap = parseInt('[[ spacing.spacing.sm ]]'),
-  border_width = 2,
+  border_width = parseInt('[[ spacing.border_width.medium ]]'),
   border_color = '[[ colors.border.medium ]]',
   border_radius = parseInt('[[ spacing.border_radius.md ]]')
 }) => {
@@ -96,14 +96,14 @@ export const Mosaic: React.FC<MosaicProps> = ({
 
   const renderStacked = () => {
     return clips.map((clip, idx) => {
-      const offset = idx * 40;
+      const offset = idx * parseInt('[[ spacing.spacing['2xl'] ]]');
       const rotation = (idx % 2 === 0 ? 5 : -5);
 
       return (
         <div key={idx} style={{
           position: 'absolute',
-          top: `${20 + offset}px`,
-          left: `${20 + offset}px`,
+          top: `${parseInt('[[ spacing.spacing.lg ]]') + offset}px`,
+          left: `${parseInt('[[ spacing.spacing.lg ]]') + offset}px`,
           width: '60%',
           height: '60%',
           display: 'flex',

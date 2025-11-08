@@ -45,7 +45,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   // Chart dimensions
   const chartWidth = 900;
   const chartHeight = 500;
-  const padding = 80;
+  const padding = parseInt('[[ spacing.spacing['4xl'] ]]');
   const barWidth = (chartWidth - 2 * padding) / data.length * 0.7;
   const barSpacing = (chartWidth - 2 * padding) / data.length;
 
@@ -101,14 +101,14 @@ export const BarChart: React.FC<BarChartProps> = ({
         {title && (
           <h3
             style={{
-              fontSize: 36,
-              fontWeight: 700,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
-              marginBottom: 30,
+              marginBottom: parseInt('[[ spacing.spacing.xl ]]'),
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
-              letterSpacing: '-0.02em'
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {title}
@@ -119,15 +119,15 @@ export const BarChart: React.FC<BarChartProps> = ({
           width={chartWidth}
           height={chartHeight}
           style={{
-            borderRadius: 16,
-            padding: 20,
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
             overflow: 'visible'
           }}
         >
           <defs>
             <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
-              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
             </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
@@ -145,11 +145,11 @@ export const BarChart: React.FC<BarChartProps> = ({
             width={chartWidth}
             height={chartHeight}
             fill="url(#bgGradient)"
-            rx="16"
+            rx="[[ spacing.border_radius.xl ]]"
           />
 
           {/* Grid lines */}
-          <g stroke="[[ colors.border.light ]]" strokeWidth="1">
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
               const y = padding + ratio * (chartHeight - 2 * padding);
               return (
@@ -165,7 +165,7 @@ export const BarChart: React.FC<BarChartProps> = ({
           </g>
 
           {/* Axes */}
-          <g stroke="[[ colors.border.medium ]]" strokeWidth="2">
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
             <line
               x1={padding}
               y1={padding}
@@ -205,7 +205,7 @@ export const BarChart: React.FC<BarChartProps> = ({
                   width={barWidth}
                   height={animatedHeight}
                   fill={color}
-                  rx="4"
+                  rx="[[ spacing.spacing.xxs ]]"
                   filter="url(#glow)"
                   opacity={barProgress}
                 />
@@ -216,9 +216,9 @@ export const BarChart: React.FC<BarChartProps> = ({
                   y={y - 10}
                   textAnchor="middle"
                   fill="[[ colors.text.on_dark ]]"
-                  fontSize="18"
-                  fontWeight="700"
-                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.bold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                   opacity={barProgress}
                 >
                   {item.value}
@@ -230,9 +230,9 @@ export const BarChart: React.FC<BarChartProps> = ({
                   y={chartHeight - padding + 25}
                   textAnchor="middle"
                   fill="[[ colors.text.on_dark ]]"
-                  fontSize="14"
-                  fontWeight="500"
-                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.medium ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                   opacity={barProgress}
                 >
                   {item.label}
@@ -247,9 +247,9 @@ export const BarChart: React.FC<BarChartProps> = ({
               x={chartWidth / 2}
               y={chartHeight - 10}
               textAnchor="middle"
-              fill="[[ colors.text.subdued ]]"
-              fontSize="16"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
             >
               {xlabel}
             </text>
@@ -257,13 +257,13 @@ export const BarChart: React.FC<BarChartProps> = ({
 
           {ylabel && (
             <text
-              x={20}
+              x="[[ spacing.spacing.lg ]]"
               y={chartHeight / 2}
               textAnchor="middle"
-              fill="[[ colors.text.subdued ]]"
-              fontSize="16"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
-              transform={`rotate(-90 20 ${chartHeight / 2})`}
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+              transform={`rotate(-90 [[ spacing.spacing.lg ]] ${chartHeight / 2})`}
             >
               {ylabel}
             </text>

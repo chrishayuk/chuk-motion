@@ -16,6 +16,9 @@ class BackgroundColors(BaseModel):
     dark: str
     light: str
     glass: str
+    darker: str = "rgba(20, 25, 40, 0.98)"
+    overlay: str = "rgba(0, 0, 0, 0.5)"
+    hacker: str = "rgba(0, 0, 0, 0.95)"
 
 
 # Text Color Model
@@ -25,6 +28,7 @@ class TextColors(BaseModel):
     on_dark: str
     on_light: str
     muted: str
+    dimmed: str = "rgba(255, 255, 255, 0.3)"
 
 
 # Semantic Color Model
@@ -35,6 +39,40 @@ class SemanticColors(BaseModel):
     warning: str
     error: str
     info: str
+
+
+# Border Color Model
+class BorderColors(BaseModel):
+    """Border color variants with different opacities."""
+
+    subtle: str = "rgba(255, 255, 255, 0.1)"
+    light: str = "rgba(255, 255, 255, 0.2)"
+    medium: str = "rgba(255, 255, 255, 0.3)"
+    strong: str = "rgba(255, 255, 255, 0.4)"
+
+
+# Shadow Color Model
+class ShadowColors(BaseModel):
+    """Shadow color variants."""
+
+    light: str = "rgba(0, 0, 0, 0.2)"
+    medium: str = "rgba(0, 0, 0, 0.3)"
+    dark: str = "rgba(0, 0, 0, 0.5)"
+
+
+# Highlight Color Model
+class HighlightColors(BaseModel):
+    """Highlight colors for code and UI."""
+
+    line: str = "rgba(255, 255, 255, 0.2)"
+
+
+# Gradient Color Model
+class GradientColors(BaseModel):
+    """Gradient variants."""
+
+    bold: str = ""  # Will be set per theme
+    primary_to_secondary: str = ""  # Will be set per theme
 
 
 # Color Theme Model
@@ -49,6 +87,9 @@ class ColorTheme(BaseModel):
     background: BackgroundColors
     text: TextColors
     semantic: SemanticColors
+    border: BorderColors = Field(default_factory=BorderColors)
+    shadow: ShadowColors = Field(default_factory=ShadowColors)
+    highlight: HighlightColors = Field(default_factory=HighlightColors)
 
 
 # Color Tokens Model

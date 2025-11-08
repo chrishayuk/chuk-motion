@@ -186,7 +186,7 @@ export const Terminal: React.FC<TerminalProps> = ({
           background: currentTheme.bg,
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
-          filter: 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])',
+          filter: 'drop-shadow(0 10px 40px '[[ colors.shadow.dark ]]')',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -194,7 +194,7 @@ export const Terminal: React.FC<TerminalProps> = ({
         {/* Terminal header */}
         <div
           style={{
-            height: '40px',
+            height: `${parseInt('[[ spacing.spacing['2xl'] ]]')}px`,
             background: currentTheme.chrome,
             display: 'flex',
             alignItems: 'center',
@@ -204,16 +204,16 @@ export const Terminal: React.FC<TerminalProps> = ({
         >
           {/* Window controls */}
           <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.md ]]' }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ff5f57' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#febc2e' }} />
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#28c840' }} />
+            <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+            <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+            <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
           </div>
 
           {/* Title */}
           <div
             style={{
               color: currentTheme.text,
-              fontSize: 28,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               opacity: 0.8,
             }}
@@ -228,8 +228,8 @@ export const Terminal: React.FC<TerminalProps> = ({
             flex: 1,
             padding: '[[ spacing.spacing.md ]]',
             fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
-            fontSize: 28,
-            lineHeight: 1.6,
+            fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+            lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
             overflow: 'auto',
           }}
         >
@@ -260,10 +260,10 @@ export const Terminal: React.FC<TerminalProps> = ({
                       <span
                         style={{
                           background: currentTheme.cursorColor,
-                          width: '8px',
+                          width: `${parseInt('[[ spacing.spacing.xs ]]')}px`,
                           height: '1em',
                           display: 'inline-block',
-                          marginLeft: '2px',
+                          marginLeft: `${parseInt('[[ spacing.border_width.medium ]]')}px`,
                           verticalAlign: 'text-bottom',
                         }}
                       />
@@ -300,7 +300,7 @@ export const Terminal: React.FC<TerminalProps> = ({
                   <span
                     style={{
                       background: currentTheme.cursorColor,
-                      width: '8px',
+                      width: `${parseInt('[[ spacing.spacing.xs ]]')}px`,
                       height: '1em',
                       display: 'inline-block',
                       verticalAlign: 'text-bottom',

@@ -167,7 +167,7 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
 
   // Render unified diff
   const renderUnifiedDiff = () => (
-    <div style={{ flex: 1, overflow: 'auto', padding: '[[ spacing.spacing.md ]]' }}>
+    <div style={{ flex: 1, overflow: 'auto', padding: parseInt('[[ spacing.spacing.md ]]') }}>
       {parsedLines.map((line, index) => {
         const lineOpacity = getLineOpacity(index);
         const bgColor =
@@ -192,18 +192,18 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
               background: showHeatmap ? getHeatmapColor(line.heatLevel) : bgColor,
               borderLeft: line.type !== 'unchanged' ? `3px solid ${textColor}` : 'none',
               opacity: lineOpacity,
-              minHeight: '24px',
+              minHeight: parseInt('[[ spacing.spacing.lg ]]'),
             }}
           >
             {showLineNumbers && (
               <span
                 style={{
                   color: currentTheme.lineNumber,
-                  fontSize: 24,
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
                   fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
                   minWidth: '50px',
                   textAlign: 'right',
-                  padding: '2px [[ spacing.spacing.sm ]]',
+                  padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]]`,
                   userSelect: 'none',
                 }}
               >
@@ -213,11 +213,11 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
             <span
               style={{
                 color: textColor,
-                fontSize: 24,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
                 fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
-                padding: '2px [[ spacing.spacing.xs ]]',
+                padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.xs ]]`,
                 userSelect: 'none',
-                width: '20px',
+                width: parseInt('[[ spacing.spacing.lg ]]'),
               }}
             >
               {getDiffSymbol(line.type)}
@@ -226,9 +226,9 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
               style={{
                 margin: 0,
                 color: textColor,
-                fontSize: 28,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                 fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
-                padding: '2px [[ spacing.spacing.sm ]] 2px 0',
+                padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]] [[ spacing.spacing.xxs ]] 0`,
                 flex: 1,
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-all',
@@ -254,17 +254,17 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           <div
             style={{
               background: currentTheme.chrome,
-              padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
+              padding: `[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]`,
               borderBottom: `1px solid ${currentTheme.border}`,
               color: currentTheme.text,
-              fontSize: 28,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-              fontWeight: [[ typography.font_weights.semibold ]],
+              fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
             }}
           >
             {leftLabel}
           </div>
-          <div style={{ padding: '[[ spacing.spacing.md ]]' }}>
+          <div style={{ padding: parseInt('[[ spacing.spacing.md ]]') }}>
             {leftLines.map((line, index) => {
               const lineOpacity = getLineOpacity(index);
               return (
@@ -275,18 +275,18 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
                     alignItems: 'flex-start',
                     background: line.type === 'removed' ? currentTheme.removed : currentTheme.unchanged,
                     opacity: lineOpacity,
-                    minHeight: '24px',
+                    minHeight: parseInt('[[ spacing.spacing.lg ]]'),
                   }}
                 >
                   {showLineNumbers && (
                     <span
                       style={{
                         color: currentTheme.lineNumber,
-                        fontSize: 24,
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
                         fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
                         minWidth: '50px',
                         textAlign: 'right',
-                        padding: '2px [[ spacing.spacing.sm ]]',
+                        padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]]`,
                         userSelect: 'none',
                       }}
                     >
@@ -297,9 +297,9 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
                     style={{
                       margin: 0,
                       color: line.type === 'removed' ? currentTheme.removedText : currentTheme.text,
-                      fontSize: 28,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                       fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
-                      padding: '2px [[ spacing.spacing.sm ]]',
+                      padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]]`,
                       flex: 1,
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-all',
@@ -318,17 +318,17 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           <div
             style={{
               background: currentTheme.chrome,
-              padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
+              padding: `[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]`,
               borderBottom: `1px solid ${currentTheme.border}`,
               color: currentTheme.text,
-              fontSize: 28,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-              fontWeight: [[ typography.font_weights.semibold ]],
+              fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
             }}
           >
             {rightLabel}
           </div>
-          <div style={{ padding: '[[ spacing.spacing.md ]]' }}>
+          <div style={{ padding: parseInt('[[ spacing.spacing.md ]]') }}>
             {rightLines.map((line, index) => {
               const lineOpacity = getLineOpacity(index);
               return (
@@ -339,18 +339,18 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
                     alignItems: 'flex-start',
                     background: line.type === 'added' ? currentTheme.added : currentTheme.unchanged,
                     opacity: lineOpacity,
-                    minHeight: '24px',
+                    minHeight: parseInt('[[ spacing.spacing.lg ]]'),
                   }}
                 >
                   {showLineNumbers && (
                     <span
                       style={{
                         color: currentTheme.lineNumber,
-                        fontSize: 24,
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
                         fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
                         minWidth: '50px',
                         textAlign: 'right',
-                        padding: '2px [[ spacing.spacing.sm ]]',
+                        padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]]`,
                         userSelect: 'none',
                       }}
                     >
@@ -361,9 +361,9 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
                     style={{
                       margin: 0,
                       color: line.type === 'added' ? currentTheme.addedText : currentTheme.text,
-                      fontSize: 28,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                       fontFamily: "'[[ "', '".join(typography.code_font.fonts) ]]'",
-                      padding: '2px [[ spacing.spacing.sm ]]',
+                      padding: `[[ spacing.spacing.xxs ]] [[ spacing.spacing.sm ]]`,
                       flex: 1,
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-all',
@@ -395,9 +395,9 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           width: '100%',
           height: '100%',
           background: currentTheme.bg,
-          borderRadius: '[[ spacing.border_radius.lg ]]',
+          borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
           overflow: 'hidden',
-          filter: 'drop-shadow(0 10px 40px [[ colors.background.overlay ]])',
+          filter: 'drop-shadow(0 10px 40px [[ colors.shadow.dark ]])',
           display: 'flex',
           flexDirection: 'column',
           border: `1px solid ${currentTheme.border}`,
@@ -407,7 +407,7 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
         <div
           style={{
             background: currentTheme.chrome,
-            padding: '[[ spacing.spacing.md ]]',
+            padding: parseInt('[[ spacing.spacing.md ]]'),
             borderBottom: `1px solid ${currentTheme.border}`,
             display: 'flex',
             alignItems: 'center',
@@ -417,9 +417,9 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           <div
             style={{
               color: currentTheme.text,
-              fontSize: 36,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-              fontWeight: [[ typography.font_weights.semibold ]],
+              fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
             }}
           >
             {title}
@@ -427,7 +427,7 @@ export const CodeDiff: React.FC<CodeDiffProps> = ({
           <div
             style={{
               color: currentTheme.lineNumber,
-              fontSize: 28,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
             }}
           >

@@ -1649,8 +1649,43 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
         # Fallback
         return self._render_simple_component(comp, indent)
 
+    def _serialize_value(self, value: Any) -> Any:
+        """Recursively serialize values to JSON-compatible types."""
+        from pydantic import BaseModel
+        from dataclasses import is_dataclass, asdict
+
+        if isinstance(value, BaseModel):
+            # Recursively serialize Pydantic models using model_dump
+            try:
+                dumped = value.model_dump(mode='python')
+                # Recursively process the dumped dict in case it contains more BaseModels
+                return self._serialize_value(dumped)
+            except Exception as e:
+                print(f"Warning: Could not serialize {type(value).__name__}: {e}")
+                # Fallback: try to convert to dict manually
+                return str(value)
+        elif is_dataclass(value) and not isinstance(value, type):
+            # Handle dataclasses (like ComponentInstance)
+            dumped = asdict(value)
+            # Recursively process the dumped dict
+            return self._serialize_value(dumped)
+        elif isinstance(value, dict):
+            # Recursively serialize dict values
+            return {k: self._serialize_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            # Recursively serialize list items
+            return [self._serialize_value(item) for item in value]
+        elif isinstance(value, tuple):
+            # Convert tuples to lists
+            return [self._serialize_value(item) for item in value]
+        else:
+            # Return primitive types as-is
+            return value
+
     def _format_prop_value(self, value: Any) -> str:
         """Format a prop value for JSX."""
+        import json
+
         if isinstance(value, str):
             # Use template literals for strings (supports multiline and quotes)
             # Escape backticks and ${} in the string
@@ -1660,16 +1695,17 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             return "{" + str(value).lower() + "}"
         elif isinstance(value, (int, float)):
             return "{" + str(value) + "}"
-        elif isinstance(value, dict):
-            # Format dict as JS object literal
-            import json
-
-            return "{" + json.dumps(value) + "}"
-        elif isinstance(value, list):
-            # Format list as JS array
-            import json
-
-            return "{" + json.dumps(value) + "}"
+        elif isinstance(value, (dict, list)) or hasattr(value, 'model_dump'):
+            # Serialize complex types (dicts, lists, Pydantic models)
+            serialized = self._serialize_value(value)
+            try:
+                return "{" + json.dumps(serialized) + "}"
+            except TypeError as e:
+                # Debug: print what failed
+                print(f"DEBUG: Failed to serialize value of type {type(value)}")
+                print(f"DEBUG: Serialized type: {type(serialized)}")
+                print(f"DEBUG: Serialized value: {serialized}")
+                raise
         else:
             return f"{{{value}}}"
 

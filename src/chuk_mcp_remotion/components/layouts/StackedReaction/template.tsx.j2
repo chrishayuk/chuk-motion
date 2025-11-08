@@ -131,7 +131,7 @@ export const StackedReaction: React.FC<StackedReactionProps> = ({
           aspectRatio: '16/9',
           display: 'flex',
           overflow: 'hidden',
-          border: `${border_width || 2}px solid ${border_color}`,
+          border: `${border_width || parseInt('[[ spacing.border_width.medium ]]')}px solid ${border_color}`,
           borderRadius: border_radius,
           zIndex: 10,
         }}>

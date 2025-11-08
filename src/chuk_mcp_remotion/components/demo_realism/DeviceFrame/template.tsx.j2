@@ -37,16 +37,16 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
   // Device dimensions (base sizes in px)
   const deviceDimensions = {
     phone: {
-      portrait: { width: 375, height: 812, bezel: 20, radius: 40 },
-      landscape: { width: 812, height: 375, bezel: 20, radius: 40 },
+      portrait: { width: 375, height: 812, bezel: parseInt('[[ spacing.spacing.lg ]]'), radius: parseInt('[[ spacing.spacing['2xl'] ]]') },
+      landscape: { width: 812, height: 375, bezel: parseInt('[[ spacing.spacing.lg ]]'), radius: parseInt('[[ spacing.spacing['2xl'] ]]') },
     },
     tablet: {
-      portrait: { width: 768, height: 1024, bezel: 30, radius: 20 },
-      landscape: { width: 1024, height: 768, bezel: 30, radius: 20 },
+      portrait: { width: 768, height: 1024, bezel: parseInt('[[ spacing.spacing.xl ]]'), radius: parseInt('[[ spacing.spacing.lg ]]') },
+      landscape: { width: 1024, height: 768, bezel: parseInt('[[ spacing.spacing.xl ]]'), radius: parseInt('[[ spacing.spacing.lg ]]') },
     },
     laptop: {
-      portrait: { width: 1440, height: 900, bezel: 40, radius: 10 },
-      landscape: { width: 1440, height: 900, bezel: 40, radius: 10 },
+      portrait: { width: 1440, height: 900, bezel: parseInt('[[ spacing.spacing['2xl'] ]]'), radius: 10 },
+      landscape: { width: 1440, height: 900, bezel: parseInt('[[ spacing.spacing['2xl'] ]]'), radius: 10 },
     },
   };
 
@@ -100,7 +100,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
           position: 'relative',
           width: '100%',
           height: '100%',
-          filter: shadow ? 'drop-shadow(0 20px 60px [[ colors.background.overlay ]])' : 'none',
+          filter: shadow ? 'drop-shadow(0 20px 60px '[[ colors.shadow.dark ]]')' : 'none',
         }}
       >
         {/* Device bezel/frame */}
@@ -114,7 +114,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
             borderRadius: `${dims.radius}px`,
             padding: `${dims.bezel}px`,
             [% if device == 'laptop' %]
-            borderTop: '2px solid #444',
+            borderTop: '[[ spacing.border_width.medium ]] solid #444',
             [% endif %]
           }}
         >
@@ -154,7 +154,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     style={{
                       color: '[[ colors.text.on_dark ]]',
                       fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-                      fontSize: 36,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
                       padding: '[[ spacing.spacing.md ]]',
                     }}
                   >
@@ -174,7 +174,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: 0,
                     right: 0,
                     height: '50%',
-                    background: 'linear-gradient(180deg, [[ colors.border.light ]] 0%, transparent 100%)',
+                    background: 'linear-gradient(180deg, '[[ colors.border.light ]]' 0%, transparent 100%)',
                     pointerEvents: 'none',
                   }}
                 />
@@ -185,7 +185,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: '15%',
                     width: '30%',
                     height: '40%',
-                    background: 'radial-gradient(ellipse at center, [[ colors.border.light ]] 0%, transparent 70%)',
+                    background: 'radial-gradient(ellipse at center, '[[ colors.border.light ]]' 0%, transparent 70%)',
                     transform: 'rotate(-25deg)',
                     pointerEvents: 'none',
                   }}
@@ -208,7 +208,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     width: '35%',
                     height: '28px',
                     background: '#0a0a0a',
-                    borderRadius: '0 0 20px 20px',
+                    borderRadius: `0 0 [[ spacing.spacing.lg ]]px [[ spacing.spacing.lg ]]px`,
                     zIndex: 10,
                   }}
                 >
@@ -216,25 +216,25 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                   <div
                     style={{
                       position: 'absolute',
-                      top: '8px',
+                      top: parseInt('[[ spacing.spacing.xs ]]'),
                       left: '50%',
                       transform: 'translateX(-50%)',
                       width: '40%',
-                      height: '4px',
+                      height: parseInt('[[ spacing.spacing.xxs ]]'),
                       background: '#1a1a1a',
-                      borderRadius: '2px',
+                      borderRadius: '[[ spacing.border_width.medium ]]',
                     }}
                   />
                   {/* Camera */}
                   <div
                     style={{
                       position: 'absolute',
-                      top: '8px',
+                      top: parseInt('[[ spacing.spacing.xs ]]'),
                       right: '20%',
-                      width: '8px',
-                      height: '8px',
+                      width: parseInt('[[ spacing.spacing.xs ]]'),
+                      height: parseInt('[[ spacing.spacing.xs ]]'),
                       background: '#0a0a0a',
-                      border: '1px solid #2a2a2a',
+                      border: '[[ spacing.border_width.thin ]] solid #2a2a2a',
                       borderRadius: '50%',
                     }}
                   />
@@ -256,7 +256,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                   width: '6px',
                   height: '6px',
                   background: '#0a0a0a',
-                  border: '1px solid #333',
+                  border: '[[ spacing.border_width.thin ]] solid #333',
                   borderRadius: '50%',
                 }}
               />
@@ -273,10 +273,10 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
               left: '50%',
               transform: 'translateX(-50%)',
               width: '110%',
-              height: '20px',
+              height: parseInt('[[ spacing.spacing.lg ]]'),
               background: 'linear-gradient(145deg, #2a2a2a, #1a1a1a)',
-              borderRadius: '0 0 12px 12px',
-              marginTop: '2px',
+              borderRadius: `0 0 [[ spacing.border_radius.lg ]]px [[ spacing.border_radius.lg ]]px`,
+              marginTop: '[[ spacing.border_width.medium ]]',
             }}
           />
         )}

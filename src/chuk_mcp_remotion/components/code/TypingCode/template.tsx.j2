@@ -57,31 +57,31 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
   // Variant styles
   const variants = {
     minimal: {
-      background: 'rgba(30, 35, 50, 0.95)',
-      borderRadius: 12,
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
       border: 'none',
-      padding: 30,
-      boxShadow: '0 10px 40px [[ colors.background.overlay ]]'
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 10px 40px [[ colors.shadow.dark ]]'
     },
     terminal: {
-      background: 'rgba(20, 20, 20, 0.98)',
-      borderRadius: 8,
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      padding: 30,
+      background: '[[ colors.background.darker ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
       boxShadow: '0 10px 40px [[ colors.background.dark ]]'
     },
     editor: {
-      background: 'rgba(26, 31, 46, 0.98)',
-      borderRadius: 12,
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
       padding: 0,
-      boxShadow: '0 20px 60px [[ colors.background.overlay ]]'
+      boxShadow: '0 20px 60px [[ colors.shadow.dark ]]'
     },
     hacker: {
-      background: 'rgba(0, 0, 0, 0.95)',
-      borderRadius: 8,
+      background: '[[ colors.background.hacker ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
       border: '1px solid [[ colors.accent[0] ]]',
-      padding: 30,
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
       boxShadow: '0 0 30px [[ colors.accent[0] ]]66'
     }
   };
@@ -95,21 +95,21 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
       width: '0.6em',
       height: '1.2em',
       background: '[[ colors.accent[0] ]]',
-      marginLeft: 2
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]')
     },
     line: {
       display: 'inline-block',
-      width: 2,
+      width: parseInt('[[ spacing.spacing.xxs ]]'),
       height: '1.2em',
       background: '[[ colors.accent[0] ]]',
-      marginLeft: 2
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]')
     },
     underline: {
       display: 'inline-block',
       width: '0.6em',
-      height: 2,
+      height: parseInt('[[ spacing.spacing.xxs ]]'),
       background: '[[ colors.accent[0] ]]',
-      marginLeft: 2,
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]'),
       verticalAlign: 'bottom'
     },
     none: {
@@ -142,39 +142,39 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                 <div
                   style={{
                     background: '[[ colors.background.overlay ]]',
-                    padding: '12px 20px',
-                    borderTopLeftRadius: 12,
-                    borderTopRightRadius: 12,
+                    padding: '[[ spacing.spacing.sm ]] [[ spacing.spacing.lg ]]',
+                    borderTopLeftRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                    borderTopRightRadius: parseInt('[[ spacing.border_radius.lg ]]'),
                     borderBottom: '1px solid [[ colors.border.light ]]',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8
+                    gap: parseInt('[[ spacing.spacing.xs ]]')
                   }}
                 >
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FF5F56' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FFBD2E' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27C93F' }} />
+                  <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.xxs ]]') }}>
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
                   </div>
                   <div
                     style={{
-                      fontSize: 14,
-                      color: '[[ colors.text.subdued ]]',
-                      marginLeft: 12,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                      color: '[[ colors.text.muted ]]',
+                      marginLeft: parseInt('[[ spacing.spacing.sm ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 </div>
-                <div style={{ padding: 30 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ padding: parseInt('[[ spacing.spacing.xl ]]') }}>
+                  <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]') }}>
                     {show_line_numbers && (
                       <div
                         style={{
-                          color: '[[ colors.text.subdued ]]',
-                          fontSize: 16,
-                          lineHeight: 1.8,
+                          color: '[[ colors.text.dimmed ]]',
+                          fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                          lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                           textAlign: 'right',
                           userSelect: 'none',
                           minWidth: 50
@@ -188,8 +188,8 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                     <div
                       style={{
                         flex: 1,
-                        fontSize: 18,
-                        lineHeight: 1.8,
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         overflow: 'auto',
                         whiteSpace: 'pre'
                       }}
@@ -209,27 +209,27 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                 </div>
               </>
             ) : (
-              <div style={{ padding: variant === 'editor' ? 30 : 0 }}>
+              <div style={{ padding: variant === 'editor' ? parseInt('[[ spacing.spacing.xl ]]') : 0 }}>
                 {title && variant !== 'editor' && (
                   <div
                     style={{
-                      fontSize: 24,
-                      fontWeight: 600,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+                      fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
                       color: '[[ colors.text.on_dark ]]',
-                      marginBottom: 20,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      marginBottom: parseInt('[[ spacing.spacing.lg ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]') }}>
                   {show_line_numbers && (
                     <div
                       style={{
-                        color: 'rgba(255, 255, 255, 0.3)',
-                        fontSize: 16,
-                        lineHeight: 1.8,
+                        color: '[[ colors.text.dimmed ]]',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         textAlign: 'right',
                         userSelect: 'none',
                         minWidth: 50
@@ -243,8 +243,8 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                   <div
                     style={{
                       flex: 1,
-                      fontSize: 18,
-                      lineHeight: 1.8,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                      lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                       overflow: 'auto',
                       whiteSpace: 'pre'
                     }}
