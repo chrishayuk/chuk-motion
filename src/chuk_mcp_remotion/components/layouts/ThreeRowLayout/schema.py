@@ -15,12 +15,8 @@ class ThreeRowLayoutProps(BaseModel):
     middle: Any | None = Field(None, description="Content for middle row")
     bottom: Any | None = Field(None, description="Content for bottom row")
     top_height: float | None = Field(25, description="Top row height (percentage, 0-100)")
-    middle_height: float | None = Field(
-        50, description="Middle row height (percentage, 0-100)"
-    )
-    bottom_height: float | None = Field(
-        25, description="Bottom row height (percentage, 0-100)"
-    )
+    middle_height: float | None = Field(50, description="Middle row height (percentage, 0-100)")
+    bottom_height: float | None = Field(25, description="Bottom row height (percentage, 0-100)")
     gap: float | None = Field(20, description="Gap between rows (pixels)")
     padding: float | None = Field(40, description="Padding around layout (pixels)")
     start_time: float = Field(description="When to show (seconds)")

@@ -189,9 +189,9 @@ class TestMotionTokensStructure:
         """Test easing curves have correct format."""
         for easing_name, easing in MOTION_TOKENS.easing.items():
             assert len(easing.curve) == 4, f"Easing '{easing_name}' curve should have 4 values"
-            assert all(
-                isinstance(v, (int, float)) for v in easing.curve
-            ), f"Easing '{easing_name}' curve values should be numeric"
+            assert all(isinstance(v, (int, float)) for v in easing.curve), (
+                f"Easing '{easing_name}' curve values should be numeric"
+            )
 
     def test_all_spring_configs_present(self):
         """Test all expected spring configs exist."""
@@ -256,12 +256,12 @@ class TestMotionTokensStructure:
             # Verify frame calculations match beat duration
             expected_30fps = int(tempo.beat_duration * 30)
             expected_60fps = int(tempo.beat_duration * 60)
-            assert (
-                tempo.frames_30fps == expected_30fps
-            ), f"Tempo '{tempo_name}' 30fps frames mismatch"
-            assert (
-                tempo.frames_60fps == expected_60fps
-            ), f"Tempo '{tempo_name}' 60fps frames mismatch"
+            assert tempo.frames_30fps == expected_30fps, (
+                f"Tempo '{tempo_name}' 30fps frames mismatch"
+            )
+            assert tempo.frames_60fps == expected_60fps, (
+                f"Tempo '{tempo_name}' 60fps frames mismatch"
+            )
 
     def test_all_platform_timings_present(self):
         """Test all expected platform timings exist."""
@@ -274,19 +274,19 @@ class TestMotionTokensStructure:
             "presentation",
         ]
         for platform in expected_platforms:
-            assert (
-                platform in MOTION_TOKENS.platform_timing
-            ), f"Platform '{platform}' not found"
-            assert isinstance(
-                MOTION_TOKENS.platform_timing[platform], PlatformTimingConfig
-            )
+            assert platform in MOTION_TOKENS.platform_timing, f"Platform '{platform}' not found"
+            assert isinstance(MOTION_TOKENS.platform_timing[platform], PlatformTimingConfig)
 
     def test_platform_timing_cta_structure(self):
         """Test platform timing CTA timing is properly structured."""
         for platform, timing in MOTION_TOKENS.platform_timing.items():
             assert isinstance(timing.cta_timing, CTATiming)
-            assert timing.cta_timing.first_cta > 0, f"Platform '{platform}' first_cta should be positive"
-            assert timing.cta_timing.final_cta < 0, f"Platform '{platform}' final_cta should be negative"
+            assert timing.cta_timing.first_cta > 0, (
+                f"Platform '{platform}' first_cta should be positive"
+            )
+            assert timing.cta_timing.final_cta < 0, (
+                f"Platform '{platform}' final_cta should be negative"
+            )
 
 
 class TestUtilityFunctions:
@@ -407,33 +407,33 @@ class TestTokenConsistency:
     def test_transition_durations_reference_valid_tokens(self):
         """Test that transitions reference valid duration tokens."""
         for enter_name, enter in MOTION_TOKENS.enter.items():
-            assert (
-                enter.default_duration in MOTION_TOKENS.duration
-            ), f"Enter '{enter_name}' references invalid duration '{enter.default_duration}'"
+            assert enter.default_duration in MOTION_TOKENS.duration, (
+                f"Enter '{enter_name}' references invalid duration '{enter.default_duration}'"
+            )
 
         for exit_name, exit_trans in MOTION_TOKENS.exit.items():
-            assert (
-                exit_trans.default_duration in MOTION_TOKENS.duration
-            ), f"Exit '{exit_name}' references invalid duration '{exit_trans.default_duration}'"
+            assert exit_trans.default_duration in MOTION_TOKENS.duration, (
+                f"Exit '{exit_name}' references invalid duration '{exit_trans.default_duration}'"
+            )
 
     def test_transition_easings_reference_valid_tokens(self):
         """Test that transitions reference valid easing tokens."""
         for enter_name, enter in MOTION_TOKENS.enter.items():
-            assert (
-                enter.default_easing in MOTION_TOKENS.easing
-            ), f"Enter '{enter_name}' references invalid easing '{enter.default_easing}'"
+            assert enter.default_easing in MOTION_TOKENS.easing, (
+                f"Enter '{enter_name}' references invalid easing '{enter.default_easing}'"
+            )
 
         for exit_name, exit_trans in MOTION_TOKENS.exit.items():
-            assert (
-                exit_trans.default_easing in MOTION_TOKENS.easing
-            ), f"Exit '{exit_name}' references invalid easing '{exit_trans.default_easing}'"
+            assert exit_trans.default_easing in MOTION_TOKENS.easing, (
+                f"Exit '{exit_name}' references invalid easing '{exit_trans.default_easing}'"
+            )
 
     def test_platform_tempo_references_valid_tokens(self):
         """Test that platform timings reference valid tempo tokens."""
         for platform, timing in MOTION_TOKENS.platform_timing.items():
-            assert (
-                timing.recommended_tempo in MOTION_TOKENS.tempo
-            ), f"Platform '{platform}' references invalid tempo '{timing.recommended_tempo}'"
+            assert timing.recommended_tempo in MOTION_TOKENS.tempo, (
+                f"Platform '{platform}' references invalid tempo '{timing.recommended_tempo}'"
+            )
 
     def test_tempo_progression(self):
         """Test that tempos have logical progression."""

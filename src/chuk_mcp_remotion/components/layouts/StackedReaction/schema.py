@@ -13,9 +13,7 @@ class StackedReactionProps(BaseModel):
 
     original_content: Any | None = Field(None, description="Original video/content")
     reaction_content: Any | None = Field(None, description="Reaction video")
-    layout: str | None = Field(
-        "vertical", description="Layout: vertical, horizontal, pip"
-    )
+    layout: str | None = Field("vertical", description="Layout: vertical, horizontal, pip")
     reaction_size: float | None = Field(40, description="Reaction panel size (percentage, 0-100)")
     gap: float | None = Field(20, description="Gap between panels (pixels)")
     padding: float | None = Field(40, description="Padding around layout (pixels)")
@@ -53,7 +51,11 @@ MCP_SCHEMA = {
             "description": "Reaction panel size (percentage, 0-100)",
         },
         "gap": {"type": "number", "default": 20, "description": "Gap between panels (pixels)"},
-        "padding": {"type": "number", "default": 40, "description": "Padding around layout (pixels)"},
+        "padding": {
+            "type": "number",
+            "default": 40,
+            "description": "Padding around layout (pixels)",
+        },
         "start_time": {"type": "float", "required": True, "description": "When to show (seconds)"},
         "duration": {"type": "float", "default": 5.0, "description": "How long to show (seconds)"},
     },

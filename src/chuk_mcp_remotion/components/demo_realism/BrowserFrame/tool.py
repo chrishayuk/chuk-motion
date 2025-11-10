@@ -1,7 +1,8 @@
 """MCP tool registration for BrowserFrame component."""
 
 import json
-from .schema import BrowserFrameProps, MCP_SCHEMA, METADATA
+
+from .schema import METADATA, BrowserFrameProps
 
 
 def register_tool(mcp, project_manager):
@@ -35,14 +36,14 @@ def register_tool(mcp, project_manager):
             startFrame=startFrame,
             durationInFrames=durationInFrames,
             url=url,
-            theme=theme,
+            theme=theme,  # type: ignore[arg-type]
             tabs=tabs_parsed,
             showStatus=showStatus,
             statusText=statusText,
             content=content,
             width=width,
             height=height,
-            position=position,
+            position=position,  # type: ignore[arg-type]
             shadow=shadow,
         )
 

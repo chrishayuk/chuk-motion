@@ -10,10 +10,9 @@ design systems optimized for video content.
 from pydantic import BaseModel, Field
 
 from ..tokens.colors import ColorTheme
-from ..tokens.motion import SpringConfig, EasingConfig, DurationConfig
+from ..tokens.motion import DurationConfig, EasingConfig, SpringConfig
 from ..tokens.spacing import SpacingTokens
 from ..tokens.typography import FontFamily
-
 
 # ============================================================================
 # THEME COMPONENT MODELS
@@ -27,7 +26,8 @@ class ThemeTypography(BaseModel):
     body_font: FontFamily = Field(..., description="Body font for general text")
     code_font: FontFamily = Field(..., description="Monospace font for code")
     default_resolution: str = Field(
-        default="video_1080p", description="Default video resolution (video_1080p, video_4k, video_720p)"
+        default="video_1080p",
+        description="Default video resolution (video_1080p, video_4k, video_720p)",
     )
 
 
@@ -58,7 +58,9 @@ class Theme(BaseModel):
     typography: ThemeTypography = Field(..., description="Typography configuration")
     motion: ThemeMotion = Field(..., description="Motion design configuration")
     spacing: SpacingTokens = Field(..., description="Spacing and layout tokens")
-    use_cases: list[str] = Field(default_factory=list, description="Recommended use cases for this theme")
+    use_cases: list[str] = Field(
+        default_factory=list, description="Recommended use cases for this theme"
+    )
 
     class Config:
         """Pydantic configuration."""
@@ -76,7 +78,8 @@ class ThemeCollection(BaseModel):
     """Collection of themes indexed by key."""
 
     themes: dict[str, Theme] = Field(
-        default_factory=dict, description="Dictionary of themes indexed by key (e.g., 'tech', 'finance')"
+        default_factory=dict,
+        description="Dictionary of themes indexed by key (e.g., 'tech', 'finance')",
     )
 
     def get(self, key: str, default: Theme | None = None) -> Theme | None:

@@ -12,10 +12,10 @@ class PerformanceMultiCamProps(BaseModel):
     """Properties for PerformanceMultiCam component."""
 
     primary_cam: Any | None = Field(None, description="Main camera feed")
-    secondary_cams: list[Any] | None = Field([], description="List of secondary camera feeds (up to 4)")
-    layout: str | None = Field(
-        "primary-main", description="Layout: primary-main, grid, filmstrip"
+    secondary_cams: list[Any] | None = Field(
+        [], description="List of secondary camera feeds (up to 4)"
     )
+    layout: str | None = Field("primary-main", description="Layout: primary-main, grid, filmstrip")
     gap: float | None = Field(20, description="Gap between cameras (pixels)")
     padding: float | None = Field(40, description="Padding (pixels)")
     start_time: float = Field(description="When to show (seconds)")

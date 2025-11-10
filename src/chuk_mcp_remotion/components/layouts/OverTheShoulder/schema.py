@@ -44,7 +44,11 @@ MCP_SCHEMA = {
             "values": ["bottom-left", "bottom-right", "top-left", "top-right"],
             "description": "Overlay position",
         },
-        "overlay_size": {"type": "number", "default": 30, "description": "Overlay size (percentage)"},
+        "overlay_size": {
+            "type": "number",
+            "default": 30,
+            "description": "Overlay size (percentage)",
+        },
         "gap": {"type": "number", "default": 20, "description": "Gap (pixels)"},
         "padding": {"type": "number", "default": 40, "description": "Padding (pixels)"},
         "start_time": {"type": "float", "required": True, "description": "When to show (seconds)"},

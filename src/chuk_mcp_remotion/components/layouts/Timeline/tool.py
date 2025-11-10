@@ -58,7 +58,9 @@ def register_tool(mcp, project_manager):
                 return LayoutComponentResponse(
                     component="Timeline",
                     layout=position,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

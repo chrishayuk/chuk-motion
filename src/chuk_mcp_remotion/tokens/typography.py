@@ -6,7 +6,7 @@ Font scales, weights, and families optimized for video readability.
 All sizes are tested for legibility at 1080p and 4K resolutions.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # Font Family Models
@@ -60,17 +60,16 @@ class FontFamilies(BaseModel):
 class FontSizeScale(BaseModel):
     """Font size scale for a specific resolution."""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     xs: str  # Small captions
     sm: str  # Regular captions
     base: str  # Body text
     lg: str  # Subheadings
     xl: str  # Headings
-    xxl: str = Field(alias="2xl")  # Large headings
-    xxxl: str = Field(alias="3xl")  # Title cards
-    xxxxl: str = Field(alias="4xl")  # Hero titles
-
-    class Config:
-        populate_by_name = True
+    xxl: str = Field(validation_alias="2xl")  # Large headings
+    xxxl: str = Field(validation_alias="3xl")  # Title cards
+    xxxxl: str = Field(validation_alias="4xl")  # Hero titles
 
 
 class FontSizes(BaseModel):

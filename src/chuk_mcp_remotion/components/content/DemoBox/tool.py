@@ -4,7 +4,7 @@
 import asyncio
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
-from chuk_mcp_remotion.models import ErrorResponse, ComponentResponse
+from chuk_mcp_remotion.models import ComponentResponse, ErrorResponse
 
 
 def register_tool(mcp, project_manager):
@@ -42,7 +42,9 @@ def register_tool(mcp, project_manager):
 
                 return ComponentResponse(
                     component="DemoBox",
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

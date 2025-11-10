@@ -1,8 +1,6 @@
 # chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/Mosaic/schema.py
 """Mosaic component schema and Pydantic models."""
 
-from typing import Any
-
 from pydantic import BaseModel, Field
 
 from ...base import ComponentMetadata
@@ -14,9 +12,7 @@ class MosaicProps(BaseModel):
     clips: list[dict] | None = Field(
         [], description="List of clip objects with {content, size, position, z_index}"
     )
-    style: str | None = Field(
-        "hero-corners", description="Style: hero-corners, stacked, spotlight"
-    )
+    style: str | None = Field("hero-corners", description="Style: hero-corners, stacked, spotlight")
     gap: float | None = Field(10, description="Gap between clips (pixels)")
     padding: float | None = Field(40, description="Padding (pixels)")
     start_time: float = Field(description="When to show (seconds)")

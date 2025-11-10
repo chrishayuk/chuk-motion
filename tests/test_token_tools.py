@@ -390,7 +390,10 @@ class TestMotionTokenTools:
         data = json.loads(result)
         assert "youtube_optimizations" in data
         # Check for platform-specific timings
-        assert "tiktok" in data["youtube_optimizations"] or "youtube_shorts" in data["youtube_optimizations"]
+        assert (
+            "tiktok" in data["youtube_optimizations"]
+            or "youtube_shorts" in data["youtube_optimizations"]
+        )
 
 
 class TestTokenImportExportTools:

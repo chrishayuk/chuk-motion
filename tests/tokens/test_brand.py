@@ -3,9 +3,6 @@
 Comprehensive tests for brand pack system.
 """
 
-import pytest
-from pydantic import ValidationError
-
 from chuk_mcp_remotion.tokens.brand import (
     BRAND_PACKS,
     AssetsConfig,
@@ -169,9 +166,7 @@ class TestBrandPacksStructure:
     def test_brand_pack_names_match_keys(self):
         """Test that brand pack names match their dictionary keys."""
         for key, pack in BRAND_PACKS.items():
-            assert (
-                pack.name == key
-            ), f"Brand pack key '{key}' doesn't match name '{pack.name}'"
+            assert pack.name == key, f"Brand pack key '{key}' doesn't match name '{pack.name}'"
 
     def test_all_packs_have_display_names(self):
         """Test all brand packs have display names."""
@@ -188,28 +183,30 @@ class TestBrandPacksStructure:
     def test_all_packs_have_logo_config(self):
         """Test all brand packs have logo configuration."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.logo, LogoConfig
-            ), f"Brand pack '{pack_name}' has invalid logo config"
+            assert isinstance(pack.logo, LogoConfig), (
+                f"Brand pack '{pack_name}' has invalid logo config"
+            )
             assert pack.logo.width > 0
             assert pack.logo.height > 0
 
     def test_all_packs_have_color_palettes(self):
         """Test all brand packs have complete color palettes."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.colors, ColorsConfig
-            ), f"Brand pack '{pack_name}' has invalid colors"
-            assert len(pack.colors.primary) > 0, f"Brand pack '{pack_name}' has empty primary colors"
+            assert isinstance(pack.colors, ColorsConfig), (
+                f"Brand pack '{pack_name}' has invalid colors"
+            )
+            assert len(pack.colors.primary) > 0, (
+                f"Brand pack '{pack_name}' has empty primary colors"
+            )
             assert pack.colors.text, f"Brand pack '{pack_name}' missing text color"
             assert pack.colors.background, f"Brand pack '{pack_name}' missing background color"
 
     def test_all_packs_have_typography(self):
         """Test all brand packs have typography configuration."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.typography, TypographyConfig
-            ), f"Brand pack '{pack_name}' has invalid typography"
+            assert isinstance(pack.typography, TypographyConfig), (
+                f"Brand pack '{pack_name}' has invalid typography"
+            )
             assert len(pack.typography.heading_font.fonts) > 0
             assert len(pack.typography.body_font.fonts) > 0
             assert len(pack.typography.code_font.fonts) > 0
@@ -217,9 +214,9 @@ class TestBrandPacksStructure:
     def test_all_packs_have_motion_config(self):
         """Test all brand packs have motion configuration."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.motion, MotionConfig
-            ), f"Brand pack '{pack_name}' has invalid motion config"
+            assert isinstance(pack.motion, MotionConfig), (
+                f"Brand pack '{pack_name}' has invalid motion config"
+            )
             assert pack.motion.default_spring
             assert pack.motion.default_easing
             assert pack.motion.default_tempo
@@ -227,9 +224,9 @@ class TestBrandPacksStructure:
     def test_all_packs_have_cta_style(self):
         """Test all brand packs have CTA style configuration."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.cta_style, CTAStyleConfig
-            ), f"Brand pack '{pack_name}' has invalid CTA style"
+            assert isinstance(pack.cta_style, CTAStyleConfig), (
+                f"Brand pack '{pack_name}' has invalid CTA style"
+            )
             assert pack.cta_style.variant
             assert pack.cta_style.position
             assert pack.cta_style.animation
@@ -237,9 +234,9 @@ class TestBrandPacksStructure:
     def test_all_packs_have_platform_preferences(self):
         """Test all brand packs have platform preferences."""
         for pack_name, pack in BRAND_PACKS.items():
-            assert isinstance(
-                pack.platform_preferences, PlatformPreferencesConfig
-            ), f"Brand pack '{pack_name}' has invalid platform preferences"
+            assert isinstance(pack.platform_preferences, PlatformPreferencesConfig), (
+                f"Brand pack '{pack_name}' has invalid platform preferences"
+            )
 
 
 class TestBrandPackDifferences:
@@ -260,7 +257,9 @@ class TestBrandPackDifferences:
         creator = BRAND_PACKS["creator"]
 
         # Creator should have vibrant colors (orange, pink, purple range)
-        assert any("#f" in color.lower() or "#e" in color.lower() for color in creator.colors.primary)
+        assert any(
+            "#f" in color.lower() or "#e" in color.lower() for color in creator.colors.primary
+        )
 
     def test_enterprise_has_conservative_motion(self):
         """Test enterprise brand has conservative motion settings."""
@@ -387,7 +386,7 @@ class TestBrandPackConsistency:
 
     def test_all_font_families_have_fallbacks(self):
         """Test all font families have system fallbacks."""
-        for pack_name, pack in BRAND_PACKS.items():
+        for _pack_name, pack in BRAND_PACKS.items():
             assert pack.typography.heading_font.fallback in ["sans-serif", "serif", "monospace"]
             assert pack.typography.body_font.fallback in ["sans-serif", "serif", "monospace"]
             assert pack.typography.code_font.fallback == "monospace"

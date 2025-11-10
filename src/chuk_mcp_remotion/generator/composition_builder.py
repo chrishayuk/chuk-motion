@@ -1596,7 +1596,13 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 "OverTheShoulder": ["screen_content", "shoulder_overlay"],
                 "DialogueFrame": ["left_speaker", "center_content", "right_speaker"],
                 "StackedReaction": ["original_content", "reaction_content"],
-                "HUDStyle": ["main_content", "top_left", "top_right", "bottom_left", "bottom_right"],
+                "HUDStyle": [
+                    "main_content",
+                    "top_left",
+                    "top_right",
+                    "bottom_left",
+                    "bottom_right",
+                ],
                 "PerformanceMultiCam": ["primary_cam", "secondary_cams"],
                 "FocusStrip": ["main_content", "focus_content"],
                 "ThreeColumnLayout": ["left", "center", "right"],
@@ -1651,13 +1657,14 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 
     def _serialize_value(self, value: Any) -> Any:
         """Recursively serialize values to JSON-compatible types."""
+        from dataclasses import asdict, is_dataclass
+
         from pydantic import BaseModel
-        from dataclasses import is_dataclass, asdict
 
         if isinstance(value, BaseModel):
             # Recursively serialize Pydantic models using model_dump
             try:
-                dumped = value.model_dump(mode='python')
+                dumped = value.model_dump(mode="python")
                 # Recursively process the dumped dict in case it contains more BaseModels
                 return self._serialize_value(dumped)
             except Exception as e:
@@ -1695,12 +1702,12 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             return "{" + str(value).lower() + "}"
         elif isinstance(value, (int, float)):
             return "{" + str(value) + "}"
-        elif isinstance(value, (dict, list)) or hasattr(value, 'model_dump'):
+        elif isinstance(value, (dict, list)) or hasattr(value, "model_dump"):
             # Serialize complex types (dicts, lists, Pydantic models)
             serialized = self._serialize_value(value)
             try:
                 return "{" + json.dumps(serialized) + "}"
-            except TypeError as e:
+            except TypeError:
                 # Debug: print what failed
                 print(f"DEBUG: Failed to serialize value of type {type(value)}")
                 print(f"DEBUG: Serialized type: {type(serialized)}")

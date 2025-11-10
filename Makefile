@@ -1,5 +1,5 @@
 .PHONY: help install dev clean test test-fast test-unit test-integration test-watch coverage
-.PHONY: lint format format-check typecheck quality security audit
+.PHONY: lint format format-check typecheck quality check security audit
 .PHONY: docs serve-docs examples build publish-test publish
 .PHONY: serve debug watch update-deps check-deps freeze ci pre-commit
 
@@ -105,6 +105,9 @@ typecheck: ## Run type checking with mypy
 
 quality: lint format-check typecheck ## Run all quality checks
 	@echo "$(GREEN)✓ All quality checks passed$(NC)"
+
+check: lint typecheck test ## Run all checks (lint, typecheck, test)
+	@echo "$(GREEN)✓ All checks passed$(NC)"
 
 ##@ Security
 

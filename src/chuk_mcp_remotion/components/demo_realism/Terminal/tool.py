@@ -1,7 +1,8 @@
 """MCP tool registration for Terminal component."""
 
 import json
-from .schema import TerminalProps, MCP_SCHEMA, METADATA
+
+from .schema import METADATA, TerminalProps
 
 
 def register_tool(mcp, project_manager):
@@ -33,13 +34,13 @@ def register_tool(mcp, project_manager):
             startFrame=startFrame,
             durationInFrames=durationInFrames,
             commands=commands_parsed,
-            prompt=prompt,
+            prompt=prompt,  # type: ignore[arg-type]
             customPrompt=customPrompt,
             title=title,
-            theme=theme,
+            theme=theme,  # type: ignore[arg-type]
             width=width,
             height=height,
-            position=position,
+            position=position,  # type: ignore[arg-type]
             showCursor=showCursor,
             typeSpeed=typeSpeed,
         )

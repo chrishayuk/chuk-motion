@@ -14,15 +14,17 @@ Critical for consistent, platform-optimized motion design across components.
 """
 
 from typing import Any
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 # ============================================================================
 # PYDANTIC MODELS
 # ============================================================================
 
+
 class DurationConfig(BaseModel):
     """Duration configuration with multiple time representations."""
+
     ms: int = Field(..., description="Duration in milliseconds")
     frames_30fps: int = Field(..., description="Duration in frames at 30 FPS")
     frames_60fps: int = Field(..., description="Duration in frames at 60 FPS")
@@ -33,6 +35,7 @@ class DurationConfig(BaseModel):
 
 class EasingConfig(BaseModel):
     """Easing curve configuration."""
+
     curve: list[float] = Field(..., description="Cubic bezier curve [x1, y1, x2, y2]")
     css: str = Field(..., description="CSS-compatible easing function")
     description: str = Field(..., description="Human-readable description")
@@ -41,6 +44,7 @@ class EasingConfig(BaseModel):
 
 class RemotionSpringConfig(BaseModel):
     """Remotion spring physics configuration."""
+
     damping: float = Field(..., description="Damping coefficient")
     mass: float = Field(..., description="Mass of the spring")
     stiffness: float = Field(..., description="Stiffness of the spring")
@@ -49,6 +53,7 @@ class RemotionSpringConfig(BaseModel):
 
 class SpringConfig(BaseModel):
     """Spring animation configuration."""
+
     config: RemotionSpringConfig = Field(..., description="Remotion spring config")
     description: str = Field(..., description="Human-readable description")
     feel: str = Field(..., description="How the animation feels")
@@ -57,6 +62,7 @@ class SpringConfig(BaseModel):
 
 class TransitionProperties(BaseModel):
     """Properties for a transition animation."""
+
     from_value: Any = Field(..., alias="from", description="Starting value")
     to: Any = Field(..., description="Ending value")
 
@@ -66,6 +72,7 @@ class TransitionProperties(BaseModel):
 
 class EnterTransition(BaseModel):
     """Enter transition configuration."""
+
     properties: dict[str, TransitionProperties] = Field(..., description="Animated properties")
     description: str = Field(..., description="Human-readable description")
     usage: str = Field(..., description="When to use this transition")
@@ -75,6 +82,7 @@ class EnterTransition(BaseModel):
 
 class ExitTransition(BaseModel):
     """Exit transition configuration."""
+
     properties: dict[str, TransitionProperties] = Field(..., description="Animated properties")
     description: str = Field(..., description="Human-readable description")
     usage: str = Field(..., description="When to use this transition")
@@ -84,6 +92,7 @@ class ExitTransition(BaseModel):
 
 class TempoConfig(BaseModel):
     """Tempo/rhythm configuration for narrative pacing."""
+
     beat_duration: float = Field(..., description="Duration of one 'beat' in seconds")
     frames_30fps: int = Field(..., description="Frames per beat at 30 FPS")
     frames_60fps: int = Field(..., description="Frames per beat at 60 FPS")
@@ -97,13 +106,15 @@ class TempoConfig(BaseModel):
 
 class CTATiming(BaseModel):
     """Call-to-action timing configuration."""
+
     first_cta: float = Field(..., description="Time for first CTA in seconds")
     final_cta: float = Field(..., description="Time for final CTA (negative = from end)")
-    mid_roll_cta: float | None = Field(None, description="Optional mid-roll CTA timing")
+    mid_roll_cta: float | None = Field(default=None, description="Optional mid-roll CTA timing")
 
 
 class PlatformTimingConfig(BaseModel):
     """Platform-specific timing configuration."""
+
     hook_duration: float = Field(..., description="Duration of opening hook in seconds")
     scene_change_interval: float = Field(..., description="Average scene change interval")
     caption_display_duration: float = Field(..., description="Recommended caption duration")
@@ -115,6 +126,7 @@ class PlatformTimingConfig(BaseModel):
 
 class MotionTokens(BaseModel):
     """Complete motion token system."""
+
     duration: dict[str, DurationConfig]
     easing: dict[str, EasingConfig]
     spring_configs: dict[str, SpringConfig]
@@ -298,43 +310,57 @@ MOTION_TOKENS = MotionTokens(
     # ============================================================================
     spring_configs={
         "gentle": SpringConfig(
-            config=RemotionSpringConfig(damping=100, mass=1.0, stiffness=100, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=100, mass=1.0, stiffness=100, overshootClamping=False
+            ),
             description="Smooth, gradual spring with minimal overshoot",
             feel="Calm, refined, elegant",
             usage="Subtle UI transitions, professional content",
         ),
         "smooth": SpringConfig(
-            config=RemotionSpringConfig(damping=50, mass=1.0, stiffness=120, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=50, mass=1.0, stiffness=120, overshootClamping=False
+            ),
             description="Balanced spring animation (default)",
             feel="Natural, pleasant, general-purpose",
             usage="Most transitions, default choice",
         ),
         "bouncy": SpringConfig(
-            config=RemotionSpringConfig(damping=30, mass=1.0, stiffness=150, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=30, mass=1.0, stiffness=150, overshootClamping=False
+            ),
             description="Playful spring with noticeable bounce",
             feel="Fun, energetic, playful",
             usage="Playful UI, creator content, emphasizing actions",
         ),
         "snappy": SpringConfig(
-            config=RemotionSpringConfig(damping=80, mass=0.5, stiffness=200, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=80, mass=0.5, stiffness=200, overshootClamping=False
+            ),
             description="Quick, responsive spring",
             feel="Fast, responsive, modern",
             usage="UI responses, button presses, snappy interactions",
         ),
         "wobbly": SpringConfig(
-            config=RemotionSpringConfig(damping=20, mass=1.2, stiffness=100, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=20, mass=1.2, stiffness=100, overshootClamping=False
+            ),
             description="Exaggerated wobble spring",
             feel="Cartoonish, attention-grabbing, silly",
             usage="Comedic emphasis, playful reveals",
         ),
         "stiff": SpringConfig(
-            config=RemotionSpringConfig(damping=150, mass=1.0, stiffness=300, overshootClamping=True),
+            config=RemotionSpringConfig(
+                damping=150, mass=1.0, stiffness=300, overshootClamping=True
+            ),
             description="Very stiff, minimal bounce",
             feel="Precise, controlled, mechanical",
             usage="Precise UI movements, technical content",
         ),
         "explosive": SpringConfig(
-            config=RemotionSpringConfig(damping=10, mass=0.8, stiffness=250, overshootClamping=False),
+            config=RemotionSpringConfig(
+                damping=10, mass=0.8, stiffness=250, overshootClamping=False
+            ),
             description="Dramatic, high-energy spring",
             feel="Explosive, dramatic, intense",
             usage="Hero moments, dramatic reveals, climactic scenes",
@@ -672,6 +698,7 @@ MOTION_TOKENS = MotionTokens(
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
+
 
 def get_duration(name: str) -> DurationConfig:
     """Get a duration config by name, fallback to 'normal' if not found."""

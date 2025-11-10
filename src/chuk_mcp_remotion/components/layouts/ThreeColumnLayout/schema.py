@@ -14,15 +14,9 @@ class ThreeColumnLayoutProps(BaseModel):
     left: Any | None = Field(None, description="Content for left column")
     center: Any | None = Field(None, description="Content for center column")
     right: Any | None = Field(None, description="Content for right column")
-    left_width: float | None = Field(
-        25, description="Left column width (percentage, 0-100)"
-    )
-    center_width: float | None = Field(
-        50, description="Center column width (percentage, 0-100)"
-    )
-    right_width: float | None = Field(
-        25, description="Right column width (percentage, 0-100)"
-    )
+    left_width: float | None = Field(25, description="Left column width (percentage, 0-100)")
+    center_width: float | None = Field(50, description="Center column width (percentage, 0-100)")
+    right_width: float | None = Field(25, description="Right column width (percentage, 0-100)")
     gap: float | None = Field(20, description="Gap between columns (pixels)")
     padding: float | None = Field(40, description="Padding around layout (pixels)")
     start_time: float = Field(description="When to show (seconds)")

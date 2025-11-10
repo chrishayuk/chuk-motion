@@ -45,7 +45,9 @@ def register_tool(mcp, project_manager):
 
         def _add():
             if not project_manager.current_timeline:
-                return ErrorResponse(error="No active project. Create a project first.").model_dump_json()
+                return ErrorResponse(
+                    error="No active project. Create a project first."
+                ).model_dump_json()
 
             try:
                 main_parsed = json.loads(main_content) if main_content else None
@@ -76,7 +78,9 @@ def register_tool(mcp, project_manager):
                 return LayoutComponentResponse(
                     component="FocusStrip",
                     layout=position,
-                    start_time=project_manager.current_timeline.frames_to_seconds(component.start_frame),
+                    start_time=project_manager.current_timeline.frames_to_seconds(
+                        component.start_frame
+                    ),
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

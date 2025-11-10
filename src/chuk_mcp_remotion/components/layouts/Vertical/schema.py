@@ -54,7 +54,11 @@ MCP_SCHEMA = {
             "description": "Top section ratio (percentage, 0-100)",
         },
         "gap": {"type": "number", "default": 20, "description": "Gap between sections (pixels)"},
-        "padding": {"type": "number", "default": 40, "description": "Padding around layout (pixels)"},
+        "padding": {
+            "type": "number",
+            "default": 40,
+            "description": "Padding around layout (pixels)",
+        },
         "start_time": {"type": "float", "required": True, "description": "When to show (seconds)"},
         "duration": {"type": "float", "default": 5.0, "description": "How long to show (seconds)"},
     },

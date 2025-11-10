@@ -77,7 +77,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
 
         def _get():
             if not hasattr(COLOR_TOKENS, theme_name):
-                available_themes = [k for k in COLOR_TOKENS.model_dump().keys()]
+                available_themes = list(COLOR_TOKENS.model_dump().keys())
                 return json.dumps(
                     {
                         "error": f"Theme '{theme_name}' not found",
@@ -85,7 +85,10 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                     }
                 )
 
-            return json.dumps({"theme": theme_name, "colors": getattr(COLOR_TOKENS, theme_name).model_dump()}, indent=2)
+            return json.dumps(
+                {"theme": theme_name, "colors": getattr(COLOR_TOKENS, theme_name).model_dump()},
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -213,7 +216,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
         """
 
         def _get():
-            return json.dumps({"font_families": TYPOGRAPHY_TOKENS.font_families.model_dump()}, indent=2)
+            return json.dumps(
+                {"font_families": TYPOGRAPHY_TOKENS.font_families.model_dump()}, indent=2
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -238,7 +243,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
 
         def _get():
             if not hasattr(TYPOGRAPHY_TOKENS.font_sizes, resolution):
-                available_resolutions = [k for k in TYPOGRAPHY_TOKENS.font_sizes.model_dump().keys()]
+                available_resolutions = list(TYPOGRAPHY_TOKENS.font_sizes.model_dump().keys())
                 return json.dumps(
                     {
                         "error": f"Resolution '{resolution}' not found",
@@ -277,7 +282,7 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
 
         def _get():
             if not hasattr(TYPOGRAPHY_TOKENS.text_styles, style_name):
-                available_styles = [k for k in TYPOGRAPHY_TOKENS.text_styles.model_dump().keys()]
+                available_styles = list(TYPOGRAPHY_TOKENS.text_styles.model_dump().keys())
                 return json.dumps(
                     {
                         "error": f"Style '{style_name}' not found",
@@ -286,7 +291,10 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 )
 
             return json.dumps(
-                {"style_name": style_name, "style": getattr(TYPOGRAPHY_TOKENS.text_styles, style_name).model_dump()},
+                {
+                    "style_name": style_name,
+                    "style": getattr(TYPOGRAPHY_TOKENS.text_styles, style_name).model_dump(),
+                },
                 indent=2,
             )
 
@@ -334,7 +342,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
         """
 
         def _get():
-            return json.dumps({"spring_configs": MOTION_TOKENS.model_dump()["spring_configs"]}, indent=2)
+            return json.dumps(
+                {"spring_configs": MOTION_TOKENS.model_dump()["spring_configs"]}, indent=2
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 
@@ -362,7 +372,9 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 return json.dumps(
                     {
                         "error": f"Spring '{spring_name}' not found",
-                        "available_springs": list(MOTION_TOKENS.model_dump()["spring_configs"].keys()),
+                        "available_springs": list(
+                            MOTION_TOKENS.model_dump()["spring_configs"].keys()
+                        ),
                     }
                 )
 
@@ -426,7 +438,10 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                 )
 
             return json.dumps(
-                {"easing_name": easing_name, "curve": MOTION_TOKENS.model_dump()["easing"][easing_name]},
+                {
+                    "easing_name": easing_name,
+                    "curve": MOTION_TOKENS.model_dump()["easing"][easing_name],
+                },
                 indent=2,
             )
 
@@ -507,7 +522,13 @@ def register_token_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
         """
 
         def _get():
-            return json.dumps({"enter": MOTION_TOKENS.model_dump()["enter"], "exit": MOTION_TOKENS.model_dump()["exit"]}, indent=2)
+            return json.dumps(
+                {
+                    "enter": MOTION_TOKENS.model_dump()["enter"],
+                    "exit": MOTION_TOKENS.model_dump()["exit"],
+                },
+                indent=2,
+            )
 
         return await asyncio.get_event_loop().run_in_executor(None, _get)
 

@@ -235,7 +235,7 @@ class TestCaptionStylesStructure:
 
     def test_all_styles_have_typography(self):
         """Test all styles have typography configuration."""
-        for style_name, style in CAPTION_STYLES.items():
+        for _style_name, style in CAPTION_STYLES.items():
             assert isinstance(style.typography, TypographyConfig)
             assert len(style.typography.font_family) > 0
             assert style.typography.font_size > 0
@@ -250,14 +250,14 @@ class TestCaptionStylesStructure:
 
     def test_all_styles_have_position(self):
         """Test all styles have position configuration."""
-        for style_name, style in CAPTION_STYLES.items():
+        for _style_name, style in CAPTION_STYLES.items():
             assert isinstance(style.position, PositionConfig)
             assert style.position.vertical in ["top", "center", "bottom", "lower_third"]
             assert style.position.horizontal in ["left", "center", "right"]
 
     def test_all_styles_have_animation(self):
         """Test all styles have animation configuration."""
-        for style_name, style in CAPTION_STYLES.items():
+        for _style_name, style in CAPTION_STYLES.items():
             assert isinstance(style.animation, AnimationConfig)
             assert style.animation.enter
             assert style.animation.exit

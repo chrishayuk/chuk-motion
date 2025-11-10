@@ -1,6 +1,6 @@
 """MCP tool registration for BeforeAfterSlider component."""
 
-from .schema import BeforeAfterSliderProps, MCP_SCHEMA, METADATA
+from .schema import METADATA, BeforeAfterSliderProps
 
 
 def register_tool(mcp, project_manager):
@@ -35,17 +35,17 @@ def register_tool(mcp, project_manager):
             afterImage=afterImage,
             beforeLabel=beforeLabel,
             afterLabel=afterLabel,
-            orientation=orientation,
+            orientation=orientation,  # type: ignore[arg-type]
             sliderPosition=sliderPosition,
             animateSlider=animateSlider,
             sliderStartPosition=sliderStartPosition,
             sliderEndPosition=sliderEndPosition,
             showLabels=showLabels,
-            labelPosition=labelPosition,
-            handleStyle=handleStyle,
+            labelPosition=labelPosition,  # type: ignore[arg-type]
+            handleStyle=handleStyle,  # type: ignore[arg-type]
             width=width,
             height=height,
-            position=position,
+            position=position,  # type: ignore[arg-type]
             borderRadius=borderRadius,
         )
 

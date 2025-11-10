@@ -40,7 +40,12 @@ MCP_SCHEMA = {
         "milestones": {"type": "array", "description": "Milestone objects"},
         "current_time": {"type": "number", "default": 0, "description": "Current progress time"},
         "total_duration": {"type": "number", "default": 10, "description": "Total duration"},
-        "position": {"type": "enum", "default": "bottom", "values": ["top", "bottom"], "description": "Position"},
+        "position": {
+            "type": "enum",
+            "default": "bottom",
+            "values": ["top", "bottom"],
+            "description": "Position",
+        },
         "height": {"type": "number", "default": 100, "description": "Timeline height (pixels)"},
         "start_time": {"type": "float", "required": True, "description": "When to show (seconds)"},
         "duration": {"type": "float", "default": 5.0, "description": "How long to show (seconds)"},

@@ -14,15 +14,17 @@ Critical for auto-generated captions that match platform best practices.
 """
 
 from typing import Literal
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 # ============================================================================
 # PYDANTIC MODELS
 # ============================================================================
 
+
 class TypographyConfig(BaseModel):
     """Typography configuration for captions."""
+
     font_family: list[str] = Field(..., description="Font family list with fallbacks")
     font_weight: int = Field(..., description="Font weight (100-900)")
     font_size: int = Field(..., description="Font size in px")
@@ -35,6 +37,7 @@ class TypographyConfig(BaseModel):
 
 class ColorsConfig(BaseModel):
     """Colors configuration for captions."""
+
     text: str = Field(..., description="Text color")
     stroke: str | None = Field(None, description="Text stroke color")
     stroke_width: int = Field(0, description="Stroke width in px")
@@ -43,17 +46,19 @@ class ColorsConfig(BaseModel):
 
 class BackgroundConfig(BaseModel):
     """Background configuration for captions."""
+
     enabled: bool = Field(..., description="Whether background is enabled")
     style: Literal["pill", "box", "none", "gradient"] = Field(..., description="Background style")
     color: str = Field(..., description="Background color or gradient")
     padding: str = Field(..., description="Padding CSS")
     border_radius: str = Field(..., description="Border radius CSS")
     blur: int = Field(0, description="Backdrop blur in px")
-    border: str | None = Field(None, description="Border CSS")
+    border: str | None = Field(default=None, description="Border CSS")
 
 
 class PositionConfig(BaseModel):
     """Position configuration for captions."""
+
     vertical: Literal["top", "center", "bottom", "lower_third"] = Field(
         ..., description="Vertical position"
     )
@@ -63,6 +68,7 @@ class PositionConfig(BaseModel):
 
 class AnimationConfig(BaseModel):
     """Animation configuration for captions."""
+
     enter: str = Field(..., description="Enter animation name")
     exit: str = Field(..., description="Exit animation name")
     enter_duration: float = Field(..., description="Enter duration in seconds")
@@ -72,6 +78,7 @@ class AnimationConfig(BaseModel):
 
 class HighlightConfig(BaseModel):
     """Highlight configuration for captions."""
+
     enabled: bool = Field(..., description="Whether highlighting is enabled")
     trigger: Literal["emphasis", "keywords", "all", "none"] = Field(
         ..., description="What triggers highlighting"
@@ -84,20 +91,33 @@ class HighlightConfig(BaseModel):
 
 class CaptionStyle(BaseModel):
     """Complete caption style configuration."""
+
     name: str = Field(..., description="Style identifier")
     display_name: str = Field(..., description="Human-readable name")
     description: str = Field(..., description="Description of style")
-    display_mode: Literal["word_by_word", "phrase_by_phrase", "line_by_line", "full_sentence"] = Field(
-        ..., description="Caption display mode"
+    display_mode: Literal["word_by_word", "phrase_by_phrase", "line_by_line", "full_sentence"] = (
+        Field(..., description="Caption display mode")
     )
-    words_per_burst: int | None = Field(None, description="Words per burst (for word_by_word)")
-    words_per_phrase: int | None = Field(None, description="Words per phrase (for phrase_by_phrase)")
-    words_per_line: int | None = Field(None, description="Words per line (for line_by_line)")
-    words_per_sentence: int | None = Field(None, description="Words per sentence (for full_sentence)")
-    word_duration: float | None = Field(None, description="Duration per word in seconds")
-    phrase_duration: float | None = Field(None, description="Duration per phrase in seconds")
-    line_duration: float | None = Field(None, description="Duration per line in seconds")
-    sentence_duration: float | None = Field(None, description="Duration per sentence in seconds")
+    words_per_burst: int | None = Field(
+        default=None, description="Words per burst (for word_by_word)"
+    )
+    words_per_phrase: int | None = Field(
+        default=None, description="Words per phrase (for phrase_by_phrase)"
+    )
+    words_per_line: int | None = Field(
+        default=None, description="Words per line (for line_by_line)"
+    )
+    words_per_sentence: int | None = Field(
+        default=None, description="Words per sentence (for full_sentence)"
+    )
+    word_duration: float | None = Field(default=None, description="Duration per word in seconds")
+    phrase_duration: float | None = Field(
+        default=None, description="Duration per phrase in seconds"
+    )
+    line_duration: float | None = Field(default=None, description="Duration per line in seconds")
+    sentence_duration: float | None = Field(
+        default=None, description="Duration per sentence in seconds"
+    )
     gap_duration: float = Field(..., description="Gap between captions in seconds")
     typography: TypographyConfig
     colors: ColorsConfig
@@ -445,6 +465,7 @@ CAPTION_STYLES: dict[str, CaptionStyle] = {
 # ============================================================================
 # CAPTION UTILITIES
 # ============================================================================
+
 
 def get_caption_style(name: str) -> CaptionStyle:
     """Get a caption style by name, fallback to minimal if not found."""

@@ -1,7 +1,8 @@
 """MCP tool registration for CodeDiff component."""
 
 import json
-from .schema import CodeDiffProps, MCP_SCHEMA, METADATA
+
+from .schema import METADATA, CodeDiffProps
 
 
 def register_tool(mcp, project_manager):
@@ -36,17 +37,17 @@ def register_tool(mcp, project_manager):
             startFrame=startFrame,
             durationInFrames=durationInFrames,
             lines=lines_parsed,
-            mode=mode,
+            mode=mode,  # type: ignore[arg-type]
             language=language,
             showLineNumbers=showLineNumbers,
             showHeatmap=showHeatmap,
             title=title,
             leftLabel=leftLabel,
             rightLabel=rightLabel,
-            theme=theme,
+            theme=theme,  # type: ignore[arg-type]
             width=width,
             height=height,
-            position=position,
+            position=position,  # type: ignore[arg-type]
             animateLines=animateLines,
         )
 

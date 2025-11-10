@@ -1,68 +1,51 @@
 """BrowserFrame component schema and metadata."""
 
-from typing import Literal, Optional, List
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
 from chuk_mcp_remotion.components.base import ComponentMetadata
+
 
 class TabConfig(BaseModel):
     """Configuration for a browser tab."""
+
     title: str = Field(default="New Tab", description="Tab title")
     active: bool = Field(default=False, description="Whether this tab is active")
+
 
 class BrowserFrameProps(BaseModel):
     """Props for BrowserFrame component."""
 
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
-    url: str = Field(
-        default="https://example.com",
-        description="URL to display in the address bar"
-    )
+    url: str = Field(default="https://example.com", description="URL to display in the address bar")
     theme: Literal["light", "dark", "chrome", "firefox", "safari", "arc"] = Field(
-        default="chrome",
-        description="Browser theme style"
+        default="chrome", description="Browser theme style"
     )
-    tabs: Optional[List[dict]] = Field(
-        default=None,
-        description="List of tabs to display (each with title and active status)"
+    tabs: list[dict] | None = Field(
+        default=None, description="List of tabs to display (each with title and active status)"
     )
-    showStatus: bool = Field(
-        default=False,
-        description="Show status bar at bottom"
-    )
-    statusText: str = Field(
-        default="",
-        description="Status bar text to display"
-    )
+    showStatus: bool = Field(default=False, description="Show status bar at bottom")
+    statusText: str = Field(default="", description="Status bar text to display")
     content: str = Field(
-        default="",
-        description="Content to display in browser window (image path or text)"
+        default="", description="Content to display in browser window (image path or text)"
     )
-    width: int = Field(
-        default=1200,
-        description="Browser window width in pixels",
-        ge=400,
-        le=1920
-    )
-    height: int = Field(
-        default=800,
-        description="Browser window height in pixels",
-        ge=300,
-        le=1080
-    )
+    width: int = Field(default=1200, description="Browser window width in pixels", ge=400, le=1920)
+    height: int = Field(default=800, description="Browser window height in pixels", ge=300, le=1080)
     position: Literal[
         "center",
-        "top-left", "top-center", "top-right",
-        "center-left", "center-right",
-        "bottom-left", "bottom-center", "bottom-right"
-    ] = Field(
-        default="center",
-        description="Position of browser window on screen"
-    )
-    shadow: bool = Field(
-        default=True,
-        description="Enable window shadow"
-    )
+        "top-left",
+        "top-center",
+        "top-right",
+        "center-left",
+        "center-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+    ] = Field(default="center", description="Position of browser window on screen")
+    shadow: bool = Field(default=True, description="Enable window shadow")
+
 
 METADATA = ComponentMetadata(
     name="BrowserFrame",
@@ -129,9 +112,14 @@ MCP_SCHEMA = {
         "default": "center",
         "enum": [
             "center",
-            "top-left", "top-center", "top-right",
-            "center-left", "center-right",
-            "bottom-left", "bottom-center", "bottom-right"
+            "top-left",
+            "top-center",
+            "top-right",
+            "center-left",
+            "center-right",
+            "bottom-left",
+            "bottom-center",
+            "bottom-right",
         ],
     },
     "shadow": {

@@ -1,95 +1,56 @@
 """BeforeAfterSlider component schema and metadata."""
 
-from typing import Literal, Optional
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
 from chuk_mcp_remotion.components.base import ComponentMetadata
+
 
 class BeforeAfterSliderProps(BaseModel):
     """Props for BeforeAfterSlider component."""
 
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
-    beforeImage: str = Field(
-        ...,
-        description="Path to the 'before' image"
-    )
-    afterImage: str = Field(
-        ...,
-        description="Path to the 'after' image"
-    )
-    beforeLabel: str = Field(
-        default="Before",
-        description="Label for the 'before' state"
-    )
-    afterLabel: str = Field(
-        default="After",
-        description="Label for the 'after' state"
-    )
+    beforeImage: str = Field(..., description="Path to the 'before' image")
+    afterImage: str = Field(..., description="Path to the 'after' image")
+    beforeLabel: str = Field(default="Before", description="Label for the 'before' state")
+    afterLabel: str = Field(default="After", description="Label for the 'after' state")
     orientation: Literal["horizontal", "vertical"] = Field(
-        default="horizontal",
-        description="Slider orientation"
+        default="horizontal", description="Slider orientation"
     )
     sliderPosition: float = Field(
-        default=50.0,
-        description="Initial slider position as percentage (0-100)",
-        ge=0.0,
-        le=100.0
+        default=50.0, description="Initial slider position as percentage (0-100)", ge=0.0, le=100.0
     )
-    animateSlider: bool = Field(
-        default=True,
-        description="Animate slider movement"
-    )
+    animateSlider: bool = Field(default=True, description="Animate slider movement")
     sliderStartPosition: float = Field(
-        default=0.0,
-        description="Starting position for slider animation (0-100)",
-        ge=0.0,
-        le=100.0
+        default=0.0, description="Starting position for slider animation (0-100)", ge=0.0, le=100.0
     )
     sliderEndPosition: float = Field(
-        default=100.0,
-        description="Ending position for slider animation (0-100)",
-        ge=0.0,
-        le=100.0
+        default=100.0, description="Ending position for slider animation (0-100)", ge=0.0, le=100.0
     )
-    showLabels: bool = Field(
-        default=True,
-        description="Show before/after labels"
-    )
+    showLabels: bool = Field(default=True, description="Show before/after labels")
     labelPosition: Literal["top", "bottom", "overlay"] = Field(
-        default="overlay",
-        description="Position of labels"
+        default="overlay", description="Position of labels"
     )
     handleStyle: Literal["default", "arrow", "circle", "bar"] = Field(
-        default="default",
-        description="Style of the slider handle"
+        default="default", description="Style of the slider handle"
     )
-    width: int = Field(
-        default=1200,
-        description="Component width in pixels",
-        ge=400,
-        le=1920
-    )
-    height: int = Field(
-        default=800,
-        description="Component height in pixels",
-        ge=300,
-        le=1080
-    )
+    width: int = Field(default=1200, description="Component width in pixels", ge=400, le=1920)
+    height: int = Field(default=800, description="Component height in pixels", ge=300, le=1080)
     position: Literal[
         "center",
-        "top-left", "top-center", "top-right",
-        "center-left", "center-right",
-        "bottom-left", "bottom-center", "bottom-right"
-    ] = Field(
-        default="center",
-        description="Position on screen"
-    )
-    borderRadius: int = Field(
-        default=12,
-        description="Border radius in pixels",
-        ge=0,
-        le=50
-    )
+        "top-left",
+        "top-center",
+        "top-right",
+        "center-left",
+        "center-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+    ] = Field(default="center", description="Position on screen")
+    borderRadius: int = Field(default=12, description="Border radius in pixels", ge=0, le=50)
+
 
 METADATA = ComponentMetadata(
     name="BeforeAfterSlider",
@@ -188,9 +149,14 @@ MCP_SCHEMA = {
         "default": "center",
         "enum": [
             "center",
-            "top-left", "top-center", "top-right",
-            "center-left", "center-right",
-            "bottom-left", "bottom-center", "bottom-right"
+            "top-left",
+            "top-center",
+            "top-right",
+            "center-left",
+            "center-right",
+            "bottom-left",
+            "bottom-center",
+            "bottom-right",
         ],
     },
     "borderRadius": {

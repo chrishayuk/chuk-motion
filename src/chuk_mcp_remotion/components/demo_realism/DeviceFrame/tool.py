@@ -1,6 +1,6 @@
 """MCP tool registration for DeviceFrame component."""
 
-from .schema import DeviceFrameProps, MCP_SCHEMA, METADATA
+from .schema import METADATA, DeviceFrameProps
 
 
 def register_tool(mcp, project_manager):
@@ -22,13 +22,13 @@ def register_tool(mcp, project_manager):
         props = DeviceFrameProps(
             startFrame=startFrame,
             durationInFrames=durationInFrames,
-            device=device,
+            device=device,  # type: ignore[arg-type]
             content=content,
-            orientation=orientation,
+            orientation=orientation,  # type: ignore[arg-type]
             scale=scale,
             glare=glare,
             shadow=shadow,
-            position=position,
+            position=position,  # type: ignore[arg-type]
         )
 
         project = project_manager.get_active_project()

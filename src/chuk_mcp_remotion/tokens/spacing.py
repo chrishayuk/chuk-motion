@@ -13,16 +13,18 @@ Comprehensive spacing system including:
 Critical for multi-platform video generation where UI overlays vary.
 """
 
-from typing import Any, Literal
-from pydantic import BaseModel, Field
+from typing import Literal
 
+from pydantic import BaseModel, Field
 
 # ============================================================================
 # PYDANTIC MODELS
 # ============================================================================
 
+
 class CriticalZone(BaseModel):
     """Critical zone configuration for platform overlays."""
+
     top: int | None = None
     bottom: int | None = None
     left: int | None = None
@@ -33,22 +35,24 @@ class CriticalZone(BaseModel):
 
 class SafeAreaConfig(BaseModel):
     """Safe area configuration for a platform."""
+
     top: int = Field(..., description="Top safe area padding in pixels")
     bottom: int = Field(..., description="Bottom safe area padding in pixels")
     left: int = Field(..., description="Left safe area padding in pixels")
     right: int = Field(..., description="Right safe area padding in pixels")
     critical_zones: dict[str, CriticalZone] | None = Field(
-        None, description="Platform-specific critical zones"
+        default=None, description="Platform-specific critical zones"
     )
     description: str = Field(..., description="Description of safe area")
     aspect_ratio: str = Field(..., description="Recommended aspect ratio")
-    usage: str | None = Field(None, description="Usage recommendations")
-    ui_overlays: list[str] | None = Field(None, description="Platform UI overlays")
-    notes: str | None = Field(None, description="Additional notes")
+    usage: str | None = Field(default=None, description="Usage recommendations")
+    ui_overlays: list[str] | None = Field(default=None, description="Platform UI overlays")
+    notes: str | None = Field(default=None, description="Additional notes")
 
 
 class AttentionZone(BaseModel):
     """Attention zone configuration."""
+
     description: str
     horizontal_start: str | None = None
     horizontal_end: str | None = None
@@ -62,6 +66,7 @@ class AttentionZone(BaseModel):
 
 class LayoutModeCharacteristics(BaseModel):
     """Characteristics of a layout mode."""
+
     spacing_multiplier: float
     font_size_multiplier: float
     content_density: Literal["very_low", "low", "medium", "high", "very_high"]
@@ -71,6 +76,7 @@ class LayoutModeCharacteristics(BaseModel):
 
 class LayoutModeConfig(BaseModel):
     """Layout mode configuration."""
+
     name: str
     description: str
     characteristics: LayoutModeCharacteristics
@@ -81,6 +87,7 @@ class LayoutModeConfig(BaseModel):
 
 class SpacingTokens(BaseModel):
     """Complete spacing token system."""
+
     spacing: dict[str, str]
     safe_area: dict[str, SafeAreaConfig]
     attention_zone: dict[str, AttentionZone]
@@ -439,6 +446,7 @@ SPACING_TOKENS = SpacingTokens(
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
+
 
 def get_safe_area(platform: str) -> SafeAreaConfig:
     """Get safe area config by platform, fallback to 'desktop' if not found."""

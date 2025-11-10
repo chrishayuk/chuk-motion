@@ -1,8 +1,11 @@
 """DeviceFrame component schema and metadata."""
 
-from typing import Literal, Optional
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
 from chuk_mcp_remotion.components.base import ComponentMetadata
+
 
 class DeviceFrameProps(BaseModel):
     """Props for DeviceFrame component."""
@@ -10,40 +13,32 @@ class DeviceFrameProps(BaseModel):
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
     device: Literal["phone", "tablet", "laptop"] = Field(
-        default="phone",
-        description="Type of device frame to display"
+        default="phone", description="Type of device frame to display"
     )
     content: str = Field(
         default="",
-        description="Content to display inside the device (can be image path or component)"
+        description="Content to display inside the device (can be image path or component)",
     )
     orientation: Literal["portrait", "landscape"] = Field(
-        default="portrait",
-        description="Device orientation"
+        default="portrait", description="Device orientation"
     )
     scale: float = Field(
-        default=1.0,
-        description="Auto-scale factor for the device (0.1 to 2.0)",
-        ge=0.1,
-        le=2.0
+        default=1.0, description="Auto-scale factor for the device (0.1 to 2.0)", ge=0.1, le=2.0
     )
-    glare: bool = Field(
-        default=True,
-        description="Enable realistic screen glare effect"
-    )
-    shadow: bool = Field(
-        default=True,
-        description="Enable device shadow"
-    )
+    glare: bool = Field(default=True, description="Enable realistic screen glare effect")
+    shadow: bool = Field(default=True, description="Enable device shadow")
     position: Literal[
         "center",
-        "top-left", "top-center", "top-right",
-        "center-left", "center-right",
-        "bottom-left", "bottom-center", "bottom-right"
-    ] = Field(
-        default="center",
-        description="Position of device on screen"
-    )
+        "top-left",
+        "top-center",
+        "top-right",
+        "center-left",
+        "center-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+    ] = Field(default="center", description="Position of device on screen")
+
 
 METADATA = ComponentMetadata(
     name="DeviceFrame",
@@ -101,9 +96,14 @@ MCP_SCHEMA = {
         "default": "center",
         "enum": [
             "center",
-            "top-left", "top-center", "top-right",
-            "center-left", "center-right",
-            "bottom-left", "bottom-center", "bottom-right"
+            "top-left",
+            "top-center",
+            "top-right",
+            "center-left",
+            "center-right",
+            "bottom-left",
+            "bottom-center",
+            "bottom-right",
         ],
     },
 }

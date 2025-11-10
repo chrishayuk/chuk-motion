@@ -116,6 +116,7 @@ class ComponentBuilder:
         """
         # Get theme (now returns a Pydantic Theme model)
         theme = YOUTUBE_THEMES.get(theme_name, YOUTUBE_THEMES["tech"])
+        assert theme is not None, f"Theme '{theme_name}' not found"
 
         # Find and get template
         try:
@@ -211,6 +212,7 @@ class ComponentBuilder:
             JavaScript object with theme styles
         """
         theme = YOUTUBE_THEMES.get(theme_name, YOUTUBE_THEMES["tech"])
+        assert theme is not None, f"Theme '{theme_name}' not found"
         colors = theme.colors
 
         styles = {

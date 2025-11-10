@@ -17,9 +17,7 @@ class PiPProps(BaseModel):
         "bottom-right",
         description="Overlay position: bottom-right, bottom-left, top-right, top-left",
     )
-    overlay_size: float | None = Field(
-        20, description="Overlay size (percentage of screen, 0-100)"
-    )
+    overlay_size: float | None = Field(20, description="Overlay size (percentage of screen, 0-100)")
     margin: float | None = Field(40, description="Margin from edges (pixels)")
     start_time: float = Field(description="When to show (seconds)")
     duration: float | None = Field(5.0, description="How long to show (seconds)")

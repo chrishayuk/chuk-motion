@@ -5,11 +5,11 @@ YouTube-optimized themes combining color, typography, and motion tokens.
 Each theme is a complete design system ready for video production.
 """
 
-from .models import Theme, ThemeCollection, ThemeTypography, ThemeMotion
 from ..tokens.colors import COLOR_TOKENS
 from ..tokens.motion import MOTION_TOKENS
 from ..tokens.spacing import SPACING_TOKENS
 from ..tokens.typography import TYPOGRAPHY_TOKENS
+from .models import Theme, ThemeCollection, ThemeMotion, ThemeTypography
 
 # ============================================================================
 # YOUTUBE THEME COLLECTION (Pydantic Models)

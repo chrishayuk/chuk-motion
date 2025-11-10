@@ -151,7 +151,7 @@ class TokenManager:
 
         value = getattr(TYPOGRAPHY_TOKENS, category)
         # Convert Pydantic model to dict for consistent access
-        if hasattr(value, 'model_dump'):
+        if hasattr(value, "model_dump"):
             value_dict = value.model_dump()
             if key:
                 return value_dict.get(key)

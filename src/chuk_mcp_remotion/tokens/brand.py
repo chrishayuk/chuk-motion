@@ -14,15 +14,17 @@ This allows MCP servers to load brand packs dynamically per client.
 """
 
 from typing import Any
-from pydantic import BaseModel, Field
 
+from pydantic import BaseModel, Field
 
 # ============================================================================
 # PYDANTIC MODELS
 # ============================================================================
 
+
 class LogoConfig(BaseModel):
     """Logo configuration."""
+
     url: str | None = Field(None, description="Logo asset URL or path")
     width: int = Field(..., description="Logo width in px")
     height: int = Field(..., description="Logo height in px")
@@ -32,6 +34,7 @@ class LogoConfig(BaseModel):
 
 class ColorsConfig(BaseModel):
     """Color palette configuration."""
+
     primary: list[str] = Field(..., description="Gradient steps for primary color")
     secondary: list[str] = Field(..., description="Secondary color gradient")
     accent: list[str] = Field(..., description="Accent color gradient")
@@ -44,12 +47,14 @@ class ColorsConfig(BaseModel):
 
 class FontConfig(BaseModel):
     """Font configuration."""
+
     fonts: list[str] = Field(..., description="Font family list")
     fallback: str = Field(..., description="Fallback font family")
 
 
 class TypographyConfig(BaseModel):
     """Typography configuration."""
+
     heading_font: FontConfig
     body_font: FontConfig
     code_font: FontConfig
@@ -60,6 +65,7 @@ class TypographyConfig(BaseModel):
 
 class MotionConfig(BaseModel):
     """Motion overrides configuration."""
+
     default_spring: str = Field(..., description="Default spring preset name")
     default_easing: str = Field(..., description="Default easing preset name")
     default_tempo: str = Field(..., description="Default tempo preset name")
@@ -67,6 +73,7 @@ class MotionConfig(BaseModel):
 
 class AssetsConfig(BaseModel):
     """Brand assets configuration."""
+
     intro_bumper: str | None = Field(None, description="Path to intro video/animation")
     outro_bumper: str | None = Field(None, description="Path to outro video/animation")
     watermark: str | None = Field(None, description="Path to watermark image")
@@ -75,6 +82,7 @@ class AssetsConfig(BaseModel):
 
 class CTAStyleConfig(BaseModel):
     """Call-to-action style configuration."""
+
     variant: str = Field(..., description="CTA variant (minimal, bold, gradient, neon)")
     position: str = Field(..., description="Default CTA position")
     animation: str = Field(..., description="Enter animation for CTAs")
@@ -82,13 +90,21 @@ class CTAStyleConfig(BaseModel):
 
 class PlatformPreferencesConfig(BaseModel):
     """Platform preferences configuration."""
-    default_platform: str = Field(..., description="Default platform (youtube_long_form, linkedin, etc.)")
-    safe_area_mode: str = Field(..., description="Safe area mode (conservative, standard, aggressive)")
-    layout_mode: str = Field(..., description="Layout mode (presentation, feed_grab, mobile_readable)")
+
+    default_platform: str = Field(
+        ..., description="Default platform (youtube_long_form, linkedin, etc.)"
+    )
+    safe_area_mode: str = Field(
+        ..., description="Safe area mode (conservative, standard, aggressive)"
+    )
+    layout_mode: str = Field(
+        ..., description="Layout mode (presentation, feed_grab, mobile_readable)"
+    )
 
 
 class BrandPack(BaseModel):
     """Complete brand pack configuration."""
+
     name: str = Field(..., description="Brand pack identifier")
     display_name: str = Field(..., description="Human-readable name")
     description: str = Field(..., description="Description of brand")
@@ -433,6 +449,7 @@ BRAND_PACKS: dict[str, BrandPack] = {
 # BRAND PACK UTILITIES
 # ============================================================================
 
+
 def get_brand_pack(name: str) -> BrandPack:
     """Get a brand pack by name, fallback to default if not found."""
     return BRAND_PACKS.get(name, BRAND_PACKS["default"])
@@ -441,6 +458,7 @@ def get_brand_pack(name: str) -> BrandPack:
 def merge_brand_pack(base: str, overrides: dict[str, Any]) -> BrandPack:
     """Merge custom overrides into a base brand pack."""
     import copy
+
     base_pack = copy.deepcopy(get_brand_pack(base))
 
     # Convert to dict, merge, then back to Pydantic model

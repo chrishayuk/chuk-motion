@@ -1,90 +1,63 @@
 """CodeDiff component schema and metadata."""
 
-from typing import Literal, Optional, List
+from typing import Literal
+
 from pydantic import BaseModel, Field
+
 from chuk_mcp_remotion.components.base import ComponentMetadata
+
 
 class DiffLine(BaseModel):
     """Configuration for a diff line."""
+
     content: str = Field(..., description="Line content")
     type: Literal["added", "removed", "unchanged", "context"] = Field(
-        ...,
-        description="Type of change"
+        ..., description="Type of change"
     )
-    lineNumber: Optional[int] = Field(None, description="Line number")
-    heatLevel: Optional[int] = Field(
-        None,
-        description="Heat level for heatmap (0-100, higher = more changes)",
-        ge=0,
-        le=100
+    lineNumber: int | None = Field(None, description="Line number")
+    heatLevel: int | None = Field(
+        None, description="Heat level for heatmap (0-100, higher = more changes)", ge=0, le=100
     )
+
 
 class CodeDiffProps(BaseModel):
     """Props for CodeDiff component."""
 
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
-    lines: List[dict] = Field(
+    lines: list[dict] = Field(
         default=[],
-        description="List of diff lines (each with content, type, lineNumber, heatLevel)"
+        description="List of diff lines (each with content, type, lineNumber, heatLevel)",
     )
     mode: Literal["unified", "split"] = Field(
-        default="unified",
-        description="Diff display mode: unified or split (side-by-side)"
+        default="unified", description="Diff display mode: unified or split (side-by-side)"
     )
     language: str = Field(
-        default="typescript",
-        description="Programming language for syntax highlighting"
+        default="typescript", description="Programming language for syntax highlighting"
     )
-    showLineNumbers: bool = Field(
-        default=True,
-        description="Show line numbers"
-    )
-    showHeatmap: bool = Field(
-        default=False,
-        description="Show heatmap visualization of changes"
-    )
-    title: str = Field(
-        default="Code Comparison",
-        description="Title for the diff viewer"
-    )
-    leftLabel: str = Field(
-        default="Before",
-        description="Label for left side (in split mode)"
-    )
-    rightLabel: str = Field(
-        default="After",
-        description="Label for right side (in split mode)"
-    )
+    showLineNumbers: bool = Field(default=True, description="Show line numbers")
+    showHeatmap: bool = Field(default=False, description="Show heatmap visualization of changes")
+    title: str = Field(default="Code Comparison", description="Title for the diff viewer")
+    leftLabel: str = Field(default="Before", description="Label for left side (in split mode)")
+    rightLabel: str = Field(default="After", description="Label for right side (in split mode)")
     theme: Literal["dark", "light", "github", "monokai"] = Field(
-        default="dark",
-        description="Color theme for the diff viewer"
+        default="dark", description="Color theme for the diff viewer"
     )
-    width: int = Field(
-        default=1400,
-        description="Diff viewer width in pixels",
-        ge=600,
-        le=1920
-    )
-    height: int = Field(
-        default=800,
-        description="Diff viewer height in pixels",
-        ge=400,
-        le=1080
-    )
+    width: int = Field(default=1400, description="Diff viewer width in pixels", ge=600, le=1920)
+    height: int = Field(default=800, description="Diff viewer height in pixels", ge=400, le=1080)
     position: Literal[
         "center",
-        "top-left", "top-center", "top-right",
-        "center-left", "center-right",
-        "bottom-left", "bottom-center", "bottom-right"
-    ] = Field(
-        default="center",
-        description="Position of diff viewer on screen"
-    )
-    animateLines: bool = Field(
-        default=True,
-        description="Animate lines appearing one by one"
-    )
+        "top-left",
+        "top-center",
+        "top-right",
+        "center-left",
+        "center-right",
+        "bottom-left",
+        "bottom-center",
+        "bottom-right",
+    ] = Field(default="center", description="Position of diff viewer on screen")
+    animateLines: bool = Field(default=True, description="Animate lines appearing one by one")
+
 
 METADATA = ComponentMetadata(
     name="CodeDiff",
@@ -167,9 +140,14 @@ MCP_SCHEMA = {
         "default": "center",
         "enum": [
             "center",
-            "top-left", "top-center", "top-right",
-            "center-left", "center-right",
-            "bottom-left", "bottom-center", "bottom-right"
+            "top-left",
+            "top-center",
+            "top-right",
+            "center-left",
+            "center-right",
+            "bottom-left",
+            "bottom-center",
+            "bottom-right",
         ],
     },
     "animateLines": {

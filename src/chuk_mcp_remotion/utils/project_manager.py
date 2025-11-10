@@ -166,7 +166,11 @@ class ProjectManager:
 
         # Support both Timeline and CompositionBuilder
         # Prefer CompositionBuilder if it exists and has components
-        if self.current_composition and hasattr(self.current_composition, 'components') and self.current_composition.components:
+        if (
+            self.current_composition
+            and hasattr(self.current_composition, "components")
+            and self.current_composition.components
+        ):
             builder = self.current_composition
         elif self.current_timeline:
             builder = self.current_timeline
@@ -178,20 +182,20 @@ class ProjectManager:
         fps = builder.fps
         width = builder.width
         height = builder.height
-        theme = getattr(builder, 'theme', 'tech')
+        theme = getattr(builder, "theme", "tech")
 
         project_dir = self.workspace_dir / self.current_project
         components_dir = project_dir / "src" / "components"
 
         # Generate component TSX files for all unique component types
         # Handle both Timeline (tracks-based) and CompositionBuilder (components list)
-        if hasattr(builder, 'get_all_components'):
+        if hasattr(builder, "get_all_components"):
             # Timeline has get_all_components() method
             all_components = builder.get_all_components()
             component_types = {c.component_type for c in all_components}
-        elif hasattr(builder, 'components'):
+        elif hasattr(builder, "components"):
             # CompositionBuilder has components attribute
-            component_types = builder._find_all_component_types(builder.components)
+            component_types = builder._find_all_component_types(builder.components)  # type: ignore[attr-defined]
         else:
             component_types = set()
 
@@ -374,10 +378,7 @@ class ProjectManager:
                 orientation = scene.get("config", {}).get("orientation", "horizontal")
 
                 # Map children to left/right or top/bottom based on orientation
-                if orientation == "horizontal":
-                    keys = ["left", "right"]
-                else:
-                    keys = ["top", "bottom"]
+                keys = ["left", "right"] if orientation == "horizontal" else ["top", "bottom"]
 
                 for i, key in enumerate(keys):
                     if i < len(children):
@@ -392,7 +393,9 @@ class ProjectManager:
                                 layer=5,
                             )
                             component_instance.props[key] = child_instance
-                            self._process_nested_children(child, child_instance, component_types_needed)
+                            self._process_nested_children(
+                                child, child_instance, component_types_needed
+                            )
 
         # Grid and Container children (array or single)
         elif "children" in scene:
@@ -515,7 +518,9 @@ class ProjectManager:
                                 layer=5,
                             )
                             child_instances.append(child_inst)
-                            self._process_nested_children(child_item, child_inst, component_types_needed)
+                            self._process_nested_children(
+                                child_item, child_inst, component_types_needed
+                            )
                         # Handle Mosaic clips structure: {content: {type: "DemoBox", config: {...}}}
                         elif isinstance(child_item, dict) and "content" in child_item:
                             content = child_item["content"]
@@ -529,5 +534,7 @@ class ProjectManager:
                                     layer=5,
                                 )
                                 child_instances.append(child_inst)
-                                self._process_nested_children(content, child_inst, component_types_needed)
+                                self._process_nested_children(
+                                    content, child_inst, component_types_needed
+                                )
                     component_instance.props[key] = child_instances

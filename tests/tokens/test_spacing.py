@@ -251,7 +251,10 @@ class TestSpacingTokensStructure:
         mobile = SPACING_TOKENS.layout_mode["mobile_readable"]
         presentation = SPACING_TOKENS.layout_mode["presentation"]
 
-        assert mobile.characteristics.font_size_multiplier > presentation.characteristics.font_size_multiplier
+        assert (
+            mobile.characteristics.font_size_multiplier
+            > presentation.characteristics.font_size_multiplier
+        )
 
     def test_all_border_radius_sizes_present(self):
         """Test all expected border radius sizes exist."""

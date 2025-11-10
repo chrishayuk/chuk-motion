@@ -14,12 +14,8 @@ class AsymmetricLayoutProps(BaseModel):
     main: Any | None = Field(None, description="Main content area")
     top_side: Any | None = Field(None, description="Top sidebar content")
     bottom_side: Any | None = Field(None, description="Bottom sidebar content")
-    layout: str | None = Field(
-        "main-left", description="Layout variant: main-left or main-right"
-    )
-    main_ratio: float | None = Field(
-        66.67, description="Main content width (percentage, 0-100)"
-    )
+    layout: str | None = Field("main-left", description="Layout variant: main-left or main-right")
+    main_ratio: float | None = Field(66.67, description="Main content width (percentage, 0-100)")
     gap: float | None = Field(20, description="Gap between panels (pixels)")
     padding: float | None = Field(40, description="Padding around layout (pixels)")
     start_time: float = Field(description="When to show (seconds)")
