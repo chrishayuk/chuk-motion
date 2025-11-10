@@ -34,6 +34,7 @@ class ProjectManager:
         self.component_builder = ComponentBuilder()
         self.current_project: str | None = None
         self.current_timeline: Timeline | None = None
+        self.current_composition = None
 
     def create_project(
         self, name: str, theme: str = "tech", fps: int = 30, width: int = 1920, height: int = 1080
@@ -155,7 +156,7 @@ class ProjectManager:
 
     def generate_composition(self) -> str:
         """
-        Generate the complete video composition from the timeline.
+        Generate the complete video composition from the timeline or composition builder.
 
         Returns:
             Path to generated VideoComposition.tsx file
@@ -163,17 +164,57 @@ class ProjectManager:
         if not self.current_project:
             raise ValueError("No active project")
 
-        if not self.current_timeline:
-            raise ValueError("No timeline created")
+        # Support both Timeline and CompositionBuilder
+        # Prefer CompositionBuilder if it exists and has components
+        if (
+            self.current_composition
+            and hasattr(self.current_composition, "components")
+            and self.current_composition.components
+        ):
+            builder = self.current_composition
+        elif self.current_timeline:
+            builder = self.current_timeline
+        else:
+            raise ValueError("No timeline or composition created")
 
-        composition_tsx = self.current_timeline.generate_composition_tsx()
-        duration_frames = self.current_timeline.get_total_duration_frames()
-        fps = self.current_timeline.fps
-        width = self.current_timeline.width
-        height = self.current_timeline.height
-        theme = self.current_timeline.theme
+        composition_tsx = builder.generate_composition_tsx()
+        duration_frames = builder.get_total_duration_frames()
+        fps = builder.fps
+        width = builder.width
+        height = builder.height
+        theme = getattr(builder, "theme", "tech")
 
         project_dir = self.workspace_dir / self.current_project
+        components_dir = project_dir / "src" / "components"
+
+        # Generate component TSX files for all unique component types
+        # Handle both Timeline (tracks-based) and CompositionBuilder (components list)
+        if hasattr(builder, "get_all_components"):
+            # Timeline has get_all_components() method
+            all_components = builder.get_all_components()
+            component_types = {c.component_type for c in all_components}
+        elif hasattr(builder, "components"):
+            # CompositionBuilder has components attribute
+            component_types = builder._find_all_component_types(builder.components)  # type: ignore[attr-defined]
+        else:
+            component_types = set()
+
+        for component_type in component_types:
+            try:
+                # Generate component code using the component builder
+                tsx_code = self.component_builder.build_component(
+                    component_type,
+                    {},  # Empty config - templates handle props from VideoComposition
+                    theme,
+                )
+
+                # Write component file
+                component_file = components_dir / f"{component_type}.tsx"
+                component_file.write_text(tsx_code)
+                print(f"  ✓ Generated {component_type}.tsx")
+
+            except Exception as e:
+                print(f"  ⚠️  Warning: Could not generate {component_type}: {e}")
 
         # Write composition file
         composition_file = project_dir / "src" / "VideoComposition.tsx"
@@ -330,8 +371,34 @@ class ProjectManager:
 
         # Handle different types of nested structures
 
+        # Special handling for SplitScreen children - map array to left/right or top/bottom
+        if "children" in scene and scene.get("type") == "SplitScreen":
+            children = scene["children"]
+            if isinstance(children, list) and len(children) >= 2:
+                orientation = scene.get("config", {}).get("orientation", "horizontal")
+
+                # Map children to left/right or top/bottom based on orientation
+                keys = ["left", "right"] if orientation == "horizontal" else ["top", "bottom"]
+
+                for i, key in enumerate(keys):
+                    if i < len(children):
+                        child = children[i]
+                        if isinstance(child, dict) and "type" in child:
+                            component_types_needed.add(child["type"])
+                            child_instance = ComponentInstance(
+                                component_type=child["type"],
+                                start_frame=scene.get("startFrame", 0),
+                                duration_frames=scene.get("durationInFrames", 90),
+                                props=child.get("config", {}),
+                                layer=5,
+                            )
+                            component_instance.props[key] = child_instance
+                            self._process_nested_children(
+                                child, child_instance, component_types_needed
+                            )
+
         # Grid and Container children (array or single)
-        if "children" in scene:
+        elif "children" in scene:
             children = scene["children"]
             if isinstance(children, list):
                 child_instances = []
@@ -377,46 +444,54 @@ class ProjectManager:
                     component_instance.props[key] = child_instance
                     self._process_nested_children(child, child_instance, component_types_needed)
 
-        # Specialized layout components
+        # Specialized layout components (using snake_case names to match templates)
         specialized_keys = [
-            "mainFeed",
-            "demo1",
-            "demo2",
-            "overlay",  # AsymmetricLayout
-            "center",  # ThreeColumnLayout
-            "middle",  # ThreeRowLayout
-            "hostView",
-            "screenContent",  # OverTheShoulderLayout
-            "characterA",
-            "characterB",  # DialogueFrameLayout
-            "originalClip",
-            "reactorFace",  # StackedReactionLayout
-            "gameplay",
-            "webcam",
-            "chatOverlay",  # HUDStyleLayout
-            "frontCam",
-            "overheadCam",
-            "handCam",
-            "detailCam",  # PerformanceMultiCamLayout
-            "hostStrip",
-            "backgroundContent",  # FocusStripLayout
+            # AsymmetricLayout
+            "main",
+            "top_side",
+            "bottom_side",
+            # ThreeColumnLayout / ThreeRowLayout
+            "center",
+            "middle",
+            # OverTheShoulder
+            "screen_content",
+            "shoulder_overlay",
+            # DialogueFrame
+            "left_speaker",
+            "right_speaker",
+            "center_content",
+            # StackedReaction
+            "original_content",
+            "reaction_content",
+            # HUDStyle
+            "main_content",
+            "top_left",
+            "top_right",
+            "bottom_left",
+            "bottom_right",
+            # PerformanceMultiCam
+            "primary_cam",
+            "secondary_cams",
+            # FocusStrip
+            "focus_content",
+            # PiP
             "mainContent",
-            "pipContent",  # PiPLayout
+            "pipContent",
+            # Vertical
             "topContent",
             "bottomContent",
-            "captionBar",  # VerticalLayout
+            "captionBar",
+            # Timeline / Mosaic
             "milestones",
-            "clips",  # TimelineLayout, MosaicLayout
-            "content",  # Container
-            "leftPanel",
-            "rightPanel",
-            "topPanel",
-            "bottomPanel",  # SplitScreen
+            "clips",
+            # Container
+            "content",
         ]
 
         for key in specialized_keys:
             if key in scene:
                 child = scene[key]
+                # Handle single child component
                 if isinstance(child, dict) and "type" in child:
                     component_types_needed.add(child["type"])
                     child_instance = ComponentInstance(
@@ -428,3 +503,38 @@ class ProjectManager:
                     )
                     component_instance.props[key] = child_instance
                     self._process_nested_children(child, child_instance, component_types_needed)
+                # Handle array of child components (e.g., secondary_cams, clips)
+                elif isinstance(child, list):
+                    child_instances = []
+                    for child_item in child:
+                        # Handle direct component: {type: "DemoBox", config: {...}}
+                        if isinstance(child_item, dict) and "type" in child_item:
+                            component_types_needed.add(child_item["type"])
+                            child_inst = ComponentInstance(
+                                component_type=child_item["type"],
+                                start_frame=scene.get("startFrame", 0),
+                                duration_frames=scene.get("durationInFrames", 90),
+                                props=child_item.get("config", {}),
+                                layer=5,
+                            )
+                            child_instances.append(child_inst)
+                            self._process_nested_children(
+                                child_item, child_inst, component_types_needed
+                            )
+                        # Handle Mosaic clips structure: {content: {type: "DemoBox", config: {...}}}
+                        elif isinstance(child_item, dict) and "content" in child_item:
+                            content = child_item["content"]
+                            if isinstance(content, dict) and "type" in content:
+                                component_types_needed.add(content["type"])
+                                child_inst = ComponentInstance(
+                                    component_type=content["type"],
+                                    start_frame=scene.get("startFrame", 0),
+                                    duration_frames=scene.get("durationInFrames", 90),
+                                    props=content.get("config", {}),
+                                    layer=5,
+                                )
+                                child_instances.append(child_inst)
+                                self._process_nested_children(
+                                    content, child_inst, component_types_needed
+                                )
+                    component_instance.props[key] = child_instances

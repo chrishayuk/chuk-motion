@@ -73,7 +73,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 2: LinkedIn Feed Margins")
 
-    linkedin_margins = SPACING_TOKENS['safe_margins']['linkedin_feed']
+    linkedin_margins = SPACING_TOKENS.safe_area['linkedin']
 
     linkedin_lower = ComponentInstance(
         component_type="LowerThird",
@@ -81,7 +81,7 @@ async def create_safe_margins_demo():
         duration_frames=0,
         props={
             "name": "LinkedIn Feed",
-            "title": f"Safe Zone: {linkedin_margins['left']} horizontal, {linkedin_margins['top']} vertical",
+            "title": f"Safe Zone: {linkedin_margins.left} horizontal, {linkedin_margins.top} vertical",
             "variant": "glass",
             "position": "bottom_left"
         },
@@ -114,7 +114,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 3: Instagram Stories (9:16)")
 
-    instagram_margins = SPACING_TOKENS['safe_margins']['instagram_story']
+    instagram_margins = SPACING_TOKENS.safe_area['instagram_story']
 
     instagram_lower = ComponentInstance(
         component_type="LowerThird",
@@ -122,7 +122,7 @@ async def create_safe_margins_demo():
         duration_frames=0,
         props={
             "name": "Instagram Stories",
-            "title": f"Top: {instagram_margins['top']} | Bottom: {instagram_margins['bottom']}",
+            "title": f"Top: {instagram_margins.top} | Bottom: {instagram_margins.bottom}",
             "variant": "animated",
             "position": "bottom_center"
         },
@@ -155,7 +155,7 @@ async def create_safe_margins_demo():
     # ========================================================================
     print("📍 Section 4: TikTok Margins")
 
-    tiktok_margins = SPACING_TOKENS['safe_margins']['tiktok']
+    tiktok_margins = SPACING_TOKENS.safe_area['tiktok']
 
     tiktok_lower = ComponentInstance(
         component_type="LowerThird",
@@ -163,7 +163,7 @@ async def create_safe_margins_demo():
         duration_frames=0,
         props={
             "name": "TikTok",
-            "title": f"Right side: {tiktok_margins['right']} (buttons!) | Top: {tiktok_margins['top']}",
+            "title": f"Right side: {tiktok_margins.right} (buttons!) | Top: {tiktok_margins.top}",
             "variant": "bold",
             "position": "top_left"
         },
@@ -192,11 +192,11 @@ async def create_safe_margins_demo():
     )
 
     # ========================================================================
-    # SECTION 5: YouTube Standard (35-45s)
+    # SECTION 5: YouTube Long Form (35-45s)
     # ========================================================================
-    print("📍 Section 5: YouTube Standard")
+    print("📍 Section 5: YouTube Long Form")
 
-    youtube_margins = SPACING_TOKENS['safe_margins']['youtube_standard']
+    youtube_margins = SPACING_TOKENS.safe_area['youtube_long_form']
 
     youtube_lower = ComponentInstance(
         component_type="LowerThird",
@@ -204,7 +204,7 @@ async def create_safe_margins_demo():
         duration_frames=0,
         props={
             "name": "YouTube",
-            "title": f"Standard Safe Area: {youtube_margins['top']} all around",
+            "title": f"Standard Safe Area: {youtube_margins.top} all around",
             "variant": "glass",
             "position": "bottom_right"
         },
@@ -336,13 +336,17 @@ async def create_safe_margins_demo():
     print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
     print(f"📐 Resolution: 1920x1080 @ 30fps")
     print("\n📱 Platform Safe Margins Covered:")
-    for platform, margins in SPACING_TOKENS['safe_margins'].items():
+    for platform, margins in SPACING_TOKENS.safe_area.items():
         print(f"   • {platform.replace('_', ' ').title()}")
-        if 'all' in margins:
-            print(f"     → {margins['all']} all sides")
+        if hasattr(margins, 'all'):
+            print(f"     → {margins.all} all sides")
         else:
-            print(f"     → Top: {margins.get('top', 'N/A')}, Bottom: {margins.get('bottom', 'N/A')}")
-            print(f"     → Left: {margins.get('left', 'N/A')}, Right: {margins.get('right', 'N/A')}")
+            top = getattr(margins, 'top', 'N/A')
+            bottom = getattr(margins, 'bottom', 'N/A')
+            left = getattr(margins, 'left', 'N/A')
+            right = getattr(margins, 'right', 'N/A')
+            print(f"     → Top: {top}, Bottom: {bottom}")
+            print(f"     → Left: {left}, Right: {right}")
 
     print("\n🚀 To render:")
     print(f"   cd {project_path}")

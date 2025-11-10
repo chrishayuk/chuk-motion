@@ -97,33 +97,33 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   // Variant styles
   const variants = {
     minimal: {
-      background: 'rgba(30, 35, 50, 0.95)',
-      borderRadius: 12,
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
       border: 'none',
-      padding: 20,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+      padding: parseInt('[[ spacing.spacing.lg ]]'),
+      boxShadow: '0 10px 40px [[ colors.shadow.dark ]]'
     },
     terminal: {
-      background: 'rgba(20, 20, 20, 0.98)',
-      borderRadius: 8,
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      padding: 30,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
+      background: '[[ colors.background.darker ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 10px 40px [[ colors.background.dark ]]'
     },
     editor: {
-      background: 'rgba(26, 31, 46, 0.98)',
-      borderRadius: 12,
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
       padding: 0,
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
+      boxShadow: '0 20px 60px [[ colors.shadow.dark ]]'
     },
     glass: {
-      background: 'rgba(255, 255, 255, 0.05)',
+      background: '[[ colors.background.glass ]]',
       backdropFilter: 'blur(20px)',
-      borderRadius: 16,
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      padding: 30,
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+      borderRadius: parseInt('[[ spacing.spacing.md ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 20px 60px [[ colors.shadow.dark ]]'
     }
   };
 
@@ -155,40 +155,40 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
               <>
                 <div
                   style={{
-                    background: 'rgba(0, 0, 0, 0.3)',
-                    padding: '12px 20px',
-                    borderTopLeftRadius: 12,
-                    borderTopRightRadius: 12,
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    background: '[[ colors.background.overlay ]]',
+                    padding: `[[ spacing.spacing.sm ]] [[ spacing.spacing.lg ]]`,
+                    borderTopLeftRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                    borderTopRightRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                    borderBottom: '1px solid [[ colors.border.light ]]',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8
+                    gap: parseInt('[[ spacing.spacing.xs ]]')
                   }}
                 >
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FF5F56' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FFBD2E' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27C93F' }} />
+                  <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.xs ]]') }}>
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
                   </div>
                   <div
                     style={{
-                      fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      marginLeft: 12,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                      color: '[[ colors.text.muted ]]',
+                      marginLeft: parseInt('[[ spacing.spacing.sm ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 </div>
-                <div style={{ padding: 30 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ padding: parseInt('[[ spacing.spacing.xl ]]') }}>
+                  <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]') }}>
                     {show_line_numbers && (
                       <div
                         style={{
-                          color: 'rgba(255, 255, 255, 0.3)',
-                          fontSize: 16,
-                          lineHeight: 1.8,
+                          color: '[[ colors.text.dimmed ]]',
+                          fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                          lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                           textAlign: 'right',
                           userSelect: 'none',
                           minWidth: 50
@@ -202,8 +202,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                     <div
                       style={{
                         flex: 1,
-                        fontSize: 18,
-                        lineHeight: 1.6,
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         overflow: 'auto',
                         maxHeight: '100%',
                         whiteSpace: 'pre'
@@ -217,11 +217,11 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                             {...getLineProps({ line })}
                             style={{
                               ...getLineProps({ line }).style,
-                              backgroundColor: isHighlighted ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                              paddingLeft: 10,
-                              paddingRight: 10,
-                              marginLeft: -10,
-                              marginRight: -10
+                              backgroundColor: isHighlighted ? '[[ colors.highlight.line ]]' : 'transparent',
+                              paddingLeft: parseInt('[[ spacing.spacing.xs ]]'),
+                              paddingRight: parseInt('[[ spacing.spacing.xs ]]'),
+                              marginLeft: -parseInt('[[ spacing.spacing.xs ]]'),
+                              marginRight: -parseInt('[[ spacing.spacing.xs ]]')
                             }}
                           >
                             {line.map((token, key) => (
@@ -235,27 +235,27 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                 </div>
               </>
             ) : (
-              <div style={{ padding: variant === 'editor' ? 30 : 0 }}>
+              <div style={{ padding: variant === 'editor' ? parseInt('[[ spacing.spacing.xl ]]') : 0 }}>
                 {title && variant !== 'editor' && (
                   <div
                     style={{
-                      fontSize: 24,
-                      fontWeight: 600,
-                      color: '#FFFFFF',
-                      marginBottom: 20,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                      fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
+                      color: '[[ colors.text.on_dark ]]',
+                      marginBottom: parseInt('[[ spacing.spacing.lg ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]') }}>
                   {show_line_numbers && (
                     <div
                       style={{
-                        color: 'rgba(255, 255, 255, 0.3)',
-                        fontSize: 16,
-                        lineHeight: 1.8,
+                        color: '[[ colors.text.dimmed ]]',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         textAlign: 'right',
                         userSelect: 'none',
                         minWidth: 50
@@ -269,8 +269,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                   <div
                     style={{
                       flex: 1,
-                      fontSize: 18,
-                      lineHeight: 1.6,
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                      lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                       overflow: 'auto',
                       maxHeight: '100%',
                       whiteSpace: 'pre'
@@ -284,11 +284,11 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                           {...getLineProps({ line })}
                           style={{
                             ...getLineProps({ line }).style,
-                            backgroundColor: isHighlighted ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                            paddingLeft: 10,
-                            paddingRight: 10,
-                            marginLeft: -10,
-                            marginRight: -10
+                            backgroundColor: isHighlighted ? '[[ colors.highlight.line ]]' : 'transparent',
+                            paddingLeft: parseInt('[[ spacing.spacing.xs ]]'),
+                            paddingRight: parseInt('[[ spacing.spacing.xs ]]'),
+                            marginLeft: -parseInt('[[ spacing.spacing.xs ]]'),
+                            marginRight: -parseInt('[[ spacing.spacing.xs ]]')
                           }}
                         >
                           {line.map((token, key) => (

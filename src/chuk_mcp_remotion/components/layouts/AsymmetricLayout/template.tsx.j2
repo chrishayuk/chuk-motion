@@ -1,0 +1,182 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/AsymmetricLayout/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface AsymmetricLayoutProps {
+  main?: React.ReactNode;
+  top_side?: React.ReactNode;
+  bottom_side?: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+  layout?: string;
+  main_ratio?: number;
+  padding?: number;
+  gap?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const AsymmetricLayout: React.FC<AsymmetricLayoutProps> = ({
+  main,
+  top_side,
+  bottom_side,
+  startFrame,
+  durationInFrames,
+  layout = 'main-left',
+  main_ratio = 66.67,
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  gap = parseInt('[[ spacing.spacing.md ]]'),
+  border_width,
+  border_color = '[[ colors.border.light ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const side_ratio = 100 - main_ratio;
+
+  // Main on left, side panels on right
+  const renderMainLeft = () => (
+    <>
+      {main && (
+        <div style={{
+          width: `${main_ratio}%`,
+          height: '100%',
+          display: 'flex',
+          overflow: 'hidden',
+          position: 'relative',
+          ...(border_width && {
+            border: `${border_width}px solid ${border_color}`,
+            borderRadius: border_radius
+          }),
+        }}>
+          {main}
+        </div>
+      )}
+      <div style={{
+        width: `${side_ratio}%`,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: gap,
+      }}>
+        {top_side && (
+          <div style={{
+            width: '100%',
+            height: '50%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {top_side}
+          </div>
+        )}
+        {bottom_side && (
+          <div style={{
+            width: '100%',
+            height: '50%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {bottom_side}
+          </div>
+        )}
+      </div>
+    </>
+  );
+
+  // Side panels on left, main on right
+  const renderMainRight = () => (
+    <>
+      <div style={{
+        width: `${side_ratio}%`,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: gap,
+      }}>
+        {top_side && (
+          <div style={{
+            width: '100%',
+            height: '50%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {top_side}
+          </div>
+        )}
+        {bottom_side && (
+          <div style={{
+            width: '100%',
+            height: '50%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {bottom_side}
+          </div>
+        )}
+      </div>
+      {main && (
+        <div style={{
+          width: `${main_ratio}%`,
+          height: '100%',
+          display: 'flex',
+          overflow: 'hidden',
+          position: 'relative',
+          ...(border_width && {
+            border: `${border_width}px solid ${border_color}`,
+            borderRadius: border_radius
+          }),
+        }}>
+          {main}
+        </div>
+      )}
+    </>
+  );
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: padding,
+          left: padding,
+          right: padding,
+          bottom: padding,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: gap,
+          width: `calc(100% - ${padding * 2}px)`,
+          height: `calc(100% - ${padding * 2}px)`,
+        }}
+      >
+        {layout === 'main-left' ? renderMainLeft() : renderMainRight()}
+      </div>
+    </AbsoluteFill>
+  );
+};

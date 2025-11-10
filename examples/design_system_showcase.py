@@ -85,8 +85,8 @@ async def create_design_system_showcase():
             start_frame=0,
             duration_frames=0,
             props={
-                "name": theme_info["name"],
-                "title": theme_info["description"],
+                "name": theme_info.name,
+                "title": theme_info.description,
                 "variant": "glass",
                 "position": "bottom_left"
             },

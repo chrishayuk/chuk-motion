@@ -53,27 +53,27 @@ export const EndScreen: React.FC<EndScreenProps> = ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 40
+            gap: parseInt('[[ spacing.spacing['2xl'] ]]')
           }}
         >
           <div
             style={{
-              fontSize: 80,
-              fontWeight: 900,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
-              letterSpacing: '-0.02em'
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {ctaText}
           </div>
           <div
             style={{
-              padding: '24px 60px',
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
               background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-              borderRadius: 16,
-              fontSize: 36,
-              fontWeight: 700,
+              borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
               color: '[[ colors.text.on_dark ]]',
               transform: `scale(${pulse})`,
               boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
@@ -90,8 +90,8 @@ export const EndScreen: React.FC<EndScreenProps> = ({
             display: 'flex',
             width: '100%',
             height: '100%',
-            gap: 40,
-            padding: 60
+            gap: parseInt('[[ spacing.spacing['2xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['3xl'] ]]')
           }}
         >
           {/* Left side - CTA */}
@@ -104,29 +104,29 @@ export const EndScreen: React.FC<EndScreenProps> = ({
               alignItems: 'center',
               background: '[[ colors.background.glass ]]',
               backdropFilter: 'blur(10px)',
-              borderRadius: 24,
-              padding: 60,
-              gap: 40
+              borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+              padding: parseInt('[[ spacing.spacing['3xl'] ]]'),
+              gap: parseInt('[[ spacing.spacing['2xl'] ]]')
             }}
           >
             <div
               style={{
-                fontSize: 64,
-                fontWeight: 900,
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+                fontWeight: parseInt('[[ typography.font_weights.black ]]'),
                 color: '[[ colors.text.on_dark ]]',
                 textAlign: 'center',
-                letterSpacing: '-0.02em'
+                letterSpacing: '[[ typography.letter_spacing.tight ]]'
               }}
             >
               {ctaText}
             </div>
             <div
               style={{
-                padding: '24px 60px',
+                padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
                 background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-                borderRadius: 16,
-                fontSize: 32,
-                fontWeight: 700,
+                borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+                fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
                 color: '[[ colors.text.on_dark ]]',
                 transform: `scale(${pulse})`,
                 boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
@@ -147,9 +147,9 @@ export const EndScreen: React.FC<EndScreenProps> = ({
                 alignItems: 'center',
                 background: '[[ colors.background.glass ]]',
                 backdropFilter: 'blur(10px)',
-                borderRadius: 24,
-                padding: 40,
-                gap: 20
+                borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                padding: parseInt('[[ spacing.spacing['2xl'] ]]'),
+                gap: parseInt('[[ spacing.spacing.lg ]]')
               }}
             >
               <Img
@@ -157,14 +157,14 @@ export const EndScreen: React.FC<EndScreenProps> = ({
                 style={{
                   width: '100%',
                   height: 'auto',
-                  borderRadius: 16,
-                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+                  borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                  boxShadow: '0 10px 40px [[ colors.shadow.dark ]]'
                 }}
               />
               <div
                 style={{
-                  fontSize: 28,
-                  fontWeight: 600,
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                  fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
                   color: '[[ colors.text.on_dark ]]',
                   textAlign: 'center'
                 }}
@@ -184,17 +184,17 @@ export const EndScreen: React.FC<EndScreenProps> = ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 60,
-            padding: 60
+            gap: parseInt('[[ spacing.spacing['3xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['3xl'] ]]')
           }}
         >
           <div
             style={{
-              fontSize: 72,
-              fontWeight: 900,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
-              letterSpacing: '-0.02em'
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {ctaText}
@@ -203,7 +203,7 @@ export const EndScreen: React.FC<EndScreenProps> = ({
             <div
               style={{
                 display: 'flex',
-                gap: 40,
+                gap: parseInt('[[ spacing.spacing['2xl'] ]]'),
                 alignItems: 'center'
               }}
             >
@@ -212,20 +212,20 @@ export const EndScreen: React.FC<EndScreenProps> = ({
                 style={{
                   width: 480,
                   height: 270,
-                  borderRadius: 16,
-                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
-                  border: `4px solid [[ colors.accent[0] ]]`
+                  borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                  boxShadow: '0 10px 40px [[ colors.shadow.dark ]]',
+                  border: `[[ spacing.spacing.xxs ]] solid [[ colors.accent[0] ]]`
                 }}
               />
             </div>
           )}
           <div
             style={{
-              padding: '24px 60px',
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
               background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-              borderRadius: 16,
-              fontSize: 36,
-              fontWeight: 700,
+              borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
               color: '[[ colors.text.on_dark ]]',
               transform: `scale(${pulse})`,
               boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`
@@ -244,8 +244,8 @@ export const EndScreen: React.FC<EndScreenProps> = ({
             flexDirection: 'column',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: 60,
-            padding: 80
+            gap: parseInt('[[ spacing.spacing['3xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['4xl'] ]]')
           }}
         >
           {thumbnailUrl && (
@@ -255,29 +255,29 @@ export const EndScreen: React.FC<EndScreenProps> = ({
                 width: 640,
                 height: 360,
                 borderRadius: 20,
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+                boxShadow: '0 20px 60px [[ colors.shadow.medium ]]',
                 border: `3px solid [[ colors.primary[0] ]]`
               }}
             />
           )}
           <div
             style={{
-              fontSize: 72,
-              fontWeight: 900,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
-              letterSpacing: '-0.02em'
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {ctaText}
           </div>
           <div
             style={{
-              padding: '28px 80px',
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['4xl'] ]]',
               background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
-              borderRadius: 20,
-              fontSize: 40,
-              fontWeight: 700,
+              borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
               color: '[[ colors.text.on_dark ]]',
               transform: `scale(${pulse})`,
               boxShadow: `0 10px 40px [[ colors.primary[0] ]]60`,

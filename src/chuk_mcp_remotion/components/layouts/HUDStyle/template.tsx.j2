@@ -1,0 +1,142 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/HUDStyle/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface HUDStyleProps {
+  main_content?: React.ReactNode;
+  top_left?: React.ReactNode;
+  top_right?: React.ReactNode;
+  bottom_left?: React.ReactNode;
+  bottom_right?: React.ReactNode;
+  center?: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+  overlay_size?: number;
+  padding?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const HUDStyle: React.FC<HUDStyleProps> = ({
+  main_content,
+  top_left,
+  top_right,
+  bottom_left,
+  bottom_right,
+  center,
+  startFrame,
+  durationInFrames,
+  overlay_size = 15,
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  border_width = parseInt('[[ spacing.border_width.thin ]]'),
+  border_color = '[[ colors.accent[0] ]]',
+  border_radius = parseInt('[[ spacing.border_radius.sm ]]')
+}) => {
+  const frame = useCurrentFrame();
+
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const overlayStyle = {
+    width: `${overlay_size}%`,
+    aspectRatio: '16/9',
+    display: 'flex',
+    overflow: 'hidden',
+    border: `${border_width}px solid ${border_color}`,
+    borderRadius: border_radius,
+    backgroundColor: '[[ colors.shadow.dark ]]',
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {/* Main content */}
+      {main_content && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          overflow: 'hidden',
+        }}>
+          {main_content}
+        </div>
+      )}
+
+      {/* Top-left overlay */}
+      {top_left && (
+        <div style={{
+          ...overlayStyle,
+          position: 'absolute',
+          top: padding,
+          left: padding,
+          zIndex: 10,
+        }}>
+          {top_left}
+        </div>
+      )}
+
+      {/* Top-right overlay */}
+      {top_right && (
+        <div style={{
+          ...overlayStyle,
+          position: 'absolute',
+          top: padding,
+          right: padding,
+          zIndex: 10,
+        }}>
+          {top_right}
+        </div>
+      )}
+
+      {/* Bottom-left overlay */}
+      {bottom_left && (
+        <div style={{
+          ...overlayStyle,
+          position: 'absolute',
+          bottom: padding,
+          left: padding,
+          zIndex: 10,
+        }}>
+          {bottom_left}
+        </div>
+      )}
+
+      {/* Bottom-right overlay */}
+      {bottom_right && (
+        <div style={{
+          ...overlayStyle,
+          position: 'absolute',
+          bottom: padding,
+          right: padding,
+          zIndex: 10,
+        }}>
+          {bottom_right}
+        </div>
+      )}
+
+      {/* Center overlay */}
+      {center && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: `${overlay_size * 2}%`,
+          aspectRatio: '16/9',
+          display: 'flex',
+          overflow: 'hidden',
+          border: `${border_width}px solid ${border_color}`,
+          borderRadius: border_radius,
+          backgroundColor: '[[ colors.background.dark ]]',
+          zIndex: 15,
+        }}>
+          {center}
+        </div>
+      )}
+    </AbsoluteFill>
+  );
+};

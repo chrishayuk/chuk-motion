@@ -56,8 +56,12 @@ def register_theme_tools(mcp, project_manager, vfs: "AsyncVirtualFileSystem"):
                             "key": key,
                             "name": theme.name,
                             "description": theme.description,
-                            "primary_color": theme.colors.get("primary", ["N/A"])[0],
-                            "accent_color": theme.colors.get("accent", ["N/A"])[0],
+                            "primary_color": theme.colors.primary[0]
+                            if theme.colors.primary
+                            else "N/A",
+                            "accent_color": theme.colors.accent[0]
+                            if theme.colors.accent
+                            else "N/A",
                             "use_cases": theme.use_cases[:3],  # First 3 use cases
                         }
                     )

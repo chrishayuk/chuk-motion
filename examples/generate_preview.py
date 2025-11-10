@@ -234,23 +234,23 @@ def generate_theme_preview_html() -> str:
     html_parts.append('<div class="section"><h2 class="section-title">🎨 YouTube Themes</h2><div class="theme-grid">')
 
     for theme_name, theme in YOUTUBE_THEMES.items():
-        colors = theme['colors']
-        primary = colors['primary'][0] if isinstance(colors['primary'], list) else colors['primary']
-        accent = colors['accent'][0] if isinstance(colors['accent'], list) else colors['accent']
+        colors = theme.colors
+        primary = colors.primary[0] if isinstance(colors.primary, list) else colors.primary
+        accent = colors.accent[0] if isinstance(colors.accent, list) else colors.accent
 
         use_cases_html = "\n".join(
-            f'<li>{uc}</li>' for uc in theme.get('use_cases', [])[:4]
+            f'<li>{uc}</li>' for uc in theme.use_cases[:4]
         )
 
         html_parts.append(f'''
         <div class="theme-card">
-            <div class="theme-name">{theme['name']}</div>
-            <div class="theme-desc">{theme['description']}</div>
+            <div class="theme-name">{theme.name}</div>
+            <div class="theme-desc">{theme.description}</div>
             <div class="color-swatches">
                 <div class="color-swatch" style="background: {primary};" title="Primary"></div>
                 <div class="color-swatch" style="background: {accent};" title="Accent"></div>
             </div>
-            <div class="gradient-preview" style="background: {colors['gradient']};"></div>
+            <div class="gradient-preview" style="background: {colors.gradient};"></div>
             <ul class="use-cases">
                 {use_cases_html}
             </ul>

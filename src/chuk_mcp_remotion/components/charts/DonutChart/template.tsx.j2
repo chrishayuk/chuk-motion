@@ -78,8 +78,8 @@ export const DonutChart: React.FC<DonutChartProps> = ({
 
   // Default colors
   const defaultColors = [
-    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '#7B61FF', '#FF6B9D',
-    '#FFB800', '#00E5A0', '#FF4D4D', '#9D4EDD'
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] ]]', '[[ colors.accent[1] ]]',
+    '[[ colors.primary[2] ]]', '[[ colors.accent[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[3] ]]'
   ];
 
   // Calculate slice paths
@@ -138,19 +138,19 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 40
+          gap: parseInt('[[ spacing.spacing['2xl'] ]]')
         }}
       >
         {title && (
           <h3
             style={{
-              fontSize: 40,
-              fontWeight: 700,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
-              letterSpacing: '-0.02em',
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]',
               margin: 0
             }}
           >
@@ -158,14 +158,14 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           </h3>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 60 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: parseInt('[[ spacing.spacing['3xl'] ]]') }}>
           {/* Donut chart */}
           <div style={{ position: 'relative' }}>
             <svg
               width={chartSize}
               height={chartSize}
               style={{
-                filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))'
+                filter: 'drop-shadow(0 10px 30px [[ colors.background.dark ]])'
               }}
             >
               <defs>
@@ -194,8 +194,8 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                     key={idx}
                     d={path}
                     fill={slice.color}
-                    stroke="rgba(255, 255, 255, 0.1)"
-                    strokeWidth="2"
+                    stroke="[[ colors.border.light ]]"
+                    strokeWidth="[[ spacing.border_width.medium ]]"
                     filter="url(#glowDonut)"
                     opacity={sliceProgress}
                   />
@@ -217,21 +217,21 @@ export const DonutChart: React.FC<DonutChartProps> = ({
               >
                 <div
                   style={{
-                    fontSize: 48,
-                    fontWeight: 900,
+                    fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+                    fontWeight: '[[ typography.font_weights.black ]]',
                     color: '[[ colors.text.on_dark ]]',
                     lineHeight: 1,
-                    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)'
+                    textShadow: '0 [[ spacing.border_width.medium ]] 10px [[ colors.background.dark ]]'
                   }}
                 >
                   {total}
                 </div>
                 <div
                   style={{
-                    fontSize: 16,
-                    fontWeight: 500,
-                    color: 'rgba(255, 255, 255, 0.7)',
-                    marginTop: 8
+                    fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                    fontWeight: '[[ typography.font_weights.medium ]]',
+                    color: '[[ colors.text.muted ]]',
+                    marginTop: parseInt('[[ spacing.spacing.xs ]]')
                   }}
                 >
                   {centerText}
@@ -241,7 +241,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           </div>
 
           {/* Legend */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: parseInt('[[ spacing.spacing.sm ]]') }}>
             {slices.map((slice, idx) => {
               const legendDelay = idx * 3 + 10;
               const legendProgress = spring({
@@ -256,16 +256,16 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 12,
+                    gap: parseInt('[[ spacing.spacing.sm ]]'),
                     opacity: legendProgress,
-                    transform: `translateX(${interpolate(legendProgress, [0, 1], [20, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
+                    transform: `translateX(${interpolate(legendProgress, [0, 1], [parseInt('[[ spacing.spacing.lg ]]'), 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
                   }}
                 >
                   <div
                     style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 6,
+                      width: parseInt('[[ spacing.spacing.lg ]]'),
+                      height: parseInt('[[ spacing.spacing.lg ]]'),
+                      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
                       backgroundColor: slice.color,
                       flexShrink: 0
                     }}
@@ -273,19 +273,19 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div
                       style={{
-                        fontSize: 18,
-                        fontWeight: 600,
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        fontWeight: '[[ typography.font_weights.semibold ]]',
                         color: '[[ colors.text.on_dark ]]',
-                        lineHeight: 1.2
+                        lineHeight: '[[ typography.line_heights.tight ]]'
                       }}
                     >
                       {slice.label}
                     </div>
                     <div
                       style={{
-                        fontSize: 14,
-                        fontWeight: 400,
-                        color: 'rgba(255, 255, 255, 0.6)'
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        fontWeight: '[[ typography.font_weights.regular ]]',
+                        color: '[[ colors.text.muted ]]'
                       }}
                     >
                       {slice.value} ({Math.round(slice.percentage * 100)}%)

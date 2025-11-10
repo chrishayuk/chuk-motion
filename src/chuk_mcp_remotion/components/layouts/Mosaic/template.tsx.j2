@@ -1,0 +1,181 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/Mosaic/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface MosaicClip {
+  content: React.ReactNode;
+  size?: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  z_index?: number;
+}
+
+interface MosaicProps {
+  clips?: MosaicClip[];
+  startFrame: number;
+  durationInFrames: number;
+  style?: string;
+  padding?: number;
+  gap?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const Mosaic: React.FC<MosaicProps> = ({
+  clips = [],
+  startFrame,
+  durationInFrames,
+  style = 'hero-corners',
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  gap = parseInt('[[ spacing.spacing.sm ]]'),
+  border_width = parseInt('[[ spacing.border_width.medium ]]'),
+  border_color = '[[ colors.border.medium ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const renderHeroCorners = () => {
+    if (clips.length === 0) return null;
+
+    const hero = clips[0];
+    const corners = clips.slice(1, 5);
+
+    return (
+      <>
+        {/* Hero center */}
+        <div style={{
+          position: 'absolute',
+          top: '20%',
+          left: '20%',
+          width: '60%',
+          height: '60%',
+          display: 'flex',
+          overflow: 'hidden',
+          border: `${border_width}px solid ${border_color}`,
+          borderRadius: border_radius,
+          zIndex: 10,
+        }}>
+          {hero.content}
+        </div>
+
+        {/* Corners */}
+        {corners.map((clip, idx) => {
+          const positions = [
+            { top: padding, left: padding, width: '15%' },
+            { top: padding, right: padding, width: '15%' },
+            { bottom: padding, left: padding, width: '15%' },
+            { bottom: padding, right: padding, width: '15%' },
+          ];
+          const pos = positions[idx];
+
+          return (
+            <div key={idx} style={{
+              position: 'absolute',
+              ...pos,
+              aspectRatio: '16/9',
+              display: 'flex',
+              overflow: 'hidden',
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius,
+              zIndex: 5,
+            }}>
+              {clip.content}
+            </div>
+          );
+        })}
+      </>
+    );
+  };
+
+  const renderStacked = () => {
+    return clips.map((clip, idx) => {
+      const offset = idx * parseInt('[[ spacing.spacing['2xl'] ]]');
+      const rotation = (idx % 2 === 0 ? 5 : -5);
+
+      return (
+        <div key={idx} style={{
+          position: 'absolute',
+          top: `${parseInt('[[ spacing.spacing.lg ]]') + offset}px`,
+          left: `${parseInt('[[ spacing.spacing.lg ]]') + offset}px`,
+          width: '60%',
+          height: '60%',
+          display: 'flex',
+          overflow: 'hidden',
+          border: `${border_width}px solid ${border_color}`,
+          borderRadius: border_radius,
+          transform: `rotate(${rotation}deg)`,
+          zIndex: idx,
+        }}>
+          {clip.content}
+        </div>
+      );
+    });
+  };
+
+  const renderSpotlight = () => {
+    if (clips.length === 0) return null;
+
+    const spotlight = clips[0];
+    const surrounding = clips.slice(1);
+
+    return (
+      <>
+        {/* Spotlight center */}
+        <div style={{
+          position: 'absolute',
+          top: '25%',
+          left: '25%',
+          width: '50%',
+          height: '50%',
+          display: 'flex',
+          overflow: 'hidden',
+          border: `${border_width * 2}px solid ${border_color}`,
+          borderRadius: border_radius,
+          zIndex: 15,
+        }}>
+          {spotlight.content}
+        </div>
+
+        {/* Surrounding clips */}
+        {surrounding.map((clip, idx) => {
+          const angle = (360 / surrounding.length) * idx;
+          const x = 50 + 35 * Math.cos((angle * Math.PI) / 180);
+          const y = 50 + 35 * Math.sin((angle * Math.PI) / 180);
+
+          return (
+            <div key={idx} style={{
+              position: 'absolute',
+              top: `${y}%`,
+              left: `${x}%`,
+              width: '15%',
+              aspectRatio: '16/9',
+              transform: 'translate(-50%, -50%)',
+              display: 'flex',
+              overflow: 'hidden',
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius,
+              zIndex: 5,
+            }}>
+              {clip.content}
+            </div>
+          );
+        })}
+      </>
+    );
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {style === 'hero-corners' && renderHeroCorners()}
+      {style === 'stacked' && renderStacked()}
+      {style === 'spotlight' && renderSpotlight()}
+    </AbsoluteFill>
+  );
+};

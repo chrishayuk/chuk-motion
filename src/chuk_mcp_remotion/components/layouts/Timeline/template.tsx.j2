@@ -1,0 +1,118 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/Timeline/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface TimelineProps {
+  main_content?: React.ReactNode;
+  milestones?: Array<{time: number; label: string; icon?: string}>;
+  startFrame: number;
+  durationInFrames: number;
+  current_time?: number;
+  total_duration?: number;
+  position?: string;
+  height?: number;
+}
+
+export const Timeline: React.FC<TimelineProps> = ({
+  main_content,
+  milestones = [],
+  startFrame,
+  durationInFrames,
+  current_time = 0,
+  total_duration = 10,
+  position = 'bottom',
+  height = 100
+}) => {
+  const frame = useCurrentFrame();
+
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const progress = (current_time / total_duration) * 100;
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {/* Main content */}
+      {main_content && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          overflow: 'hidden',
+        }}>
+          {main_content}
+        </div>
+      )}
+
+      {/* Timeline bar */}
+      <div style={{
+        position: 'absolute',
+        ...(position === 'top' ? { top: 0 } : { bottom: 0 }),
+        left: 0,
+        right: 0,
+        height: height,
+        backgroundColor: '[[ colors.background.dark ]]',
+        borderTop: position === 'bottom' ? `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.border.light ]]` : undefined,
+        borderBottom: position === 'top' ? `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.border.light ]]` : undefined,
+        display: 'flex',
+        alignItems: 'center',
+        padding: `0 ${parseInt('[[ spacing.spacing.xl ]]')}px`,
+        zIndex: 20,
+      }}>
+        {/* Progress bar */}
+        <div style={{
+          position: 'relative',
+          width: '100%',
+          height: parseInt('[[ spacing.spacing.xs ]]'),
+          backgroundColor: '[[ colors.border.light ]]',
+          borderRadius: '[[ spacing.border_radius.sm ]]',
+          overflow: 'hidden',
+        }}>
+          {/* Progress fill */}
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: `${progress}%`,
+            backgroundColor: '[[ colors.primary[0] ]]',
+            borderRadius: '[[ spacing.border_radius.sm ]]',
+            transition: 'width 0.3s ease',
+          }} />
+
+          {/* Milestones */}
+          {milestones.map((milestone, idx) => {
+            const milestonePos = (milestone.time / total_duration) * 100;
+            return (
+              <div
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  left: `${milestonePos}%`,
+                  top: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: parseInt('[[ spacing.spacing.md ]]'),
+                  height: parseInt('[[ spacing.spacing.md ]]'),
+                  borderRadius: '50%',
+                  backgroundColor: milestonePos <= progress ? '[[ colors.accent[1] ]]' : '[[ colors.border.medium ]]',
+                  border: `${parseInt('[[ spacing.border_width.medium ]]')}px solid [[ colors.text.on_dark ]]`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                }}
+                title={milestone.label}
+              >
+                {milestone.icon}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};

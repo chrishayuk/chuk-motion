@@ -126,7 +126,7 @@ export const PieChart: React.FC<PieChartProps> = ({
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 40
+          gap: parseInt('[[ spacing.spacing['2xl'] ]]')
         }}
       >
         {title && (
@@ -146,13 +146,13 @@ export const PieChart: React.FC<PieChartProps> = ({
           </h3>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 60 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: parseInt('[[ spacing.spacing['3xl'] ]]') }}>
           {/* Pie chart */}
           <svg
             width={chartSize}
             height={chartSize}
             style={{
-              filter: 'drop-shadow(0 10px 30px rgba(0, 0, 0, 0.5))'
+              filter: 'drop-shadow(0 10px 30px [[ colors.shadow.dark ]])'
             }}
           >
             <defs>
@@ -187,8 +187,8 @@ export const PieChart: React.FC<PieChartProps> = ({
                   <path
                     d={path}
                     fill={slice.color}
-                    stroke="rgba(255, 255, 255, 0.1)"
-                    strokeWidth="2"
+                    stroke="[[ colors.border.light ]]"
+                    strokeWidth="[[ spacing.border_width.medium ]]"
                     filter="url(#glowPie)"
                     opacity={sliceProgress}
                   />
@@ -213,7 +213,7 @@ export const PieChart: React.FC<PieChartProps> = ({
           </svg>
 
           {/* Legend */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 15 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: parseInt('[[ spacing.spacing.sm ]]') }}>
             {slices.map((slice, idx) => {
               const legendDelay = idx * 3 + 10;
               const legendProgress = spring({
@@ -228,16 +228,16 @@ export const PieChart: React.FC<PieChartProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 12,
+                    gap: parseInt('[[ spacing.spacing.sm ]]'),
                     opacity: legendProgress,
-                    transform: `translateX(${interpolate(legendProgress, [0, 1], [20, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
+                    transform: `translateX(${interpolate(legendProgress, [0, 1], [parseInt('[[ spacing.spacing.lg ]]'), 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}px)`
                   }}
                 >
                   <div
                     style={{
-                      width: 24,
-                      height: 24,
-                      borderRadius: 6,
+                      width: parseInt('[[ spacing.spacing.lg ]]'),
+                      height: parseInt('[[ spacing.spacing.lg ]]'),
+                      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
                       backgroundColor: slice.color,
                       flexShrink: 0
                     }}
@@ -257,7 +257,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                       style={{
                         fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
                         fontWeight: '[[ typography.font_weights.regular ]]',
-                        color: '[[ colors.text.subdued ]]'
+                        color: '[[ colors.text.muted ]]'
                       }}
                     >
                       {slice.value} ({Math.round(slice.percentage * 100)}%)

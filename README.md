@@ -1,51 +1,128 @@
 # chuk-mcp-remotion
 
-> AI-powered video generation with Remotion - A design-system-first approach to creating professional YouTube videos
+> AI-powered video generation with Remotion - A design-system-first approach to creating professional multi-platform videos
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://github.com/anthropics/mcp)
+[![Tests](https://img.shields.io/badge/tests-950%20passing-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)](tests/)
 
 ## Overview
 
-`chuk-mcp-remotion` is an MCP (Model Context Protocol) server that brings the power of [Remotion](https://www.remotion.dev) video generation to AI assistants like Claude. It provides a **design-system-first approach** inspired by [shadcn/ui](https://ui.shadcn.com) and [chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx), making it easy for LLMs to create professional, animated videos optimized for YouTube.
+`chuk-mcp-remotion` is an MCP (Model Context Protocol) server that brings the power of [Remotion](https://www.remotion.dev) video generation to AI assistants like Claude. It provides a **design-system-first approach** with comprehensive design tokens, enabling AI to create professional, animated videos optimized for **YouTube, TikTok, LinkedIn, Instagram Stories**, and more.
 
 ### Key Features
 
-- **🎨 Design System Approach**: Pre-built themes, components, and tokens optimized for video
-- **🎬 YouTube-Optimized**: Components designed for hooks, retention, and engagement
-- **🤖 LLM-Friendly**: Discoverable components with detailed schemas and examples
-- **⚡ Powered by Remotion**: Generate React-based videos programmatically
-- **🎯 Component Library**: 20+ ready-to-use video components (titles, overlays, charts, animations)
+- **🎨 Complete Design System**: Design tokens for colors, typography, spacing, and motion
+- **📱 Multi-Platform Support**: Safe margins for LinkedIn, TikTok, Instagram, YouTube
+- **🎬 37+ Video Components**: Charts, code blocks, overlays, layouts, animations, and demo realism
 - **🎨 7 Built-in Themes**: Tech, Finance, Education, Lifestyle, Gaming, Minimal, Business
-- **📊 Data Visualization**: Animated charts and counters for engaging data presentation
+- **⚡ Track-Based Timeline**: Professional multi-track composition system
+- **🤖 LLM-Friendly**: Discoverable components with detailed schemas
+- **📊 Data Visualization**: Animated charts (Pie, Bar, Line, Area, Donut, Horizontal Bar)
+- **💻 Code Display**: Syntax-highlighted code blocks with typing animations
 
-## Architecture
+## Design System
 
-### Design System Structure
+### Four Token Categories
 
-```
-Design Tokens → Components → Variants → Themes
-```
+1. **Colors** (`tokens/colors.py`)
+   - 7 theme palettes optimized for video
+   - Dark/light mode support (`on_dark`, `on_light`)
+   - Background variants (dark, light, glass)
+   - Semantic colors (success, warning, error, info)
 
-1. **Design Tokens**: Core design primitives
-   - **Colors**: 7 theme palettes (tech, finance, education, etc.)
-   - **Typography**: Font scales optimized for 720p/1080p/4K
-   - **Motion**: Spring configs, easings, duration presets
+2. **Typography** (`tokens/typography.py`)
+   - Font scales for 720p, 1080p, 4K
+   - Primary and code font stacks
+   - Font weights, line heights, letter spacing
+   - Video-optimized readability
 
-2. **Component Registry**: 20+ video components
-   - **Scenes**: TitleScene, EndScreen
-   - **Layouts**: AsymmetricLayout, ThreeColumnLayout, ThreeRowLayout, ThreeByThreeGrid, Grid, SplitScreen
-   - **Overlays**: LowerThird, TextOverlay, SubscribeButton
-   - **Charts**: LineChart, Counter
-   - **Code**: CodeBlock, TypingCode
-   - **Animations**: Pre-built animation presets
+3. **Spacing** (`tokens/spacing.py`) ⭐ NEW
+   - 10-step spacing scale (4px - 120px)
+   - **7 platform safe margins**: LinkedIn, Instagram Stories/Square, TikTok, YouTube, Mobile
+   - Border radius tokens
+   - Layout width tokens
 
-3. **Themes**: Complete design systems
-   - Tech, Finance, Education, Lifestyle, Gaming, Minimal, Business
-   - Each theme combines colors, typography, and motion
+4. **Motion** (`tokens/motion.py`)
+   - Spring configurations for animations
+   - Easing curves (ease-out, ease-in-out, bounce)
+   - Duration presets (fast, normal, slow)
 
-4. **Variants**: Multiple styles per component (inspired by cva)
-   - Example: LowerThird variants: minimal, standard, glass, bold, animated
+### Platform Safe Margins
+
+Ensure your content isn't cropped by platform UIs:
+
+| Platform | Top | Bottom | Left | Right | Notes |
+|----------|-----|--------|------|-------|-------|
+| **LinkedIn Feed** | 40px | 40px | 24px | 24px | Recommended 8-24px safe zone |
+| **Instagram Stories** | 100px | 120px | 24px | 24px | UI overlays at top/bottom |
+| **TikTok** | 100px | 180px | 24px | **80px** | Side buttons on right |
+| **YouTube** | 20px | 20px | 20px | 20px | Standard margins |
+| **Mobile Vertical** | 80px | 100px | - | - | 9:16 format |
+| **Mobile Horizontal** | - | - | 24px | 24px | 16:9 format |
+| **Instagram Square** | 32px (all sides) | - | - | - | 1:1 format |
+
+## Component Library
+
+### 📊 Charts (6 components)
+All charts support design tokens and smooth animations:
+
+- **PieChart** - Proportions and percentages
+- **BarChart** - Vertical bar comparisons
+- **HorizontalBarChart** - Ranked horizontal bars with top 3 highlighting
+- **LineChart** - Trends over time
+- **AreaChart** - Filled area trends
+- **DonutChart** - Ring chart with center stat
+
+### 🎨 Overlays (5 components)
+- **TitleScene** - Full-screen animated titles (4 variants, 5 animations)
+- **EndScreen** - YouTube end screens with CTAs (4 variants)
+- **LowerThird** - Name plates (5 variants, 5 positions)
+- **TextOverlay** - Animated text emphasis (5 styles, 5 animations)
+- **SubscribeButton** - Animated subscribe button (5 animations)
+
+### 💻 Code (2 components)
+- **CodeBlock** - Syntax-highlighted code display (4 variants: minimal, terminal, editor, glass)
+- **TypingCode** - Character-by-character typing animation (4 variants, 4 cursor styles)
+
+### 📐 Layouts (17 components)
+Professional video layouts for multi-platform content:
+
+- **AsymmetricLayout** - Main feed (2/3) + stacked demo panels (1/3)
+- **Container** - Content container with optional borders and backgrounds
+- **DialogueFrame** - Conversation-style layout with speaker/audience
+- **FocusStrip** - Main content with focus strip overlay
+- **Grid** - Flexible grid layouts (8 types: 1x2, 2x1, 2x2, 3x2, 2x3, 3x3, 4x2, 2x4)
+- **HUDStyle** - HUD-style overlay layout (4 corners + center)
+- **Mosaic** - Multi-clip mosaic grid layout
+- **OverTheShoulder** - Presenter with screen content
+- **PerformanceMultiCam** - Primary camera + up to 4 secondary cameras
+- **PiP** - Picture-in-picture with positioning
+- **SplitScreen** - Side-by-side or top/bottom splits (4 divider styles)
+- **StackedReaction** - Content with stacked reactions
+- **ThreeByThreeGrid** - 3x3 grid layout for multiple items
+- **ThreeColumnLayout** - Three-column layout
+- **ThreeRowLayout** - Three-row layout
+- **Timeline** - Timeline-based event display
+- **Vertical** - Two-panel vertical split
+
+### 🎬 Animations (1 component)
+- **Counter** - Animated number counter (4 animations: count_up, flip, slot_machine, digital)
+
+### 🎭 Demo Realism (5 components)
+Realistic UI mockups and demonstrations:
+
+- **BeforeAfterSlider** - Interactive before/after comparison slider
+- **BrowserFrame** - Browser window with realistic chrome and tabs
+- **CodeDiff** - Side-by-side code comparison with syntax highlighting
+- **DeviceFrame** - Device mockups (phone, tablet, desktop) with content
+- **Terminal** - Terminal window with command history and typing
+
+### 📦 Content (1 component)
+- **DemoBox** - Reusable content container for demos
+
+**Total: 37 production-ready components** - All using design tokens with 100% test coverage!
 
 ## Installation
 
@@ -62,281 +139,150 @@ Design Tokens → Components → Variants → Themes
 git clone https://github.com/chrishayuk/chuk-mcp-remotion.git
 cd chuk-mcp-remotion
 
-# Install dependencies
-pip install -e .
-
-# Or with uv (faster)
+# Install dependencies with uv (recommended)
 uv pip install -e .
+
+# Or with pip
+pip install -e .
 ```
 
-### Install Remotion (Node.js)
-
-The server generates Remotion projects, so you'll need Remotion installed:
+### Install Remotion
 
 ```bash
-# Remotion will be installed per-project
-# The MCP server handles this automatically
-```
-
-## Examples
-
-### Comprehensive Layouts Showcase (Recommended)
-
-The definitive showcase demonstrating **ALL 17 layout types** in two parts:
-
-```bash
-python examples/comprehensive_layouts_showcase.py
-```
-
-This creates a complete showcase with:
-- **Part 1**: All layouts with DemoBox placeholders (structure-only)
-- **Part 2**: All layouts with realistic content (real-world usage)
-
-**Layouts included:**
-- Core: Grid, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, AsymmetricLayout, SplitScreen, Container
-- Specialized: OverTheShoulder, DialogueFrame, StackedReaction, HUDStyle, PerformanceMultiCam, FocusStrip, PiP, Vertical, Timeline, Mosaic
-
-⏱️ Duration: ~2.5 minutes • 🎬 37 scenes • 📦 17+ component types
-
-[**Full YouTube Layouts Guide →**](docs/YOUTUBE_LAYOUTS.md)
-
-### More Examples
-
-```bash
-# Explore design system
-python examples/explore_design_system.py
-
-# Data visualization
-python examples/data_visualization_overlay.py
-
-# Code display
-python examples/code_display.py
+# Remotion is installed per-project automatically
+# The MCP server handles this when generating projects
 ```
 
 ## Quick Start
 
-### 1. Start the Server
-
-**HTTP Mode** (for testing/development):
-```bash
-python -m chuk_mcp_remotion.server http --port 8000
-```
+### 1. Start the MCP Server
 
 **STDIO Mode** (for Claude Desktop):
 ```bash
 python -m chuk_mcp_remotion.server stdio
 ```
 
-### 2. Explore Available Components
-
-Use the discovery tools to explore what's available:
-
-```python
-# List all components
-remotion_list_components()
-
-# Search for specific components
-remotion_search_components(query="text")
-
-# Get component schema
-remotion_get_component_schema(component_name="LowerThird")
-
-# List themes
-remotion_list_themes()
+**HTTP Mode** (for testing/development):
+```bash
+python -m chuk_mcp_remotion.server http --port 8000
 ```
 
-### 3. Explore Design Tokens
+### 2. Create a Project
 
 ```python
-# Color palettes
-remotion_list_color_tokens()
-
-# Typography system
-remotion_list_typography_tokens()
-
-# Motion design
-remotion_list_motion_tokens()
+# Via MCP tools
+remotion_create_project(
+    name="my_video",
+    theme="tech",
+    fps=30,
+    width=1920,
+    height=1080
+)
 ```
 
-## Component Catalog
-
-**📖 [Complete Component Documentation →](docs/components/README.md)**
-
-Explore detailed documentation for all components including props, variants, animations, and best practices. Each component has comprehensive guides with usage examples and design patterns.
-
-### Scenes
-
-#### TitleScene
-Full-screen animated title card
-- **Variants**: minimal, standard, bold, kinetic
-- **Animations**: fade_zoom, slide_up, typewriter, blur_in, split
+### 3. Add Components
 
 ```python
-{
-    "text": "The Future of AI",
-    "subtitle": "Transforming Technology",
-    "variant": "bold",
-    "animation": "fade_zoom",
-    "duration_seconds": 3.0
-}
+# Add a title scene
+remotion_add_title_scene(
+    text="Welcome to AI Videos",
+    subtitle="Created with Design Tokens",
+    variant="bold",
+    animation="fade_zoom",
+    duration="3s"
+)
+
+# Add a chart with safe margins
+remotion_add_pie_chart(
+    data='[{"label": "AI", "value": 40}, {"label": "ML", "value": 30}]',
+    title="Technology Distribution",
+    duration="4s",
+    gap_before="1s"  # Time strings supported!
+)
+
+# Add code with typing animation
+remotion_add_typing_code(
+    code="console.log('Hello, World!');",
+    language="javascript",
+    title="Example Code",
+    typing_speed="medium",
+    duration="5s"
+)
 ```
 
-#### EndScreen
-YouTube end screen with CTAs
-- **Variants**: standard, split, carousel, minimal
+### 4. Render the Video
 
-### Overlays
-
-#### LowerThird
-Name plate overlay (TV-style graphics)
-- **Variants**: minimal, standard, glass, bold, animated
-- **Positions**: bottom_left, bottom_center, bottom_right, top_left, top_center
-
-```python
-{
-    "name": "Dr. Sarah Chen",
-    "title": "AI Researcher, Stanford",
-    "variant": "glass",
-    "position": "bottom_left",
-    "start_time": 2.0,
-    "duration": 5.0
-}
+```bash
+cd remotion-projects/my_video
+npm install
+npm start  # Preview in browser
+npm run build  # Render to MP4
 ```
 
-#### TextOverlay
-Animated text for emphasis
-- **Styles**: emphasis, caption, callout, subtitle, quote
-- **Animations**: blur_in, slide_up, fade, typewriter, scale_in
+## Examples
 
-#### SubscribeButton
-Animated subscribe button
-- **Animations**: bounce, glow, pulse, slide, wiggle
+The `examples/` directory contains production-ready demos:
 
-### Layouts
+### Design System Showcases
 
-**NEW!** Complete coverage of all 10 common YouTube layout patterns! Perfect for tutorials, showcases, reactions, and more.
+```bash
+# Complete design system showcase (90 seconds)
+python examples/design_system_showcase.py
 
-#### AsymmetricLayout
-Perfect for tutorials! Main feed + demo panels.
-- **Variants**: main-right (default), main-left, main-bottom, main-top
-- **Features**:
-  - Main content (2/3 screen)
-  - Two demo panels (1/3 screen, stacked)
-  - Optional overlay support
-  - Border and styling controls
+# Platform safe margins demo (60 seconds)
+python examples/safe_margins_demo.py
 
-```python
-{
-    "type": "AsymmetricLayout",
-    "config": {
-        "layout": "main-right",
-        "border_width": 2
-    },
-    "mainFeed": {"type": "TypingCode", ...},
-    "demo1": {"type": "CodeBlock", ...},
-    "demo2": {"type": "CodeBlock", ...},
-    "overlay": {"type": "LowerThird", ...}
-}
+# Explore all design tokens
+python examples/explore_design_system.py
 ```
 
-#### ThreeColumnLayout
-Sidebar + Main + Sidebar arrangements
-- **Configurable widths** (e.g., 25-50-25, 30-40-30)
-- **Use cases**: Side-by-side comparisons, dashboards
+### Working Examples
 
-#### ThreeRowLayout
-Header + Main + Footer arrangements
-- **Configurable heights** (e.g., 20-60-20, 15-70-15)
-- **Use cases**: Intro + content + CTA
+```bash
+# Fibonacci code typing demo
+python examples/fibonacci_demo.py
+```
 
-#### ThreeByThreeGrid
-Perfect 3x3 grid (9 cells)
-- **Use cases**: Feature showcases, comparison matrices
+All examples use the **ProjectManager API** with the track-based timeline system.
 
-#### Grid (Flexible)
-Multi-layout grid system
-- **Layouts**: 1x2, 2x1, 2x2, 3x2, 2x3, 3x3, 4x2, 2x4
+## MCP Tools Reference
 
-#### PiPLayout ⭐ NEW
-Picture-in-picture with webcam overlay
-- **Positions**: bottom-right, bottom-left, top-right, top-left
-- **Use cases**: Commentary videos, reaction streams
+### Project Management
+- `remotion_create_project(name, theme, fps, width, height)` - Create new project
+- `remotion_get_project_info()` - Get current project info
+- `remotion_list_projects()` - List all projects
 
-#### VerticalLayout ⭐ NEW
-Optimized for 9:16 Shorts/TikTok/Reels
-- **Layouts**: top-bottom, caption-content, content-caption, split-vertical
-- **Use cases**: YouTube Shorts, TikTok, Instagram Reels
+### Component Tools (37 total)
 
-#### MosaicLayout ⭐ NEW
-Irregular collage with layered clips
-- **Styles**: hero-corners, stacked, spotlight
-- **Use cases**: Montages, highlight reels, creative intros
+#### Charts
+- `remotion_add_pie_chart(data, title, duration, track, gap_before)`
+- `remotion_add_bar_chart(data, title, duration, track, gap_before)`
+- `remotion_add_horizontal_bar_chart(data, title, duration, track, gap_before)`
+- `remotion_add_line_chart(data, title, xlabel, ylabel, duration, track, gap_before)`
+- `remotion_add_area_chart(data, title, duration, track, gap_before)`
+- `remotion_add_donut_chart(data, title, duration, track, gap_before)`
 
-#### TimelineLayout ⭐ NEW
-Progress/timeline overlay with milestones
-- **Features**: Progress bar, milestone markers, position indicators
-- **Use cases**: Educational explainers, progression videos
+#### Overlays
+- `remotion_add_title_scene(text, subtitle, variant, animation, duration, track, gap_before)`
+- `remotion_add_end_screen(cta_text, variant, duration, track, gap_before)`
+- `remotion_add_lower_third(name, title, variant, position, duration, track, gap_before)`
+- `remotion_add_text_overlay(text, style, animation, position, duration, track, gap_before)`
+- `remotion_add_subscribe_button(animation, position, duration, track, gap_before)`
 
-**📚 All 10 YouTube Layout Patterns:** See [Complete Layouts Guide](docs/ALL_YOUTUBE_LAYOUTS.md) for the full coverage matrix.
+#### Code
+- `remotion_add_code_block(code, language, title, variant, animation, show_line_numbers, duration, track, gap_before)`
+- `remotion_add_typing_code(code, language, title, variant, cursor_style, typing_speed, show_line_numbers, duration, track, gap_before)`
 
-### Charts & Data
+#### Layouts
+- `remotion_add_grid(children, layout, duration, track, gap_before)`
+- `remotion_add_container(content, border, duration, track, gap_before)`
+- `remotion_add_split_screen(left, right, variant, duration, track, gap_before)`
 
-#### LineChart
-Animated line chart
-- **Animations**: draw, fade_in, scale_in, points_sequence
-
-#### Counter
-Animated number counter for stats
-- **Animations**: count_up, flip, slot_machine, digital
-
-## Themes
-
-### Tech Theme
-Modern tech aesthetic with blue/cyan palette
-- **Use Cases**: Tech reviews, coding tutorials, software demos
-- **Colors**: Primary blue (#0066FF), Accent cyan (#00D9FF)
-- **Motion**: Smooth spring, ease-out curves
-
-### Finance Theme
-Professional finance with green/gold
-- **Use Cases**: Stock analysis, investing advice, business news
-- **Colors**: Primary green (#00C853), Accent gold (#FFD600)
-- **Motion**: Snappy, precise animations
-
-### Education Theme
-Friendly education with purple/orange
-- **Use Cases**: Educational content, explainers, courses
-- **Colors**: Primary purple (#7C4DFF), Accent orange (#FF6E40)
-- **Motion**: Bouncy, playful animations
-
-### Gaming Theme
-High-energy gaming with neon accents
-- **Use Cases**: Gaming videos, esports, stream overlays
-- **Colors**: Neon green (#00E676), Neon purple (#E040FB)
-- **Motion**: Elastic, energetic animations
-
-### Minimal Theme
-Clean monochrome aesthetic
-- **Use Cases**: Professional content, documentaries, interviews
-- **Colors**: Grayscale with accent colors
-- **Motion**: Smooth, subtle animations
-
-### Lifestyle Theme
-Warm lifestyle with coral/pink
-- **Use Cases**: Vlogs, lifestyle, wellness, travel
-- **Colors**: Pink (#FF6B9D), Coral (#FFB74D)
-- **Motion**: Gentle, smooth animations
-
-### Business Theme
-Professional business with navy/teal
-- **Use Cases**: Corporate videos, presentations, B2B
-- **Colors**: Navy (#1565C0), Teal (#00ACC1)
-- **Motion**: Snappy, professional animations
-
-## MCP Tools
+#### Animations
+- `remotion_add_counter(start_value, end_value, prefix, suffix, decimals, animation, duration, track, gap_before)`
 
 ### Discovery Tools
-- `remotion_list_components(category?)` - List available components
+- `remotion_list_components(category)` - List available components
 - `remotion_search_components(query)` - Search components
 - `remotion_get_component_schema(name)` - Get component details
 - `remotion_list_themes()` - List available themes
@@ -346,13 +292,91 @@ Professional business with navy/teal
 - `remotion_list_color_tokens()` - Color palettes
 - `remotion_list_typography_tokens()` - Typography system
 - `remotion_list_motion_tokens()` - Motion design
+- `remotion_list_spacing_tokens()` ⭐ NEW - Spacing and safe margins
 
 ### Info Tools
 - `remotion_get_info()` - Server information and statistics
 
+## Time String Format ⭐ NEW
+
+All duration and timing parameters support flexible time strings:
+
+```python
+# String formats
+duration="2s"       # 2 seconds
+duration="500ms"    # 500 milliseconds
+duration="1.5s"     # 1.5 seconds
+duration="1m"       # 1 minute (60 seconds)
+gap_before="1s"     # 1 second gap
+gap_before="250ms"  # 250ms gap
+
+# Float format still works
+duration=2.0
+gap_before=0.5
+```
+
+## Track-Based Timeline System
+
+The timeline uses a professional multi-track approach:
+
+```python
+# Main track: Sequential auto-stacking
+remotion_add_title_scene(...)  # Starts at 0s
+remotion_add_pie_chart(...)    # Auto-stacks after title
+remotion_add_bar_chart(...)    # Auto-stacks after pie chart
+
+# Overlay track: Layers on top
+remotion_add_text_overlay(..., track="overlay", align_to="main", offset=5.0)
+
+# Background track: Behind main content
+remotion_add_background(..., track="background")
+```
+
+**Default Tracks:**
+- `main` (layer 0) - Primary content, auto-stacks with 0.5s gap
+- `overlay` (layer 10) - Text overlays, UI elements
+- `background` (layer -10) - Background media
+
+## Themes
+
+### Tech Theme
+Modern tech aesthetic with blue/cyan palette
+- **Colors**: Primary blue (#0066FF), Accent cyan (#00D9FF)
+- **Use Cases**: Tech reviews, coding tutorials, software demos
+
+### Finance Theme
+Professional finance with green/gold
+- **Colors**: Primary green (#00C853), Accent gold (#FFD600)
+- **Use Cases**: Stock analysis, investing advice, business news
+
+### Education Theme
+Friendly education with purple/orange
+- **Colors**: Primary purple (#7C4DFF), Accent orange (#FF6E40)
+- **Use Cases**: Educational content, explainers, courses
+
+### Gaming Theme
+High-energy gaming with neon accents
+- **Colors**: Neon green (#00E676), Neon purple (#E040FB)
+- **Use Cases**: Gaming videos, esports, stream overlays
+
+### Minimal Theme
+Clean monochrome aesthetic
+- **Colors**: Grayscale with subtle accents
+- **Use Cases**: Professional content, documentaries
+
+### Lifestyle Theme
+Warm lifestyle with coral/pink
+- **Colors**: Pink (#FF6B9D), Coral (#FFB74D)
+- **Use Cases**: Vlogs, lifestyle, wellness, travel
+
+### Business Theme
+Professional business with navy/teal
+- **Colors**: Navy (#1565C0), Teal (#00ACC1)
+- **Use Cases**: Corporate videos, presentations, B2B
+
 ## Configuration for Claude Desktop
 
-Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -376,76 +400,117 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 chuk-mcp-remotion/
 ├── src/chuk_mcp_remotion/
 │   ├── server.py              # Main MCP server
-│   ├── tokens/                # Design tokens
-│   │   ├── colors.py         # Color palettes
+│   ├── tokens/                # Design tokens ⭐
+│   │   ├── colors.py         # Color palettes (7 themes)
 │   │   ├── typography.py     # Typography system
-│   │   └── motion.py         # Motion design
-│   ├── registry/             # Component registry
-│   │   └── components.py     # Component definitions
+│   │   ├── motion.py         # Motion design
+│   │   ├── spacing.py        # Spacing & safe margins ⭐ NEW
+│   │   └── token_manager.py  # Token import/export
 │   ├── themes/               # Theme system
-│   │   └── youtube_themes.py # YouTube-optimized themes
+│   │   └── youtube_themes.py # 7 YouTube-optimized themes
+│   ├── components/           # Component library ⭐
+│   │   ├── charts/          # 6 chart components
+│   │   ├── overlays/        # 5 overlay components
+│   │   ├── code/            # 2 code components
+│   │   ├── layouts/         # 17 layout components ⭐
+│   │   ├── animations/      # 1 animation component
+│   │   ├── demo_realism/    # 5 demo realism components ⭐
+│   │   └── content/         # 1 content component
 │   ├── generator/            # TSX generation
-│   │   ├── templates/        # Organized template library
-│   │   │   ├── layouts/     # Layout components
-│   │   │   ├── overlays/    # Overlay components
-│   │   │   ├── effects/     # Effects
-│   │   │   └── content/     # Content components
-│   │   ├── component_builder.py
-│   │   └── composition_builder.py
-│   ├── renderer/             # Remotion rendering
-│   └── utils/                # Utilities
-├── docs/                     # Documentation
-│   ├── components/          # Component documentation
-│   │   ├── README.md       # Component catalog
-│   │   ├── COMPONENT_DESIGN.md  # Design principles
-│   │   ├── overlays/       # Overlay component docs
-│   │   ├── content/        # Content component docs
-│   │   └── layouts/        # Layout component docs
-│   ├── YOUTUBE_LAYOUTS.md  # Layout guide
-│   └── ALL_YOUTUBE_LAYOUTS.md  # Complete layouts guide
-├── examples/                 # Example videos
-│   └── youtube_layouts.py   # Layout showcase
+│   │   ├── component_builder.py    # Jinja2 templating
+│   │   ├── composition_builder.py  # Component instances
+│   │   └── timeline.py            # Track-based timeline ⭐
+│   ├── utils/                # Utilities
+│   │   └── project_manager.py     # Project scaffolding ⭐
+│   └── models.py             # Pydantic models
+├── examples/                 # Production examples ⭐
+│   ├── design_system_showcase.py
+│   ├── safe_margins_demo.py
+│   ├── fibonacci_demo.py
+│   └── explore_design_system.py
 ├── tests/                    # Tests
-└── remotion-projects/        # Generated projects
+├── remotion-templates/       # Base Remotion templates
+└── remotion-projects/        # Generated projects (gitignored)
 ```
 
 ### Running Tests
 
 ```bash
-pytest
+# Run all tests
+make test
+
+# Run with coverage
+make test-cov
 ```
 
 ### Code Quality
 
 ```bash
-# Format code
-ruff format .
+# Run all checks (linting, type checking, tests)
+make check
 
-# Lint
-ruff check .
-
-# Type check
-mypy src
+# Individual checks
+make lint       # Ruff linting
+make format     # Ruff formatting
+make typecheck  # MyPy type checking
+make test       # Run all tests
 ```
+
+**All checks must pass before committing!** The `make check` command runs linting, type checking, and all 950 tests to ensure code quality.
+
+## Recent Updates ⭐
+
+### Test Coverage Achievement (January 2025)
+- ✅ **100% test coverage** on all 17 layout component tools
+- ✅ **98% coverage** on token_manager.py (improved from 81%)
+- ✅ **950 passing tests** with comprehensive test suite
+- ✅ Added JSON parsing error tests to all layout tools
+- ✅ Removed 67 legacy tests, replaced with modular tests
+- ✅ All builder.py files at 100% coverage
+
+### Component Library Expansion (January 2025)
+- ✅ **17 layout components** (up from 3): AsymmetricLayout, Container, DialogueFrame, FocusStrip, Grid, HUDStyle, Mosaic, OverTheShoulder, PerformanceMultiCam, PiP, SplitScreen, StackedReaction, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, Timeline, Vertical
+- ✅ **5 demo realism components**: BeforeAfterSlider, BrowserFrame, CodeDiff, DeviceFrame, Terminal
+- ✅ **1 content component**: DemoBox
+- ✅ Total: **37 production-ready components**
+
+### Design System Integration (January 2025)
+- ✅ Created comprehensive spacing tokens with 7 platform safe margins
+- ✅ Applied design tokens to ALL 37 components (100% coverage)
+- ✅ Fixed Jinja2 template rendering for token context
+- ✅ Updated all themes with spacing tokens
+- ✅ Fixed Pydantic v2 compatibility issues
+
+### Time String Support (January 2025)
+- ✅ Support for time strings: "1s", "500ms", "1m"
+- ✅ Fixed `gap_before` string concatenation bug
+- ✅ Updated all 37 MCP tools to accept time strings
+- ✅ Enhanced `seconds_to_frames()` with format parsing
+
+### Example Files (January 2025)
+- ✅ Fixed ProjectManager API usage in all examples
+- ✅ Created design system showcase demo (90s)
+- ✅ Created platform safe margins demo (60s)
+- ✅ Fixed EndScreen thumbnail handling
 
 ## Roadmap
 
-### Phase 1: Foundation ✅
-- ✅ Design token system (colors, typography, motion)
-- ✅ Component registry with 20+ core components
+### Phase 1: Foundation ✅ COMPLETE
+- ✅ Design token system (colors, typography, motion, spacing)
+- ✅ Component registry with 17 components
 - ✅ 7 YouTube-optimized themes
 - ✅ Discovery tools for LLMs
-- ✅ Professional layout system (grids, columns, asymmetric)
-- ✅ Organized template structure
+- ✅ Track-based timeline system
+- ✅ Platform safe margin support
 
-### Phase 2: Generation ⚡ (Current)
-- ✅ TSX component generation
+### Phase 2: Generation ✅ COMPLETE
+- ✅ TSX component generation with Jinja2
 - ✅ Remotion project scaffolding
-- ✅ Composition builder
-- 🔲 Asset management
-- 🔲 Advanced animations
+- ✅ Composition builder with ComponentInstance
+- ✅ ProjectManager API
+- ✅ Time string parsing ("1s", "500ms")
 
-### Phase 3: Rendering
+### Phase 3: Rendering 🚧 IN PROGRESS
 - 🔲 Remotion render integration
 - 🔲 Export to MP4/WebM
 - 🔲 Thumbnail generation
@@ -455,21 +520,19 @@ mypy src
 - 🔲 Custom theme builder
 - 🔲 Animation timeline editor
 - 🔲 Audio sync
-- 🔲 B-roll suggestions
+- 🔲 Asset management
 - 🔲 Auto-captioning
-
-## Inspiration
-
-This project is inspired by:
-
-- **[Remotion](https://www.remotion.dev)**: Programmatic video generation with React
-- **[shadcn/ui](https://ui.shadcn.com)**: Design system and component approach
-- **[chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx)**: Design-system-first MCP server
-- **[chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server)**: Zero-config MCP framework
+- 🔲 Light/dark mode switching
 
 ## Contributing
 
-Contributions welcome! Please check out our [contributing guidelines](CONTRIBUTING.md).
+Contributions welcome! Please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run `make lint && make format && make typecheck`
+5. Submit a pull request
 
 ## License
 
@@ -478,12 +541,10 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Links
 
 - **GitHub**: https://github.com/chrishayuk/chuk-mcp-remotion
-- **Documentation**: https://github.com/chrishayuk/chuk-mcp-remotion/docs
-- **Component Docs**: [Component Catalog](docs/components/README.md) | [Design Principles](docs/components/COMPONENT_DESIGN.md)
 - **Related Projects**:
-  - [chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server)
-  - [chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx)
-  - [Remotion](https://www.remotion.dev)
+  - [chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server) - Zero-config MCP framework
+  - [chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx) - PowerPoint MCP server
+  - [Remotion](https://www.remotion.dev) - React-based video generation
 
 ## Author
 

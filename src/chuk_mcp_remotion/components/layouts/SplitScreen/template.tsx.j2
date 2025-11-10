@@ -22,9 +22,9 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
   bottom,
   startFrame,
   durationInFrames,
-  dividerWidth = [[ config.divider_width or 2 ]],
+  dividerWidth = [[ config.divider_width or ("parseInt('" ~ spacing['border_width']['medium'] ~ "')") ]],
   dividerColor = '[[ config.divider_color or colors.accent[0] ]]',
-  gap = [[ config.gap or 20 ]],
+  gap = [[ config.gap or ("parseInt('" ~ spacing['spacing']['lg'] ~ "')") ]],
   orientation = '[[ config.orientation or "horizontal" ]]',
 }) => {
   const frame = useCurrentFrame();
@@ -42,7 +42,7 @@ export const SplitScreen: React.FC<SplitScreenProps> = ({
         display: 'flex',
         flexDirection: isHorizontal ? 'row' : 'column',
         gap,
-        padding: [[ config.padding or 40 ]],
+        padding: [[ config.padding or ("parseInt('" ~ spacing['spacing']['2xl'] ~ "')") ]],
         backgroundColor: '[[ config.background_color or colors.background.dark ]]',
       }}
     >

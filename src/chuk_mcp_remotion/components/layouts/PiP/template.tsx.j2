@@ -1,0 +1,90 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/PiP/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface PiPProps {
+  mainContent?: React.ReactNode;
+  pipContent?: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+  position?: string;
+  overlay_size?: number;
+  margin?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const PiP: React.FC<PiPProps> = ({
+  mainContent,
+  pipContent,
+  startFrame,
+  durationInFrames,
+  position = 'bottom-right',
+  overlay_size = 20,
+  margin = parseInt('[[ spacing.spacing.xl ]]'),
+  border_width = parseInt('[[ spacing.border_width.medium ]]'),
+  border_color = '[[ colors.border.medium ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Calculate overlay position
+  const getOverlayStyle = () => {
+    const baseStyle = {
+      position: 'absolute' as const,
+      width: `${overlay_size}%`,
+      aspectRatio: '16/9',
+      display: 'flex',
+      overflow: 'hidden',
+      border: `${border_width}px solid ${border_color}`,
+      borderRadius: border_radius,
+      zIndex: 10,
+    };
+
+    switch (position) {
+      case 'bottom-right':
+        return { ...baseStyle, bottom: margin, right: margin };
+      case 'bottom-left':
+        return { ...baseStyle, bottom: margin, left: margin };
+      case 'top-right':
+        return { ...baseStyle, top: margin, right: margin };
+      case 'top-left':
+        return { ...baseStyle, top: margin, left: margin };
+      default:
+        return { ...baseStyle, bottom: margin, right: margin };
+    }
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {/* Main content - full screen background */}
+      {mainContent && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          overflow: 'hidden',
+        }}>
+          {mainContent}
+        </div>
+      )}
+
+      {/* PiP overlay */}
+      {pipContent && (
+        <div style={getOverlayStyle()}>
+          {pipContent}
+        </div>
+      )}
+    </AbsoluteFill>
+  );
+};

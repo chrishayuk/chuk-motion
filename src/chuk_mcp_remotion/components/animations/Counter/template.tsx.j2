@@ -68,9 +68,9 @@ export const Counter: React.FC<CounterProps> = ({
       frame: relativeFrame,
       fps,
       config: {
-        damping: 200,
-        mass: 1.5,
-        stiffness: 100
+        damping: [[ motion.default_spring.config.damping ]],
+        mass: [[ motion.default_spring.config.mass ]],
+        stiffness: [[ motion.default_spring.config.stiffness ]]
       }
     });
     currentValue = interpolate(progress, [0, 1], [startValue, endValue]);
@@ -81,9 +81,9 @@ export const Counter: React.FC<CounterProps> = ({
       frame: relativeFrame,
       fps,
       config: {
-        damping: 180,
-        mass: 1,
-        stiffness: 120
+        damping: [[ motion.default_spring.config.damping ]],
+        mass: [[ motion.default_spring.config.mass ]],
+        stiffness: [[ motion.default_spring.config.stiffness ]]
       }
     });
     currentValue = interpolate(progress, [0, 1], [startValue, endValue]);
@@ -147,12 +147,12 @@ export const Counter: React.FC<CounterProps> = ({
           opacity,
           transform: `scale(${scaleValue})`,
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          fontSize: 120,
-          fontWeight: 900,
+          fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution]['4xl'] ]]'),
+          fontWeight: '[[ typography.font_weights.black ]]',
           color: '[[ colors.primary[0] ]]',
           textAlign: 'center',
-          textShadow: `0 4px 20px [[ colors.primary[0] ]]80`,
-          letterSpacing: '-0.02em'
+          textShadow: `0 [[ spacing.spacing.xxs ]]px [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80`,
+          letterSpacing: '[[ typography.letter_spacing.tight ]]'
         }}
       >
         {prefix}{displayValue}{suffix}

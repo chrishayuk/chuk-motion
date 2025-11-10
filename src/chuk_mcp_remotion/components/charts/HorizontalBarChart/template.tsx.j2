@@ -44,11 +44,11 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
 
   // Chart dimensions
   const chartWidth = 1000;
-  const chartHeight = Math.max(400, data.length * 80);
+  const chartHeight = Math.max(400, data.length * parseInt('[[ spacing.spacing['4xl'] ]]'));
   const paddingLeft = 200;
-  const paddingRight = 80;
-  const paddingTop = 60;
-  const paddingBottom = 60;
+  const paddingRight = parseInt('[[ spacing.spacing['4xl'] ]]');
+  const paddingTop = parseInt('[[ spacing.spacing['3xl'] ]]');
+  const paddingBottom = parseInt('[[ spacing.spacing['3xl'] ]]');
   const barHeight = (chartHeight - paddingTop - paddingBottom) / data.length * 0.7;
   const barSpacing = (chartHeight - paddingTop - paddingBottom) / data.length;
 
@@ -84,8 +84,8 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
 
   // Default colors with gradients
   const defaultColors = [
-    '#FFB800', '#FF9500', '#FF6B00', '#FF4D00',
-    '#E63900', '#CC2900', '#B31900', '#990000'
+    '[[ colors.primary[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[2] ]]', '[[ colors.accent[3] ]]',
+    '[[ colors.primary[4] ]]', '[[ colors.accent[4] ]]', '[[ colors.primary[5] ]]', '[[ colors.accent[5] ]]'
   ];
 
   return (
@@ -98,20 +98,20 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
+          filter: 'drop-shadow(0 20px 40px [[ colors.background.dark ]])'
         }}
       >
         {title && (
           <h3
             style={{
-              fontSize: 40,
-              fontWeight: 700,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
-              marginBottom: 30,
+              marginBottom: parseInt('[[ spacing.spacing.xl ]]'),
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px rgba(0, 102, 255, 0.5)',
-              letterSpacing: '-0.02em'
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
             }}
           >
             {title}
@@ -122,15 +122,15 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           width={chartWidth}
           height={chartHeight}
           style={{
-            borderRadius: 16,
-            padding: 20,
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
             overflow: 'visible'
           }}
         >
           <defs>
             <linearGradient id="bgGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
-              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
             </linearGradient>
             {data.map((item, idx) => {
               const color = item.color || defaultColors[idx % defaultColors.length];
@@ -157,11 +157,11 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
             width={chartWidth}
             height={chartHeight}
             fill="url(#bgGradientH)"
-            rx="16"
+            rx="[[ spacing.border_radius.xl ]]"
           />
 
           {/* Grid lines */}
-          <g stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1">
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
               const x = paddingLeft + ratio * (chartWidth - paddingLeft - paddingRight);
               return (
@@ -177,7 +177,7 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           </g>
 
           {/* Axes */}
-          <g stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
             <line
               x1={paddingLeft}
               y1={paddingTop}
@@ -215,8 +215,8 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                 <circle
                   cx={paddingLeft - 140}
                   cy={y + barHeight / 2}
-                  r="22"
-                  fill={rank === 1 ? '#FFB800' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : 'rgba(255, 255, 255, 0.2)'}
+                  r="[[ spacing.spacing.lg ]]"
+                  fill={rank === 1 ? '[[ colors.primary[2] ]]' : rank === 2 ? '[[ colors.border.medium ]]' : rank === 3 ? '[[ colors.accent[3] ]]' : '[[ colors.border.light ]]'}
                   opacity={barProgress}
                   filter="url(#glowH)"
                 />
@@ -225,10 +225,10 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   y={y + barHeight / 2}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fill={rank <= 3 ? '#000000' : '[[ colors.text.on_dark ]]'}
-                  fontSize="16"
-                  fontWeight="900"
-                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  fill={rank <= 3 ? '[[ colors.background.dark ]]' : '[[ colors.text.on_dark ]]'}
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.black ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                   opacity={barProgress}
                 >
                   {rank}
@@ -236,14 +236,14 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
 
                 {/* Label */}
                 <text
-                  x={paddingLeft - 30}
+                  x={paddingLeft - parseInt('[[ spacing.spacing.xl ]]')}
                   y={y + barHeight / 2}
                   textAnchor="end"
                   dominantBaseline="middle"
-                  fill="rgba(255, 255, 255, 0.9)"
-                  fontSize="18"
-                  fontWeight="600"
-                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.semibold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                   opacity={barProgress}
                 >
                   {item.label}
@@ -256,20 +256,20 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
                   width={animatedWidth}
                   height={barHeight}
                   fill={`url(#barGradient${idx})`}
-                  rx="6"
+                  rx="[[ spacing.border_radius.md ]]"
                   filter="url(#glowH)"
                   opacity={barProgress}
                 />
 
                 {/* Value label */}
                 <text
-                  x={x + animatedWidth + 15}
+                  x={x + animatedWidth + parseInt('[[ spacing.spacing.sm ]]')}
                   y={y + barHeight / 2}
                   dominantBaseline="middle"
                   fill="[[ colors.text.on_dark ]]"
-                  fontSize="20"
-                  fontWeight="700"
-                  fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].sm ]]"
+                  fontWeight="[[ typography.font_weights.bold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
                   opacity={barProgress}
                 >
                   {item.value}
@@ -282,11 +282,11 @@ export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
           {xlabel && (
             <text
               x={paddingLeft + (chartWidth - paddingLeft - paddingRight) / 2}
-              y={chartHeight - 20}
+              y={chartHeight - parseInt('[[ spacing.spacing.lg ]]')}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.6)"
-              fontSize="16"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
             >
               {xlabel}
             </text>

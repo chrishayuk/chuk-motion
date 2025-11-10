@@ -77,9 +77,9 @@ class TestCodeBlockVariants:
         )
 
         # Should have macOS-style window controls
-        assert "#FF5F56" in tsx  # Red dot
-        assert "#FFBD2E" in tsx  # Yellow dot
-        assert "#27C93F" in tsx  # Green dot
+        assert "#FF3D00" in tsx  # Red dot
+        assert "#FFB300" in tsx  # Yellow dot
+        assert "#00C853" in tsx  # Green dot
 
 
 class TestCodeBlockAnimations:

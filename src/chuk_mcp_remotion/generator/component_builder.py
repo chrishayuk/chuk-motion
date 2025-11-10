@@ -54,6 +54,7 @@ class ComponentBuilder:
             "code",
             "animations",
             "content",
+            "demo_realism",
         ]
 
     def _to_camel_case(self, snake_str: str) -> str:
@@ -113,8 +114,9 @@ class ComponentBuilder:
         Returns:
             Generated TSX component code as string
         """
-        # Get theme
+        # Get theme (now returns a Pydantic Theme model)
         theme = YOUTUBE_THEMES.get(theme_name, YOUTUBE_THEMES["tech"])
+        assert theme is not None, f"Theme '{theme_name}' not found"
 
         # Find and get template
         try:
@@ -124,28 +126,29 @@ class ComponentBuilder:
             raise ValueError(f"Template not found for {component_name}: {e}") from e
 
         # Get font sizes for the theme's resolution
-        resolution = theme["typography"].get("default_resolution", "video_1080p")
-        font_sizes = TYPOGRAPHY_TOKENS["font_sizes"][resolution]
+        resolution = theme.typography.default_resolution
+        font_sizes = getattr(TYPOGRAPHY_TOKENS.font_sizes, resolution)
 
-        # Build complete typography context with font_sizes
-        typography_context = {
-            **theme["typography"],
-            "font_sizes": TYPOGRAPHY_TOKENS["font_sizes"],
-            "font_weights": TYPOGRAPHY_TOKENS["font_weights"],
-            "line_heights": TYPOGRAPHY_TOKENS["line_heights"],
-            "letter_spacing": TYPOGRAPHY_TOKENS["letter_spacing"],
-            "default_resolution": resolution,
-        }
+        # Build typography context with font_sizes for template compatibility
+        # This maintains backwards compatibility with existing templates that expect typography.font_sizes
+        typography_context = theme.typography.model_dump()
+        typography_context["font_sizes"] = TYPOGRAPHY_TOKENS.font_sizes.model_dump()
+        typography_context["font_weights"] = TYPOGRAPHY_TOKENS.font_weights.model_dump()
+        typography_context["line_heights"] = TYPOGRAPHY_TOKENS.line_heights.model_dump()
+        typography_context["letter_spacing"] = TYPOGRAPHY_TOKENS.letter_spacing.model_dump()
 
-        # Render template
+        # Render template - convert Pydantic models to dicts for Jinja2 template compatibility
         tsx_code = template.render(
             config=config,
-            theme=theme,
-            colors=theme["colors"],
+            theme=theme.model_dump(),
+            colors=theme.colors.model_dump(),
             typography=typography_context,
-            motion=theme["motion"],
-            spacing=SPACING_TOKENS,
-            font_sizes=font_sizes,
+            motion=theme.motion.model_dump(),
+            spacing=SPACING_TOKENS.model_dump(),
+            font_sizes=font_sizes.model_dump(),
+            # Also include global token singletons for convenience
+            TYPOGRAPHY_TOKENS=TYPOGRAPHY_TOKENS,
+            SPACING_TOKENS=SPACING_TOKENS,
         )
 
         return tsx_code
@@ -209,18 +212,15 @@ class ComponentBuilder:
             JavaScript object with theme styles
         """
         theme = YOUTUBE_THEMES.get(theme_name, YOUTUBE_THEMES["tech"])
-        colors = theme["colors"]
+        assert theme is not None, f"Theme '{theme_name}' not found"
+        colors = theme.colors
 
         styles = {
-            "primary": colors["primary"][0]
-            if isinstance(colors["primary"], list)
-            else colors["primary"],
-            "accent": colors["accent"][0]
-            if isinstance(colors["accent"], list)
-            else colors["accent"],
-            "gradient": colors["gradient"],
-            "background": colors["background"],
-            "text": colors["text"],
+            "primary": colors.primary[0] if isinstance(colors.primary, list) else colors.primary,
+            "accent": colors.accent[0] if isinstance(colors.accent, list) else colors.accent,
+            "gradient": colors.gradient,
+            "background": colors.background.model_dump(),
+            "text": colors.text.model_dump(),
         }
 
         return f"export const themeStyles = {styles};"

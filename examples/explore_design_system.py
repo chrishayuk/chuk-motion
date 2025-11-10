@@ -59,18 +59,18 @@ async def explore_themes():
     print("="*70)
 
     for theme_name, theme in YOUTUBE_THEMES.items():
-        print(f"\n🎨 {theme['name'].upper()}")
+        print(f"\n🎨 {theme.name.upper()}")
         print("-" * 70)
-        print(f"  Description: {theme['description']}")
+        print(f"  Description: {theme.description}")
 
         # Show colors
-        colors = theme['colors']
-        primary = colors['primary'][0] if isinstance(colors['primary'], list) else colors['primary']
-        accent = colors['accent'][0] if isinstance(colors['accent'], list) else colors['accent']
+        colors = theme.colors
+        primary = colors.primary[0] if isinstance(colors.primary, list) else colors.primary
+        accent = colors.accent[0] if isinstance(colors.accent, list) else colors.accent
         print(f"  Colors: Primary {primary}, Accent {accent}")
 
         # Show use cases
-        use_cases = theme.get('use_cases', [])
+        use_cases = theme.use_cases
         if use_cases:
             print(f"  Use Cases: {', '.join(use_cases[:3])}")
 
@@ -82,31 +82,34 @@ async def explore_tokens():
     print("="*70)
 
     # Color tokens
-    print(f"\n🎨 Colors: {len(COLOR_TOKENS)} themes")
-    print(f"  Themes: {', '.join(COLOR_TOKENS.keys())}")
+    color_themes = COLOR_TOKENS.model_dump()
+    print(f"\n🎨 Colors: {len(color_themes)} themes")
+    print(f"  Themes: {', '.join(color_themes.keys())}")
 
     # Typography tokens
     print(f"\n📝 Typography:")
-    font_families = TYPOGRAPHY_TOKENS['font_families']
+    font_families = TYPOGRAPHY_TOKENS.font_families.model_dump()
     print(f"  Font Families: {', '.join(font_families.keys())}")
 
     # Motion tokens
     print(f"\n⚡ Motion:")
-    springs = MOTION_TOKENS['spring_configs']
-    easings = MOTION_TOKENS['easing_curves']
-    durations = MOTION_TOKENS['durations']
+    springs = MOTION_TOKENS.spring_configs
+    easings = MOTION_TOKENS.easing
+    durations = MOTION_TOKENS.duration
     print(f"  Spring Configs: {len(springs)}")
     print(f"  Easing Curves: {len(easings)}")
     print(f"  Duration Presets: {len(durations)}")
 
     # Spacing tokens
     print(f"\n📏 Spacing:")
-    spacing = SPACING_TOKENS['spacing']
-    safe_margins = SPACING_TOKENS['safe_margins']
+    spacing = SPACING_TOKENS.spacing
+    safe_area = SPACING_TOKENS.safe_area
     print(f"  Spacing Scale: {len(spacing)} steps ({', '.join(list(spacing.keys())[:5])}...)")
-    print(f"  Safe Margins: {len(safe_margins)} platforms ({', '.join(list(safe_margins.keys())[:3])}...)")
-    print(f"  Border Radius: {len(SPACING_TOKENS['border_radius'])} variants")
-    print(f"  Layout Presets: {len(SPACING_TOKENS['layout_widths'])} widths, {len(SPACING_TOKENS['layout_heights'])} heights")
+    print(f"  Safe Areas: {len(safe_area)} platforms ({', '.join(list(safe_area.keys())[:3])}...)")
+    print(f"  Border Radius: {len(SPACING_TOKENS.border_radius)} variants")
+    # Note: layout_widths and layout_heights may not exist, checking with hasattr
+    if hasattr(SPACING_TOKENS, 'layout_widths'):
+        print(f"  Layout Presets: {len(SPACING_TOKENS.layout_widths)} widths, {len(SPACING_TOKENS.layout_heights)} heights")
 
 
 async def show_component_example():
@@ -151,11 +154,15 @@ async def main():
     print("="*70)
     print(f"  Total Components: {len(COMPONENT_REGISTRY)}")
     print(f"  Total Themes: {len(YOUTUBE_THEMES)}")
-    print(f"  Color Palettes: {len(COLOR_TOKENS)}")
-    print(f"  Spring Configs: {len(MOTION_TOKENS['spring_configs'])}")
-    print(f"  Easing Curves: {len(MOTION_TOKENS['easing_curves'])}")
-    print(f"  Spacing Tokens: {len(SPACING_TOKENS)} categories")
-    print(f"  Safe Margin Platforms: {len(SPACING_TOKENS['safe_margins'])}")
+    # Count color themes by getting fields from ColorTokens model
+    color_themes = len([f for f in COLOR_TOKENS.model_fields.keys() if not f.startswith('_')])
+    print(f"  Color Palettes: {color_themes}")
+    print(f"  Spring Configs: {len(MOTION_TOKENS.spring_configs)}")
+    print(f"  Easing Curves: {len(MOTION_TOKENS.easing)}")
+    # Count spacing categories by checking model fields
+    spacing_categories = len([f for f in SPACING_TOKENS.model_fields.keys() if not f.startswith('_')])
+    print(f"  Spacing Token Categories: {spacing_categories}")
+    print(f"  Safe Margin Platforms: {len(SPACING_TOKENS.safe_area)}")
     print("\n" + "="*70)
     print("\n✨ Ready to create amazing videos with AI!")
     print("📱 Now with platform-specific safe margins for LinkedIn, TikTok, Instagram & more!\n")

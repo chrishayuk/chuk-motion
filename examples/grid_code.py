@@ -17,6 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from chuk_mcp_remotion.utils.project_manager import ProjectManager
+from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 
 
 async def main():
@@ -49,9 +50,6 @@ async def main():
     print(f"  Theme: {project['theme']}")
     print(f"  Resolution: {project['resolution']}")
     print()
-
-    # Get composition builder
-    composition = manager.current_composition
 
     print("🎨 Step 2: Creating 9 code snippets...")
     print()
@@ -115,88 +113,111 @@ async def main():
         }
     ]
 
-    # Create ComponentInstance objects for each code snippet
-    children = []
+    # Add title card
+    title = ComponentInstance(
+        component_type="TitleScene",
+        start_frame=0,
+        duration_frames=0,
+        props={
+            "text": "Code Grid",
+            "subtitle": "9 Code Snippets in 3x3 Layout",
+            "variant": "bold",
+            "animation": "fade_zoom"
+        },
+        layer=0
+    )
+    manager.current_timeline.add_component(title, duration=3.0, track="main")
+
+    print("✓ Title card added")
+    print()
+    print("📊 Step 3: Creating code block components...")
+
+    # Create individual code block components
     for idx, snippet in enumerate(code_snippets):
         print(f"  {idx + 1}. {snippet['title']:<16} - {snippet['description']}")
 
-        child = composition.create_code_block_instance(
-            code=snippet['code'],
-            language=snippet['language'],
-            title=snippet['title'],
-            start_frame=0,  # Will be managed by Grid
-            duration_frames=300,  # 10 seconds
-            variant="minimal",  # Compact variant
-            animation="fade_in",
-            show_line_numbers=False  # No line numbers for compact display
+        code_block = ComponentInstance(
+            component_type="CodeBlock",
+            start_frame=0,
+            duration_frames=0,
+            props={
+                "code": snippet['code'],
+                "language": snippet['language'],
+                "title": snippet['title'],
+                "variant": "minimal",
+                "animation": "fade_in",
+                "show_line_numbers": False
+            },
+            layer=0
         )
-        children.append(child)
+        # Add each code block sequentially with a short duration
+        manager.current_timeline.add_component(code_block, duration=3.0, track="main", gap_before=0.2)
 
     print()
-    print("📊 Step 3: Creating 3x3 grid layout...")
+    print("✓ All 9 code blocks added")
+    print(f"  Total snippets: {len(code_snippets)}")
+    print()
 
-    # Add grid with all 9 snippets
-    composition.add_grid(
-        child_components=children,
-        start_time=0.5,
-        duration=9.5,
-        layout="3x3",
-        gap=20,  # Increased gap for better separation
-        padding=40
+    # Add end screen
+    end_screen = ComponentInstance(
+        component_type="EndScreen",
+        start_frame=0,
+        duration_frames=0,
+        props={
+            "cta_text": "Explore More Code Examples",
+            "variant": "gradient"
+        },
+        layer=0
     )
+    manager.current_timeline.add_component(end_screen, duration=3.0, track="main", gap_before=0.5)
+    print("✓ End screen added")
 
-    print("✓ Grid created with 3x3 layout")
-    print(f"  Total snippets: {len(children)}")
-    print(f"  Grid gap: 20px")
-    print(f"  Padding: 40px")
     print()
-
     print("⚙️  Step 4: Generating TSX components...")
 
-    # Generate Grid component
-    grid_tsx = manager.component_builder.build_component("Grid", {}, composition.theme)
-    grid_file = Path(project['path']) / "src" / "components" / "Grid.tsx"
-    grid_file.write_text(grid_tsx)
-    print("✓ Generated: Grid.tsx")
+    # Generate TSX files for each component type
+    component_types = {c.component_type for c in manager.current_timeline.get_all_components()}
 
-    # Generate CodeBlock component
-    code_block_tsx = manager.component_builder.build_component("CodeBlock", {}, composition.theme)
-    code_block_file = Path(project['path']) / "src" / "components" / "CodeBlock.tsx"
-    code_block_file.write_text(code_block_tsx)
-    print("✓ Generated: CodeBlock.tsx")
+    for comp_type in component_types:
+        sample = next(
+            c for c in manager.current_timeline.get_all_components()
+            if c.component_type == comp_type
+        )
+        manager.add_component_to_project(comp_type, sample.props, manager.current_timeline.theme)
+        print(f"  ✓ {comp_type}.tsx")
 
     print()
     print("📝 Step 5: Generating VideoComposition.tsx...")
 
     # Generate composition
-    composition_path = manager.generate_composition()
-    print(f"✓ Generated: VideoComposition.tsx")
+    manager.generate_composition()
+    print(f"  ✓ VideoComposition.tsx")
+
+    # Get project info
+    info = manager.get_project_info()
+    composition = info['composition']
 
     print()
     print("=" * 70)
-    print("🎉 3x3 CODE GRID GENERATED!")
+    print("🎉 CODE GRID GENERATED!")
     print("=" * 70)
     print()
-    print(f"Project location: {project['path']}")
+    print(f"📁 Project: {project_path}")
+    print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
+    print(f"📊 Components: {len(composition['components'])}")
+    print(f"📐 Resolution: 1920x1080 @ 30fps")
     print()
     print("✨ Features:")
-    print("  • 3x3 grid layout with 9 code snippets")
+    print("  • 9 code snippets across multiple languages")
     print("  • Syntax highlighting for JavaScript and Python")
-    print("  • Compact minimal variant for dense display")
+    print("  • Compact minimal variant for clean display")
     print("  • Showcases: Functions, OOP, Async, React, Generators")
-    print("  • Design system tokens for consistent spacing")
+    print("  • Design system tokens for consistent styling")
     print()
-    print("Next steps:")
-    print()
-    print("1. Install dependencies:")
-    print(f"   cd {project['path']}")
+    print("🚀 To render:")
+    print(f"   cd {project_path}")
     print("   npm install")
-    print()
-    print("2. Preview in Remotion Studio:")
     print("   npm start")
-    print()
-    print("3. Render video:")
-    print("   npx remotion render src/index.ts code-grid out/grid.mp4")
     print()
     print("💡 Use Cases:")
     print("  • Programming language comparisons")
@@ -207,7 +228,7 @@ async def main():
     print()
     print("=" * 70)
     print()
-    print("✨ Your 3x3 code grid is ready!")
+    print("✨ Your code grid is ready!")
     print()
 
 

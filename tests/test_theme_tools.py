@@ -141,10 +141,11 @@ class TestThemeTools:
         assert data["current_theme"] == "tech"
         assert "info" in data
 
-    async def test_validate_theme_valid(self, mcp_with_theme_tools, sample_theme_data):
+    async def test_validate_theme_valid(self, mcp_with_theme_tools, sample_theme):
         """Test validating valid theme."""
         tool = mcp_with_theme_tools.tools["remotion_validate_theme"]
-        result = await tool(theme_data=json.dumps(sample_theme_data))
+        theme_dict = sample_theme.model_dump()
+        result = await tool(theme_data=json.dumps(theme_dict))
 
         data = json.loads(result)
         assert data["valid"] is True
@@ -208,10 +209,11 @@ class TestThemeTools:
         assert data["status"] == "success"
         assert "file_path" in data
 
-    async def test_import_theme(self, mcp_with_theme_tools, sample_theme_data, vfs):
+    async def test_import_theme(self, mcp_with_theme_tools, sample_theme, vfs):
         """Test importing theme."""
-        # Create a theme file in vfs
-        await vfs.write_file("test_theme.json", json.dumps(sample_theme_data))
+        # Create a theme file in vfs - convert Pydantic model to dict first
+        theme_dict = sample_theme.model_dump()
+        await vfs.write_file("test_theme.json", json.dumps(theme_dict))
 
         tool = mcp_with_theme_tools.tools["remotion_import_theme"]
         result = await tool(file_path="test_theme.json", theme_key="imported_test")

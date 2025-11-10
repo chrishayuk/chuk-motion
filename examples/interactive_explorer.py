@@ -42,7 +42,7 @@ def explore_themes():
         theme_list = list(YOUTUBE_THEMES.keys())
         for idx, theme_name in enumerate(theme_list, 1):
             theme = YOUTUBE_THEMES[theme_name]
-            print(f"  {idx}. {theme['name']} - {theme['description']}")
+            print(f"  {idx}. {theme.name} - {theme.description}")
 
         print("\n  0. Back to main menu")
 
@@ -62,26 +62,28 @@ def explore_themes():
 def show_theme_details(theme_name: str):
     """Show detailed information about a theme."""
     theme = YOUTUBE_THEMES[theme_name]
-    colors = theme['colors']
+    colors = theme.colors
 
-    print_section(f"THEME: {theme['name'].upper()}")
-    print(f"\n{theme['description']}")
+    print_section(f"THEME: {theme.name.upper()}")
+    print(f"\n{theme.description}")
 
     print("\n📊 Color Palette:")
-    print(f"  Primary:    {colors['primary'][0]}")
-    print(f"  Accent:     {colors['accent'][0]}")
-    print(f"  Gradient:   {colors['gradient'][:50]}...")
+    print(f"  Primary:    {colors.primary[0]}")
+    print(f"  Accent:     {colors.accent[0]}")
+    print(f"  Gradient:   {colors.gradient[:50]}...")
 
     print("\n🎨 Background:")
-    for key, value in colors['background'].items():
+    background_dict = colors.background.model_dump()
+    for key, value in background_dict.items():
         print(f"  {key:12} {value}")
 
     print("\n✍️  Text Colors:")
-    for key, value in colors['text'].items():
+    text_dict = colors.text.model_dump()
+    for key, value in text_dict.items():
         print(f"  {key:12} {value}")
 
     print("\n💡 Use Cases:")
-    for use_case in theme.get('use_cases', [])[:5]:
+    for use_case in theme.use_cases[:5]:
         print(f"  • {use_case}")
 
     input("\nPress Enter to continue...")
@@ -229,16 +231,18 @@ def show_typography_tokens():
     print_section("TYPOGRAPHY TOKENS")
 
     print("\n📝 Font Families:")
-    for name, family in TYPOGRAPHY_TOKENS['font_families'].items():
+    font_families = TYPOGRAPHY_TOKENS.font_families.model_dump()
+    for name, family in font_families.items():
         print(f"  • {name:12} {family['fonts'][0]}")
 
     print("\n📏 Font Sizes (1080p):")
-    sizes = TYPOGRAPHY_TOKENS['font_sizes']['video_1080p']
+    sizes = TYPOGRAPHY_TOKENS.font_sizes.video_1080p.model_dump()
     for size, value in sizes.items():
         print(f"  • {size:8} {value}")
 
     print("\n⚖️  Font Weights:")
-    for name, value in TYPOGRAPHY_TOKENS['font_weights'].items():
+    font_weights = TYPOGRAPHY_TOKENS.font_weights.model_dump()
+    for name, value in font_weights.items():
         print(f"  • {name:12} {value}")
 
     input("\nPress Enter to continue...")
@@ -249,15 +253,15 @@ def show_motion_tokens():
     print_section("MOTION TOKENS")
 
     print("\n⚡ Spring Configs:")
-    for name, config in MOTION_TOKENS['spring_configs'].items():
+    for name, config in MOTION_TOKENS.spring_configs.items():
         print(f"  • {name:10} {config['description']}")
 
     print("\n📈 Easing Curves:")
-    for name, curve in MOTION_TOKENS['easing_curves'].items():
+    for name, curve in MOTION_TOKENS.easing.items():
         print(f"  • {name:20} {curve['description']}")
 
     print("\n⏱️  Duration Presets:")
-    for name, duration in MOTION_TOKENS['durations'].items():
+    for name, duration in MOTION_TOKENS.duration.items():
         print(f"  • {name:12} {duration['seconds']}s ({duration['frames']} frames)")
 
     input("\nPress Enter to continue...")

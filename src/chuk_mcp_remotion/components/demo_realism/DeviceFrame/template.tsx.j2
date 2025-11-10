@@ -1,0 +1,286 @@
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+
+interface DeviceFrameProps {
+  startFrame: number;
+  durationInFrames: number;
+  device: 'phone' | 'tablet' | 'laptop';
+  content: string;
+  orientation: 'portrait' | 'landscape';
+  scale: number;
+  glare: boolean;
+  shadow: boolean;
+  position: string;
+}
+
+export const DeviceFrame: React.FC<DeviceFrameProps> = ({
+  startFrame,
+  durationInFrames,
+  device = 'phone',
+  content = '',
+  orientation = 'portrait',
+  scale = 1.0,
+  glare = true,
+  shadow = true,
+  position = 'center',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Visibility check
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const relativeFrame = frame - startFrame;
+
+  // Device dimensions (base sizes in px)
+  const deviceDimensions = {
+    phone: {
+      portrait: { width: 375, height: 812, bezel: parseInt('[[ spacing.spacing.lg ]]'), radius: parseInt('[[ spacing.spacing['2xl'] ]]') },
+      landscape: { width: 812, height: 375, bezel: parseInt('[[ spacing.spacing.lg ]]'), radius: parseInt('[[ spacing.spacing['2xl'] ]]') },
+    },
+    tablet: {
+      portrait: { width: 768, height: 1024, bezel: parseInt('[[ spacing.spacing.xl ]]'), radius: parseInt('[[ spacing.spacing.lg ]]') },
+      landscape: { width: 1024, height: 768, bezel: parseInt('[[ spacing.spacing.xl ]]'), radius: parseInt('[[ spacing.spacing.lg ]]') },
+    },
+    laptop: {
+      portrait: { width: 1440, height: 900, bezel: parseInt('[[ spacing.spacing['2xl'] ]]'), radius: 10 },
+      landscape: { width: 1440, height: 900, bezel: parseInt('[[ spacing.spacing['2xl'] ]]'), radius: 10 },
+    },
+  };
+
+  const dims = deviceDimensions[device][orientation];
+  const totalWidth = dims.width + dims.bezel * 2;
+  const totalHeight = dims.height + dims.bezel * 2;
+
+  // Position mappings
+  const positionMap: Record<string, { top?: string; left?: string; right?: string; bottom?: string; transform?: string }> = {
+    center: {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+    },
+    'top-left': { top: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'top-center': { top: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'top-right': { top: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+    'center-left': { top: '50%', left: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'center-right': { top: '50%', right: '[[ spacing.spacing.xl ]]', transform: 'translateY(-50%)' },
+    'bottom-left': { bottom: '[[ spacing.spacing.xl ]]', left: '[[ spacing.spacing.xl ]]' },
+    'bottom-center': { bottom: '[[ spacing.spacing.xl ]]', left: '50%', transform: 'translateX(-50%)' },
+    'bottom-right': { bottom: '[[ spacing.spacing.xl ]]', right: '[[ spacing.spacing.xl ]]' },
+  };
+
+  // Entrance animation
+  const entrance = spring({
+    frame: relativeFrame,
+    fps: fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]],
+      mass: [[ motion.default_spring.config.mass ]],
+    },
+  });
+
+  const opacity = interpolate(relativeFrame, [0, 20], [0, 1], { extrapolateRight: 'clamp' });
+  const scaleAnimation = interpolate(entrance, [0, 1], [0.9, 1]);
+
+  return (
+    <AbsoluteFill
+      style={{
+        ...positionMap[position],
+        width: totalWidth * scale,
+        height: totalHeight * scale,
+        opacity,
+        transform: `${positionMap[position].transform || ''} scale(${scaleAnimation})`,
+      }}
+    >
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          filter: shadow ? 'drop-shadow(0 20px 60px '[[ colors.shadow.dark ]]')' : 'none',
+        }}
+      >
+        {/* Device bezel/frame */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: device === 'laptop'
+              ? 'linear-gradient(145deg, #2a2a2a, #1a1a1a)'
+              : 'linear-gradient(145deg, #3a3a3a, #1a1a1a)',
+            borderRadius: `${dims.radius}px`,
+            padding: `${dims.bezel}px`,
+            [% if device == 'laptop' %]
+            borderTop: '[[ spacing.border_width.medium ]] solid #444',
+            [% endif %]
+          }}
+        >
+          {/* Screen area */}
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              background: '[[ colors.background.dark ]]',
+              borderRadius: `${dims.radius * 0.7}px`,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Content */}
+            {content && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                {content.match(/\.(png|jpg|jpeg|gif|webp)$/i) ? (
+                  <img
+                    src={content}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      color: '[[ colors.text.on_dark ]]',
+                      fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+                      padding: '[[ spacing.spacing.md ]]',
+                    }}
+                  >
+                    {content}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Screen glare effect */}
+            {glare && (
+              <>
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '50%',
+                    background: 'linear-gradient(180deg, '[[ colors.border.light ]]' 0%, transparent 100%)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '15%',
+                    width: '30%',
+                    height: '40%',
+                    background: 'radial-gradient(ellipse at center, '[[ colors.border.light ]]' 0%, transparent 70%)',
+                    transform: 'rotate(-25deg)',
+                    pointerEvents: 'none',
+                  }}
+                />
+              </>
+            )}
+          </div>
+
+          {/* Phone-specific elements */}
+          {device === 'phone' && (
+            <>
+              {/* Notch (for portrait phone) */}
+              {orientation === 'portrait' && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: `${dims.bezel}px`,
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '35%',
+                    height: '28px',
+                    background: '#0a0a0a',
+                    borderRadius: `0 0 [[ spacing.spacing.lg ]]px [[ spacing.spacing.lg ]]px`,
+                    zIndex: 10,
+                  }}
+                >
+                  {/* Speaker */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: parseInt('[[ spacing.spacing.xs ]]'),
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '40%',
+                      height: parseInt('[[ spacing.spacing.xxs ]]'),
+                      background: '#1a1a1a',
+                      borderRadius: '[[ spacing.border_width.medium ]]',
+                    }}
+                  />
+                  {/* Camera */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: parseInt('[[ spacing.spacing.xs ]]'),
+                      right: '20%',
+                      width: parseInt('[[ spacing.spacing.xs ]]'),
+                      height: parseInt('[[ spacing.spacing.xs ]]'),
+                      background: '#0a0a0a',
+                      border: '[[ spacing.border_width.thin ]] solid #2a2a2a',
+                      borderRadius: '50%',
+                    }}
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Laptop-specific elements */}
+          {device === 'laptop' && (
+            <>
+              {/* Camera dot */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: `${dims.bezel / 2}px`,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '6px',
+                  height: '6px',
+                  background: '#0a0a0a',
+                  border: '[[ spacing.border_width.thin ]] solid #333',
+                  borderRadius: '50%',
+                }}
+              />
+            </>
+          )}
+        </div>
+
+        {/* Laptop base/keyboard */}
+        {device === 'laptop' && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '110%',
+              height: parseInt('[[ spacing.spacing.lg ]]'),
+              background: 'linear-gradient(145deg, #2a2a2a, #1a1a1a)',
+              borderRadius: `0 0 [[ spacing.border_radius.lg ]]px [[ spacing.border_radius.lg ]]px`,
+              marginTop: '[[ spacing.border_width.medium ]]',
+            }}
+          />
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

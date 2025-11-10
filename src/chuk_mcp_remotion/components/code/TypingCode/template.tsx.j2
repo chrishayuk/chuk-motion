@@ -1,5 +1,5 @@
 {/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/code/TypingCode/template.tsx.j2 */}
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Highlight, themes } from 'prism-react-renderer';
 
@@ -30,59 +30,107 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
   const { fps } = useVideoConfig();
   const relativeFrame = frame - startFrame;
 
-  // Don't render if outside the time range
-  if (frame < startFrame || frame >= startFrame + durationInFrames) {
-    return null;
-  }
+  // Refs for auto-scrolling - MUST be declared before any conditional returns
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const currentLineRef = useRef<HTMLDivElement>(null);
 
   // Typing speed configuration
   const charsPerFrame = typing_speed;
   const totalChars = code.length;
 
-  // Calculate how many characters to show
+  // Reserve frames for holding the final result (2 seconds at 30fps = 60 frames)
   const startDelay = 10;
-  const charsToShow = Math.min(
-    totalChars,
-    Math.floor(Math.max(0, relativeFrame - startDelay) * charsPerFrame)
-  );
+  const holdFramesAtEnd = Math.floor(fps * 2); // 2 seconds hold at end
+  const typingFrames = durationInFrames - startDelay - holdFramesAtEnd;
 
-  // Get the displayed code
-  const displayedCode = code.slice(0, charsToShow);
-  const isTypingComplete = charsToShow >= totalChars;
+  // Track typing position based on frames
+  const isTypingComplete = relativeFrame >= startDelay + typingFrames;
+
+  // Calculate how many characters to show
+  // During hold period, show all characters; otherwise calculate based on frame
+  const charsToShow = isTypingComplete
+    ? totalChars
+    : Math.min(
+        totalChars,
+        Math.ceil(Math.max(0, relativeFrame - startDelay) * charsPerFrame)
+      );
 
   // Cursor blinking
   const cursorBlinkSpeed = 30;
   const showCursor = !isTypingComplete && Math.floor(relativeFrame / (cursorBlinkSpeed / 2)) % 2 === 0;
 
+  // Auto-scroll to follow typing cursor - MUST be declared before any conditional returns
+  useEffect(() => {
+    if (currentLineRef.current && scrollContainerRef.current && !isTypingComplete) {
+      const lineElement = currentLineRef.current;
+      const containerElement = scrollContainerRef.current;
+
+      // Scroll to keep current line in view
+      const lineRect = lineElement.getBoundingClientRect();
+      const containerRect = containerElement.getBoundingClientRect();
+
+      // Check if line is below visible area
+      if (lineRect.bottom > containerRect.bottom) {
+        lineElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+      // Check if line is above visible area
+      else if (lineRect.top < containerRect.top) {
+        lineElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [charsToShow, isTypingComplete]);
+
+  // Don't render if outside the time range - MUST come after all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Track which character we're currently at
+  let charCount = 0;
+
   // Variant styles
   const variants = {
     minimal: {
-      background: 'rgba(30, 35, 50, 0.95)',
-      borderRadius: 12,
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
       border: 'none',
-      padding: 30,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 10px 40px [[ colors.shadow.dark ]]',
+      maxHeight: '90vh',
+      maxWidth: '95vw',
+      overflow: 'auto'
     },
     terminal: {
-      background: 'rgba(20, 20, 20, 0.98)',
-      borderRadius: 8,
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      padding: 30,
-      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
+      background: '[[ colors.background.darker ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 10px 40px [[ colors.background.dark ]]',
+      maxHeight: '90vh',
+      maxWidth: '95vw',
+      overflow: 'auto'
     },
     editor: {
-      background: 'rgba(26, 31, 46, 0.98)',
-      borderRadius: 12,
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+      background: '[[ colors.background.dark ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+      border: '1px solid [[ colors.border.subtle ]]',
       padding: 0,
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
+      boxShadow: '0 20px 60px [[ colors.shadow.dark ]]',
+      maxHeight: '90vh',
+      maxWidth: '95vw',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      overflow: 'hidden'
     },
     hacker: {
-      background: 'rgba(0, 0, 0, 0.95)',
-      borderRadius: 8,
-      border: '1px solid #00D9FF',
-      padding: 30,
-      boxShadow: '0 0 30px rgba(0, 217, 255, 0.4)'
+      background: '[[ colors.background.hacker ]]',
+      borderRadius: parseInt('[[ spacing.border_radius.md ]]'),
+      border: '1px solid [[ colors.accent[0] ]]',
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      boxShadow: '0 0 30px [[ colors.accent[0] ]]66',
+      maxHeight: '90vh',
+      maxWidth: '95vw',
+      overflow: 'auto'
     }
   };
 
@@ -94,22 +142,22 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
       display: 'inline-block',
       width: '0.6em',
       height: '1.2em',
-      background: '#00D9FF',
-      marginLeft: 2
+      background: '[[ colors.accent[0] ]]',
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]')
     },
     line: {
       display: 'inline-block',
-      width: 2,
+      width: parseInt('[[ spacing.spacing.xxs ]]'),
       height: '1.2em',
-      background: '#00D9FF',
-      marginLeft: 2
+      background: '[[ colors.accent[0] ]]',
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]')
     },
     underline: {
       display: 'inline-block',
       width: '0.6em',
-      height: 2,
-      background: '#00D9FF',
-      marginLeft: 2,
+      height: parseInt('[[ spacing.spacing.xxs ]]'),
+      background: '[[ colors.accent[0] ]]',
+      marginLeft: parseInt('[[ spacing.spacing.xxs ]]'),
       verticalAlign: 'bottom'
     },
     none: {
@@ -119,6 +167,92 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
 
   const cursorStyle = cursorStyles[cursor_style as keyof typeof cursorStyles] || cursorStyles.line;
 
+  // Custom theme with high contrast for dark backgrounds
+  const customTheme = {
+    plain: {
+      color: '#F0F0F0',  // Brighter default text - catches unmatched tokens
+      backgroundColor: 'transparent'
+    },
+    styles: [
+      {
+        types: ['comment', 'prolog', 'doctype', 'cdata'],
+        style: { color: '#8B92A4', fontStyle: 'italic' }
+      },
+      {
+        types: ['namespace', 'module'],
+        style: { color: '#82AAFF' }  // Blue for modules
+      },
+      {
+        types: ['string', 'attr-value', 'char'],
+        style: { color: '#A5F3B4' }  // Green strings
+      },
+      {
+        types: ['punctuation', 'operator'],
+        style: { color: '#E8E8E8' }
+      },
+      {
+        types: ['number', 'boolean', 'null'],
+        style: { color: '#FFA657' }  // Orange
+      },
+      {
+        types: ['keyword', 'control', 'directive', 'unit'],
+        style: { color: '#FF6B9D' }  // Pink keywords
+      },
+      {
+        types: ['builtin', 'type-class', 'type', 'primitive'],
+        style: { color: '#FFD580' }  // Yellow for built-in types
+      },
+      {
+        types: ['function', 'function-variable', 'method', 'function-definition'],
+        style: { color: '#82AAFF' }  // Blue functions
+      },
+      {
+        types: ['class-name', 'maybe-class-name', 'entity'],
+        style: { color: '#FFD580' }  // Yellow classes
+      },
+      {
+        types: ['property', 'property-access', 'field'],
+        style: { color: '#E0E0E0' }  // Light gray properties
+      },
+      {
+        types: ['variable', 'parameter', 'this', 'self'],
+        style: { color: '#E0E0E0' }  // Light gray variables
+      },
+      {
+        types: ['constant', 'symbol'],
+        style: { color: '#00D9FF' }  // Cyan constants
+      },
+      {
+        types: ['tag', 'selector', 'attr-name'],
+        style: { color: '#00D9FF' }  // Cyan
+      },
+      {
+        types: ['decorator', 'annotation'],
+        style: { color: '#C792EA' }  // Purple decorators
+      },
+      {
+        types: ['regex', 'important'],
+        style: { color: '#C792EA' }
+      },
+      {
+        types: ['atrule', 'url', 'inserted'],
+        style: { color: '#A5F3B4' }
+      },
+      {
+        types: ['deleted'],
+        style: { color: '#FF6B9D' }
+      },
+      {
+        types: ['important', 'bold'],
+        style: { fontWeight: 'bold', color: '#FF6B9D' }
+      },
+      {
+        types: ['italic'],
+        style: { fontStyle: 'italic' }
+      }
+    ]
+  };
+
   return (
     <div
       style={{
@@ -127,12 +261,13 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: "'Fira Code', 'Monaco', 'Consolas', 'monospace'"
+        fontFamily: "'Fira Code', 'Monaco', 'Consolas', 'monospace'",
+        color: '#F0F0F0'  // Ensure all text is bright by default
       }}
     >
       <Highlight
-        theme={themes.vsDark}
-        code={displayedCode}
+        theme={customTheme as any}
+        code={code}
         language={language as any}
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
@@ -141,46 +276,46 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
               <>
                 <div
                   style={{
-                    background: 'rgba(0, 0, 0, 0.3)',
-                    padding: '12px 20px',
-                    borderTopLeftRadius: 12,
-                    borderTopRightRadius: 12,
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                    background: '[[ colors.background.overlay ]]',
+                    padding: '[[ spacing.spacing.sm ]] [[ spacing.spacing.lg ]]',
+                    borderTopLeftRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                    borderTopRightRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                    borderBottom: '1px solid [[ colors.border.light ]]',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 8
+                    gap: parseInt('[[ spacing.spacing.xs ]]')
                   }}
                 >
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FF5F56' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#FFBD2E' }} />
-                    <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#27C93F' }} />
+                  <div style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.xxs ]]') }}>
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+                    <div style={{ width: parseInt('[[ spacing.spacing.sm ]]'), height: parseInt('[[ spacing.spacing.sm ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
                   </div>
                   <div
                     style={{
-                      fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.7)',
-                      marginLeft: 12,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                      color: '[[ colors.text.muted ]]',
+                      marginLeft: parseInt('[[ spacing.spacing.sm ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 </div>
-                <div style={{ padding: 30 }}>
-                  <div style={{ display: 'flex', gap: 20 }}>
+                <div style={{ padding: parseInt('[[ spacing.spacing.xl ]]'), flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' as const }}>
+                  <div ref={scrollContainerRef} style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]'), overflow: 'auto', flex: 1 }}>
                     {show_line_numbers && (
                       <div
                         style={{
-                          color: 'rgba(255, 255, 255, 0.3)',
-                          fontSize: 16,
-                          lineHeight: 1.8,
+                          color: '[[ colors.text.dimmed ]]',
+                          fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                          lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                           textAlign: 'right',
                           userSelect: 'none',
                           minWidth: 50
                         }}
                       >
-                        {tokens.map((_, idx) => (
+                        {code.split('\n').map((_, idx) => (
                           <div key={idx}>{idx + 1}</div>
                         ))}
                       </div>
@@ -188,54 +323,109 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                     <div
                       style={{
                         flex: 1,
-                        fontSize: 18,
-                        lineHeight: 1.8,
-                        overflow: 'auto',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         whiteSpace: 'pre'
                       }}
                     >
-                      {tokens.map((line, i) => (
-                        <div key={i} {...getLineProps({ line })} style={{ display: 'flex', alignItems: 'center' }}>
-                          {line.map((token, key) => (
-                            <span key={key} {...getTokenProps({ token })} />
-                          ))}
-                          {i === tokens.length - 1 && showCursor && cursor_style !== 'none' && (
-                            <span style={cursorStyle}></span>
-                          )}
-                        </div>
-                      ))}
+                      {(() => {
+                        // Pre-calculate which line has the cursor
+                        let tempCharCount = 0;
+                        let cursorLineIndex = -1;
+
+                        for (let i = 0; i < tokens.length; i++) {
+                          const lineStart = tempCharCount;
+                          let lineEnd = tempCharCount;
+
+                          for (const token of tokens[i]) {
+                            lineEnd += token.content.length;
+                          }
+
+                          if (charsToShow > lineStart && charsToShow <= lineEnd) {
+                            cursorLineIndex = i;
+                            break;
+                          }
+
+                          tempCharCount = lineEnd + 1; // +1 for newline
+                        }
+
+                        return tokens.map((line, i) => {
+                          const lineStartChar = charCount;
+                          let showCursorOnThisLine = false;
+                          const isCurrentLine = i === cursorLineIndex;
+
+                          return (
+                            <div
+                              key={i}
+                              {...getLineProps({ line })}
+                              ref={isCurrentLine ? currentLineRef : null}
+                              style={{ display: 'flex', alignItems: 'center' }}
+                            >
+                              {line.map((token, key) => {
+                                const tokenText = token.content;
+                                const tokenStartChar = charCount;
+                                const tokenEndChar = charCount + tokenText.length;
+                                charCount = tokenEndChar;
+
+                                // Determine what portion of this token to show
+                                let visibleText = '';
+                                if (charsToShow >= tokenEndChar) {
+                                  // Entire token is visible
+                                  visibleText = tokenText;
+                                } else if (charsToShow > tokenStartChar) {
+                                  // Partial token visibility
+                                  visibleText = tokenText.slice(0, charsToShow - tokenStartChar);
+                                  showCursorOnThisLine = true;
+                                }
+                                // else: token not visible yet, visibleText stays empty
+
+                                return (
+                                  <span key={key} {...getTokenProps({ token })} style={{ ...getTokenProps({ token }).style, visibility: visibleText ? 'visible' : 'hidden' }}>
+                                    {visibleText || tokenText}
+                                  </span>
+                                );
+                              })}
+                              {/* Account for newline character */}
+                              {i < tokens.length - 1 && (() => { charCount++; return null; })()}
+                              {showCursorOnThisLine && showCursor && cursor_style !== 'none' && (
+                                <span style={cursorStyle}></span>
+                              )}
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   </div>
                 </div>
               </>
             ) : (
-              <div style={{ padding: variant === 'editor' ? 30 : 0 }}>
+              <div style={{ padding: variant === 'editor' ? parseInt('[[ spacing.spacing.xl ]]') : 0 }}>
                 {title && variant !== 'editor' && (
                   <div
                     style={{
-                      fontSize: 24,
-                      fontWeight: 600,
-                      color: '#FFFFFF',
-                      marginBottom: 20,
-                      fontFamily: "'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+                      fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
+                      color: '[[ colors.text.on_dark ]]',
+                      marginBottom: parseInt('[[ spacing.spacing.lg ]]'),
+                      fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
                     }}
                   >
                     {title}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 20 }}>
+                <div ref={scrollContainerRef} style={{ display: 'flex', gap: parseInt('[[ spacing.spacing.lg ]]'), overflow: 'auto' }}>
                   {show_line_numbers && (
                     <div
                       style={{
-                        color: 'rgba(255, 255, 255, 0.3)',
-                        fontSize: 16,
-                        lineHeight: 1.8,
+                        color: '[[ colors.text.dimmed ]]',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                        lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         textAlign: 'right',
                         userSelect: 'none',
                         minWidth: 50
                       }}
                     >
-                      {tokens.map((_, idx) => (
+                      {code.split('\n').map((_, idx) => (
                         <div key={idx}>{idx + 1}</div>
                       ))}
                     </div>
@@ -243,22 +433,79 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                   <div
                     style={{
                       flex: 1,
-                      fontSize: 18,
-                      lineHeight: 1.8,
-                      overflow: 'auto',
+                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                      lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                       whiteSpace: 'pre'
                     }}
                   >
-                    {tokens.map((line, i) => (
-                      <div key={i} {...getLineProps({ line })} style={{ display: 'flex', alignItems: 'center' }}>
-                        {line.map((token, key) => (
-                          <span key={key} {...getTokenProps({ token })} />
-                        ))}
-                        {i === tokens.length - 1 && showCursor && cursor_style !== 'none' && (
-                          <span style={cursorStyle}></span>
-                        )}
-                      </div>
-                    ))}
+                    {(() => {
+                      charCount = 0; // Reset for non-editor variant
+
+                      // Pre-calculate which line has the cursor
+                      let tempCharCount = 0;
+                      let cursorLineIndex = -1;
+
+                      for (let i = 0; i < tokens.length; i++) {
+                        const lineStart = tempCharCount;
+                        let lineEnd = tempCharCount;
+
+                        for (const token of tokens[i]) {
+                          lineEnd += token.content.length;
+                        }
+
+                        if (charsToShow > lineStart && charsToShow <= lineEnd) {
+                          cursorLineIndex = i;
+                          break;
+                        }
+
+                        tempCharCount = lineEnd + 1; // +1 for newline
+                      }
+
+                      return tokens.map((line, i) => {
+                        const lineStartChar = charCount;
+                        let showCursorOnThisLine = false;
+                        const isCurrentLine = i === cursorLineIndex;
+
+                        return (
+                          <div
+                            key={i}
+                            {...getLineProps({ line })}
+                            ref={isCurrentLine ? currentLineRef : null}
+                            style={{ display: 'flex', alignItems: 'center' }}
+                          >
+                            {line.map((token, key) => {
+                              const tokenText = token.content;
+                              const tokenStartChar = charCount;
+                              const tokenEndChar = charCount + tokenText.length;
+                              charCount = tokenEndChar;
+
+                              // Determine what portion of this token to show
+                              let visibleText = '';
+                              if (charsToShow >= tokenEndChar) {
+                                // Entire token is visible
+                                visibleText = tokenText;
+                              } else if (charsToShow > tokenStartChar) {
+                                // Partial token visibility
+                                visibleText = tokenText.slice(0, charsToShow - tokenStartChar);
+                                showCursorOnThisLine = true;
+                              }
+                              // else: token not visible yet, visibleText stays empty
+
+                              return (
+                                <span key={key} {...getTokenProps({ token })} style={{ ...getTokenProps({ token }).style, visibility: visibleText ? 'visible' : 'hidden' }}>
+                                  {visibleText || tokenText}
+                                </span>
+                              );
+                            })}
+                            {/* Account for newline character */}
+                            {i < tokens.length - 1 && (() => { charCount++; return null; })()}
+                            {showCursorOnThisLine && showCursor && cursor_style !== 'none' && (
+                              <span style={cursorStyle}></span>
+                            )}
+                          </div>
+                        );
+                      });
+                    })()}
                   </div>
                 </div>
               </div>

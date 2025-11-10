@@ -170,7 +170,7 @@ export const TitleScene: React.FC<TitleSceneProps> = ({
         justifyContent: 'center',
         alignItems: 'center',
         fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-        padding: 80
+        padding: parseInt('[[ spacing.spacing['4xl'] ]]')
       }}
     >
       <div
@@ -183,12 +183,12 @@ export const TitleScene: React.FC<TitleSceneProps> = ({
       >
         <h1
           style={{
-            fontSize: variant === 'bold' ? 120 : 96,
-            fontWeight: variant === 'kinetic' ? 900 : 700,
+            fontSize: variant === 'bold' ? parseInt('[[ typography.font_sizes[typography.default_resolution]['4xl'] ]]') : parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+            fontWeight: variant === 'kinetic' ? parseInt('[[ typography.font_weights.black ]]') : parseInt('[[ typography.font_weights.bold ]]'),
             color: variantStyle.textColor,
             margin: 0,
-            lineHeight: 1.1,
-            letterSpacing: '-0.02em',
+            lineHeight: parseFloat('[[ typography.line_heights.tight ]]'),
+            letterSpacing: '[[ typography.letter_spacing.tight ]]',
             textTransform: variant === 'kinetic' ? 'uppercase' : 'none',
             maxWidth: 1200
           }}
@@ -198,11 +198,11 @@ export const TitleScene: React.FC<TitleSceneProps> = ({
         {subtitle && (
           <p
             style={{
-              fontSize: 48,
-              fontWeight: 500,
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.medium ]]'),
               color: variantStyle.accentColor,
-              margin: '32px 0 0 0',
-              lineHeight: 1.3,
+              margin: '[[ spacing.spacing.xl ]] 0 0 0',
+              lineHeight: parseFloat('[[ typography.line_heights.snug ]]'),
               maxWidth: 900
             }}
           >

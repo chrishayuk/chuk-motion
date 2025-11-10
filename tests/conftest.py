@@ -9,8 +9,23 @@ from unittest.mock import Mock
 import pytest
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
-from chuk_mcp_remotion.themes.theme_manager import Theme, ThemeManager
+from chuk_mcp_remotion.themes.models import Theme, ThemeMotion, ThemeTypography
+from chuk_mcp_remotion.themes.theme_manager import ThemeManager
+from chuk_mcp_remotion.tokens.colors import (
+    BackgroundColors,
+    ColorTheme,
+    SemanticColors,
+    TextColors,
+)
+from chuk_mcp_remotion.tokens.motion import (
+    DurationConfig,
+    EasingConfig,
+    RemotionSpringConfig,
+    SpringConfig,
+)
+from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
 from chuk_mcp_remotion.tokens.token_manager import TokenManager
+from chuk_mcp_remotion.tokens.typography import FontFamily
 from chuk_mcp_remotion.utils.project_manager import ProjectManager
 
 
@@ -36,44 +51,93 @@ async def token_manager(vfs):
 
 @pytest.fixture
 def sample_theme_data():
-    """Sample theme data for testing."""
+    """Sample theme data for testing - as Pydantic models."""
+    colors = ColorTheme(
+        name="Test Theme Colors",
+        description="Test color theme",
+        primary=["#FF0000", "#CC0000", "#990000"],
+        accent=["#00FF00", "#00CC00", "#009900"],
+        gradient="linear-gradient(135deg, #FF0000 0%, #00FF00 100%)",
+        background=BackgroundColors(dark="#000000", light="#FFFFFF", glass="rgba(0, 0, 0, 0.8)"),
+        text=TextColors(on_dark="#FFFFFF", on_light="#000000", muted="#808080"),
+        semantic=SemanticColors(
+            success="#00FF00",
+            warning="#FFFF00",
+            error="#FF0000",
+            info="#0000FF",
+        ),
+    )
+
+    typography = ThemeTypography(
+        primary_font=FontFamily(
+            name="Display",
+            fonts=["Inter", "sans-serif"],
+            description="Display font",
+            usage="Headings",
+        ),
+        body_font=FontFamily(
+            name="Body",
+            fonts=["Inter", "sans-serif"],
+            description="Body font",
+            usage="Body text",
+        ),
+        code_font=FontFamily(
+            name="Code",
+            fonts=["Monaco", "monospace"],
+            description="Code font",
+            usage="Code blocks",
+        ),
+        default_resolution="video_1080p",
+    )
+
+    motion = ThemeMotion(
+        default_spring=SpringConfig(
+            config=RemotionSpringConfig(
+                damping=200,
+                mass=0.5,
+                stiffness=200,
+                overshootClamping=False,
+            ),
+            description="Smooth spring animation",
+            feel="Smooth, refined",
+            usage="Default animations",
+        ),
+        default_easing=EasingConfig(
+            curve=[0.0, 0.0, 0.58, 1.0],
+            css="ease-out",
+            description="Ease out curve",
+            usage="Default easing",
+        ),
+        default_duration=DurationConfig(
+            ms=667,
+            frames_30fps=20,
+            frames_60fps=40,
+            seconds=0.667,
+            css="0.667s",
+            description="Normal duration",
+        ),
+    )
+
     return {
-        "name": "Test Theme",
-        "description": "A test theme",
-        "colors": {
-            "primary": ["#FF0000", "#CC0000", "#990000"],
-            "accent": ["#00FF00", "#00CC00", "#009900"],
-            "gradient": "linear-gradient(135deg, #FF0000 0%, #00FF00 100%)",
-            "background": {"dark": "#000000", "light": "#FFFFFF", "glass": "rgba(0, 0, 0, 0.8)"},
-            "text": {"on_dark": "#FFFFFF", "on_light": "#000000", "muted": "#808080"},
-            "semantic": {
-                "success": "#00FF00",
-                "warning": "#FFFF00",
-                "error": "#FF0000",
-                "info": "#0000FF",
-            },
-        },
-        "typography": {
-            "primary_font": {"name": "Display", "fonts": ["Inter", "sans-serif"]},
-            "body_font": {"name": "Body", "fonts": ["Inter", "sans-serif"]},
-            "default_resolution": "video_1080p",
-        },
-        "motion": {
-            "default_spring": {
-                "name": "Smooth",
-                "config": {"damping": 200, "mass": 0.5, "stiffness": 200},
-            },
-            "default_easing": {"name": "Ease Out", "curve": [0.0, 0.0, 0.58, 1.0]},
-            "default_duration": {"frames": 20, "seconds": 0.667},
-        },
-        "use_cases": ["Testing", "Unit tests"],
+        "colors": colors,
+        "typography": typography,
+        "motion": motion,
+        "spacing": SPACING_TOKENS,
     }
 
 
 @pytest.fixture
 def sample_theme(sample_theme_data):
     """Create a sample Theme instance."""
-    return Theme.from_dict(sample_theme_data)
+    return Theme(
+        name="Test Theme",
+        description="A test theme",
+        colors=sample_theme_data["colors"],
+        typography=sample_theme_data["typography"],
+        motion=sample_theme_data["motion"],
+        spacing=sample_theme_data["spacing"],
+        use_cases=["Testing", "Unit tests"],
+    )
 
 
 @pytest.fixture

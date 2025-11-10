@@ -55,7 +55,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
   // Chart dimensions
   const chartWidth = 900;
   const chartHeight = 500;
-  const padding = 60;
+  const padding = parseInt('[[ spacing.spacing['3xl'] ]]');
 
   // Entrance animation
   const entranceProgress = spring({
@@ -134,7 +134,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           transform: `translate(-50%, -50%) scale(${scale})`,
           opacity,
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          filter: 'drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5))'
+          filter: 'drop-shadow(0 20px 40px [[ colors.background.dark ]])'
         }}
       >
         {title && (
@@ -158,15 +158,15 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           width={chartWidth}
           height={chartHeight}
           style={{
-            borderRadius: 16,
-            padding: 20,
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
             overflow: 'visible'
           }}
         >
           <defs>
             <linearGradient id="bgGradientArea" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(26, 31, 46, 0.98)" />
-              <stop offset="100%" stopColor="rgba(20, 25, 40, 0.98)" />
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
             </linearGradient>
             <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="[[ colors.primary[0] ]]" stopOpacity="0.8" />
@@ -193,11 +193,11 @@ export const AreaChart: React.FC<AreaChartProps> = ({
             width={chartWidth}
             height={chartHeight}
             fill="url(#bgGradientArea)"
-            rx="16"
+            rx="[[ spacing.border_radius.xl ]]"
           />
 
           {/* Grid lines */}
-          <g stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1">
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
             {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
               const y = padding + ratio * (chartHeight - 2 * padding);
               return (
@@ -213,7 +213,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
           </g>
 
           {/* Axes */}
-          <g stroke="rgba(255, 255, 255, 0.4)" strokeWidth="2">
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
             <line
               x1={padding}
               y1={padding}
@@ -240,7 +240,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
             d={linePath}
             fill="none"
             stroke="url(#lineGradientArea)"
-            strokeWidth="4"
+            strokeWidth="[[ spacing.spacing.xxs ]]"
             strokeLinecap="round"
             strokeLinejoin="round"
             filter="url(#glowArea)"
@@ -275,14 +275,14 @@ export const AreaChart: React.FC<AreaChartProps> = ({
                   r="8"
                   fill="[[ colors.accent[0] ]]"
                   stroke="[[ colors.background.dark ]]"
-                  strokeWidth="2"
+                  strokeWidth="[[ spacing.border_width.medium ]]"
                   filter="url(#glowArea)"
                 />
                 <circle
                   cx={x}
                   cy={y}
                   r="3"
-                  fill="rgba(255, 255, 255, 0.8)"
+                  fill="[[ colors.text.on_dark ]]"
                 />
               </g>
             );
@@ -294,9 +294,9 @@ export const AreaChart: React.FC<AreaChartProps> = ({
               x={chartWidth / 2}
               y={chartHeight - 10}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.6)"
-              fontSize="16"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
             >
               {xlabel}
             </text>
@@ -304,13 +304,13 @@ export const AreaChart: React.FC<AreaChartProps> = ({
 
           {ylabel && (
             <text
-              x={20}
+              x="[[ spacing.spacing.lg ]]"
               y={chartHeight / 2}
               textAnchor="middle"
-              fill="rgba(255, 255, 255, 0.6)"
-              fontSize="16"
-              fontFamily="'Inter', 'SF Pro Display', 'system-ui', 'sans-serif'"
-              transform={`rotate(-90 20 ${chartHeight / 2})`}
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+              transform={`rotate(-90 [[ spacing.spacing.lg ]] ${chartHeight / 2})`}
             >
               {ylabel}
             </text>

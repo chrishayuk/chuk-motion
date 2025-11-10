@@ -122,8 +122,9 @@ class TestTypingCodeAnimation:
         tsx = component_builder.build_component("TypingCode", {"code": "test code"}, theme_name)
 
         assert "charsToShow" in tsx
-        assert "displayedCode" in tsx
-        assert "slice" in tsx
+        assert "charCount" in tsx
+        assert "visibleText" in tsx
+        assert "visibility" in tsx  # Characters use visibility to hide/show
 
     def test_typing_delay(self, component_builder, theme_name):
         """Test typing has initial delay."""
@@ -191,9 +192,9 @@ class TestTypingCodeContent:
         )
 
         # Should have macOS-style window controls
-        assert "#FF5F56" in tsx  # Red dot
-        assert "#FFBD2E" in tsx  # Yellow dot
-        assert "#27C93F" in tsx  # Green dot
+        assert "#FF3D00" in tsx  # Red dot
+        assert "#FFB300" in tsx  # Yellow dot
+        assert "#00C853" in tsx  # Green dot
 
     def test_monospace_font(self, component_builder, theme_name):
         """Test TypingCode uses monospace font."""
@@ -344,3 +345,81 @@ class TestTypingCodeToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Test error" in result_data["error"]
+
+    def test_tool_auto_generate_success(self):
+        """Test tool execution with auto_generate=True."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_mcp_remotion.components.code.TypingCode.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+        project_manager.generate_composition = Mock()
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        result = asyncio.run(tool_func(code="test", duration=5.0, auto_generate=True))
+
+        # Check component was added and generation was called
+        assert len(timeline.get_all_components()) >= 1
+        project_manager.generate_composition.assert_called_once()
+        result_data = json.loads(result)
+        assert result_data["component"] == "TypingCode"
+
+    def test_tool_auto_generate_failure(self):
+        """Test tool execution when auto_generate fails."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_mcp_remotion.components.code.TypingCode.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+        project_manager.generate_composition = Mock(side_effect=Exception("Generation failed"))
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        result = asyncio.run(tool_func(code="test", duration=5.0, auto_generate=True))
+
+        # Should still succeed despite generation failure
+        assert len(timeline.get_all_components()) >= 1
+        result_data = json.loads(result)
+        assert result_data["component"] == "TypingCode"
+        assert "error" not in result_data  # Component was added successfully
+
+    def test_tool_auto_generate_disabled(self):
+        """Test tool execution with auto_generate=False."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_mcp_remotion.components.code.TypingCode.tool import register_tool
+        from chuk_mcp_remotion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+        project_manager.generate_composition = Mock()
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        result = asyncio.run(tool_func(code="test", duration=5.0, auto_generate=False))
+
+        # Check component was added but generation was NOT called
+        assert len(timeline.get_all_components()) >= 1
+        project_manager.generate_composition.assert_not_called()
+        result_data = json.loads(result)
+        assert result_data["component"] == "TypingCode"
