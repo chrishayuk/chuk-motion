@@ -212,3 +212,40 @@ class TestPerformanceMultiCamToolRegistration:
         result = asyncio.run(tool_func())
         result_data = json.loads(result)
         assert "error" in result_data
+
+    def test_tool_execution_with_non_list_secondary_cams(self):
+        """Test tool execution when secondary_cams is not a list."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_mcp_remotion.components.layouts.PerformanceMultiCam.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Pass secondary_cams as a dict instead of a list to hit the else branch
+        primary_cam = json.dumps({"id": "primary"})
+        secondary_cams = json.dumps({"cam1": "data", "cam2": "data"})  # Dict, not list
+
+        result = asyncio.run(tool_func(
+            primary_cam=primary_cam,
+            secondary_cams=secondary_cams,
+            duration=5.0
+        ))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "PerformanceMultiCam"
+
+        # Verify component was added
+        timeline_mock.add_component.assert_called_once()
