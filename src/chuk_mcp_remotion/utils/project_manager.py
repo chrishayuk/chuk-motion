@@ -184,24 +184,33 @@ class ProjectManager:
         components_dir = project_dir / "src" / "components"
 
         # Generate component TSX files for all unique component types
-        if hasattr(builder, 'components'):
+        # Handle both Timeline (tracks-based) and CompositionBuilder (components list)
+        if hasattr(builder, 'get_all_components'):
+            # Timeline has get_all_components() method
+            all_components = builder.get_all_components()
+            component_types = {c.component_type for c in all_components}
+        elif hasattr(builder, 'components'):
+            # CompositionBuilder has components attribute
             component_types = builder._find_all_component_types(builder.components)
-            for component_type in component_types:
-                try:
-                    # Generate component code using the component builder
-                    tsx_code = self.component_builder.build_component(
-                        component_type,
-                        {},  # Empty config - templates handle props from VideoComposition
-                        theme,
-                    )
+        else:
+            component_types = set()
 
-                    # Write component file
-                    component_file = components_dir / f"{component_type}.tsx"
-                    component_file.write_text(tsx_code)
-                    print(f"  ✓ Generated {component_type}.tsx")
+        for component_type in component_types:
+            try:
+                # Generate component code using the component builder
+                tsx_code = self.component_builder.build_component(
+                    component_type,
+                    {},  # Empty config - templates handle props from VideoComposition
+                    theme,
+                )
 
-                except Exception as e:
-                    print(f"  ⚠️  Warning: Could not generate {component_type}: {e}")
+                # Write component file
+                component_file = components_dir / f"{component_type}.tsx"
+                component_file.write_text(tsx_code)
+                print(f"  ✓ Generated {component_type}.tsx")
+
+            except Exception as e:
+                print(f"  ⚠️  Warning: Could not generate {component_type}: {e}")
 
         # Write composition file
         composition_file = project_dir / "src" / "VideoComposition.tsx"

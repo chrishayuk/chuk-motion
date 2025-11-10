@@ -22,6 +22,7 @@ def register_tool(mcp, project_manager):
         duration: float | str = 10.0,
         track: str = "main",
         gap_before: float | str | None = None,
+        auto_generate: bool = True,
     ) -> str:
         """
         Add TypingCode to the composition.
@@ -39,6 +40,7 @@ def register_tool(mcp, project_manager):
             duration: Duration in seconds
             track: Track name (default: "main")
             gap_before: Gap before component in seconds (overrides track default)
+            auto_generate: Auto-generate composition files after adding component (default: True)
 
         Returns:
             JSON with component info
@@ -70,6 +72,14 @@ def register_tool(mcp, project_manager):
                 component = project_manager.current_timeline.add_component(
                     component, duration=duration, track=track, gap_before=gap_before
                 )
+
+                # Auto-generate composition files if requested
+                if auto_generate:
+                    try:
+                        project_manager.generate_composition()
+                    except Exception as gen_error:
+                        # Log but don't fail - component was added successfully
+                        print(f"Warning: Auto-generation failed: {gen_error}")
 
                 lines = len(code.split("\n"))
                 return CodeComponentResponse(

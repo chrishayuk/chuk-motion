@@ -122,8 +122,9 @@ class TestTypingCodeAnimation:
         tsx = component_builder.build_component("TypingCode", {"code": "test code"}, theme_name)
 
         assert "charsToShow" in tsx
-        assert "displayedCode" in tsx
-        assert "slice" in tsx
+        assert "charCount" in tsx
+        assert "visibleText" in tsx
+        assert "visibility" in tsx  # Characters use visibility to hide/show
 
     def test_typing_delay(self, component_builder, theme_name):
         """Test typing has initial delay."""
@@ -191,9 +192,9 @@ class TestTypingCodeContent:
         )
 
         # Should have macOS-style window controls
-        assert "#FF5F56" in tsx  # Red dot
-        assert "#FFBD2E" in tsx  # Yellow dot
-        assert "#27C93F" in tsx  # Green dot
+        assert "#FF3D00" in tsx  # Red dot
+        assert "#FFB300" in tsx  # Yellow dot
+        assert "#00C853" in tsx  # Green dot
 
     def test_monospace_font(self, component_builder, theme_name):
         """Test TypingCode uses monospace font."""
