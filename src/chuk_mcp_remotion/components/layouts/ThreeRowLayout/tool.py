@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -28,12 +29,24 @@ def register_tool(mcp, project_manager):
         """
         Add ThreeRowLayout to the composition.
 
-        Header + Main + Footer arrangements with configurable heights
+        Header + Main + Footer arrangements with configurable heights.
+
+        For video content in rows, use VideoContent component:
+        Example top row with video:
+        {
+            "type": "VideoContent",
+            "config": {
+                "src": "https://example.com/video.mp4",
+                "muted": true,
+                "fit": "cover",
+                "loop": true
+            }
+        }
 
         Args:
-            top: JSON component for top row
-            middle: JSON component for middle row
-            bottom: JSON component for bottom row
+            top: JSON component for top row (format: {"type": "ComponentName", "config": {...}})
+            middle: JSON component for middle row (format: {"type": "ComponentName", "config": {...}})
+            bottom: JSON component for bottom row (format: {"type": "ComponentName", "config": {...}})
             top_height: Top row height (percentage)
             middle_height: Middle row height (percentage)
             bottom_height: Bottom row height (percentage)
@@ -61,14 +74,19 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid component JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert nested components to ComponentInstance objects
+                top_component = parse_nested_component(top_parsed)
+                middle_component = parse_nested_component(middle_parsed)
+                bottom_component = parse_nested_component(bottom_parsed)
+
                 component = ComponentInstance(
                     component_type="ThreeRowLayout",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "top": top_parsed,
-                        "middle": middle_parsed,
-                        "bottom": bottom_parsed,
+                        "top": top_component,
+                        "middle": middle_component,
+                        "bottom": bottom_component,
                         "top_height": top_height,
                         "middle_height": middle_height,
                         "bottom_height": bottom_height,

@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -28,12 +29,24 @@ def register_tool(mcp, project_manager):
         """
         Add ThreeColumnLayout to the composition.
 
-        Sidebar + Main + Sidebar arrangements with configurable widths
+        Sidebar + Main + Sidebar arrangements with configurable widths.
+
+        For video content in columns, use VideoContent component:
+        Example left column with video:
+        {
+            "type": "VideoContent",
+            "config": {
+                "src": "https://example.com/video.mp4",
+                "muted": true,
+                "fit": "cover",
+                "loop": true
+            }
+        }
 
         Args:
-            left: JSON component for left column
-            center: JSON component for center column
-            right: JSON component for right column
+            left: JSON component for left column (format: {"type": "ComponentName", "config": {...}})
+            center: JSON component for center column (format: {"type": "ComponentName", "config": {...}})
+            right: JSON component for right column (format: {"type": "ComponentName", "config": {...}})
             left_width: Left column width (percentage)
             center_width: Center column width (percentage)
             right_width: Right column width (percentage)
@@ -61,14 +74,19 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid component JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert nested components to ComponentInstance objects
+                left_component = parse_nested_component(left_parsed)
+                center_component = parse_nested_component(center_parsed)
+                right_component = parse_nested_component(right_parsed)
+
                 component = ComponentInstance(
                     component_type="ThreeColumnLayout",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "left": left_parsed,
-                        "center": center_parsed,
-                        "right": right_parsed,
+                        "left": left_component,
+                        "center": center_component,
+                        "right": right_component,
                         "left_width": left_width,
                         "center_width": center_width,
                         "right_width": right_width,
