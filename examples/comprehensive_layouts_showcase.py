@@ -155,9 +155,9 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "mainFeed": create_demo_box_config("MAIN\\n67%", "accent"),
-        "demo1": create_demo_box_config("DEMO 1", "primary"),
-        "demo2": create_demo_box_config("DEMO 2", "primary")
+        "main": create_demo_box_config("MAIN\\n67%", "accent"),
+        "top_side": create_demo_box_config("TOP SIDE", "primary"),
+        "bottom_side": create_demo_box_config("BOTTOM", "primary")
     })
 
     # 6. SplitScreen
@@ -189,102 +189,92 @@ def generate_comprehensive_layouts_showcase():
     # SPECIALIZED LAYOUTS
     # ========================================
 
-    # 8. OverTheShoulderLayout
-    print("📐 8. OverTheShoulderLayout")
+    # 8. OverTheShoulder
+    print("📐 8. OverTheShoulder")
     add_scene({
-        "type": "OverTheShoulderLayout",
+        "type": "OverTheShoulder",
         "config": {
-            "host_position": "left",
-            "host_size": 35,
+            "overlay_position": "left",
+            "overlay_size": 35,
             "gap": 20,
             "border_width": 2
         },
-        "hostView": create_demo_box_config("HOST\\n35%", "primary"),
-        "screenContent": create_demo_box_config("SCREEN\\n65%", "accent")
+        "screen_content": create_demo_box_config("SCREEN\\n65%", "accent"),
+        "shoulder_overlay": create_demo_box_config("HOST\\n35%", "primary")
     })
 
-    # 9. DialogueFrameLayout
-    print("📐 9. DialogueFrameLayout")
+    # 9. DialogueFrame
+    print("📐 9. DialogueFrame")
     add_scene({
-        "type": "DialogueFrameLayout",
+        "type": "DialogueFrame",
         "config": {
-            "character_a_label": "Person A",
-            "character_b_label": "Person B",
+            "speaker_size": 50,
             "gap": 20,
             "border_width": 2
         },
-        "characterA": create_demo_box_config("PERSON A", "primary"),
-        "characterB": create_demo_box_config("PERSON B", "secondary")
+        "left_speaker": create_demo_box_config("PERSON A", "primary"),
+        "right_speaker": create_demo_box_config("PERSON B", "secondary")
     })
 
-    # 10. StackedReactionLayout
-    print("📐 10. StackedReactionLayout")
+    # 10. StackedReaction
+    print("📐 10. StackedReaction")
     add_scene({
-        "type": "StackedReactionLayout",
+        "type": "StackedReaction",
         "config": {
-            "clip_ratio": 65,
+            "reaction_size": 35,
             "gap": 20,
-            "show_labels": True,
             "border_width": 2
         },
-        "originalClip": create_demo_box_config("ORIGINAL\\n65%", "accent"),
-        "reactorFace": create_demo_box_config("REACTOR\\n35%", "primary")
+        "original_content": create_demo_box_config("ORIGINAL\\n65%", "accent"),
+        "reaction_content": create_demo_box_config("REACTOR\\n35%", "primary")
     })
 
-    # 11. HUDStyleLayout
-    print("📐 11. HUDStyleLayout")
+    # 11. HUDStyle
+    print("📐 11. HUDStyle")
     add_scene({
-        "type": "HUDStyleLayout",
+        "type": "HUDStyle",
         "config": {
-            "webcam_position": "top-left",
-            "webcam_size": 15,
-            "show_chat": True,
-            "chat_width": 25
-        },
-        "gameplay": create_demo_box_config("GAMEPLAY", "accent"),
-        "webcam": create_demo_box_config("CAM", "primary"),
-        "chatOverlay": create_demo_box_config("CHAT", "secondary")
-    })
-
-    # 12. PerformanceMultiCamLayout
-    print("📐 12. PerformanceMultiCamLayout")
-    add_scene({
-        "type": "PerformanceMultiCamLayout",
-        "config": {
-            "labels": {
-                "front": "FRONT",
-                "overhead": "OVERHEAD",
-                "hand": "HAND",
-                "detail": "DETAIL"
-            },
-            "gap": 20,
-            "show_labels": True,
+            "overlay_size": 15,
             "border_width": 2
         },
-        "frontCam": create_demo_box_config("FRONT", "accent"),
-        "overheadCam": create_demo_box_config("OVERHEAD", "primary"),
-        "handCam": create_demo_box_config("HAND", "primary"),
-        "detailCam": create_demo_box_config("DETAIL", "primary")
+        "main_content": create_demo_box_config("GAMEPLAY", "accent"),
+        "top_left": create_demo_box_config("CAM", "primary"),
+        "bottom_right": create_demo_box_config("CHAT", "secondary")
     })
 
-    # 13. FocusStripLayout
-    print("📐 13. FocusStripLayout")
+    # 12. PerformanceMultiCam
+    print("📐 12. PerformanceMultiCam")
     add_scene({
-        "type": "FocusStripLayout",
+        "type": "PerformanceMultiCam",
+        "config": {
+            "gap": 20,
+            "border_width": 2
+        },
+        "primary_cam": create_demo_box_config("FRONT", "accent"),
+        "secondary_cams": [
+            create_demo_box_config("OVERHEAD", "primary"),
+            create_demo_box_config("HAND", "primary"),
+            create_demo_box_config("DETAIL", "primary")
+        ]
+    })
+
+    # 13. FocusStrip
+    print("📐 13. FocusStrip")
+    add_scene({
+        "type": "FocusStrip",
         "config": {
             "strip_height": 30,
-            "strip_position": "center",
-            "background_blur": 5,
+            "position": "center",
             "border_width": 2
         },
-        "hostStrip": create_demo_box_config("HOST\\nSTRIP 30%", "primary"),
-        "backgroundContent": create_demo_box_config("B-ROLL\\nBACKGROUND", "accent")
+        "focus_content": create_demo_box_config("HOST\\nSTRIP 30%", "primary"),
+        "main_content": create_demo_box_config("B-ROLL\\nBACKGROUND", "accent")
     })
 
-    # 14. PiPLayout
-    print("📐 14. PiPLayout")
+    # 14. PiP
+    print("📐 14. PiP")
     add_scene({
-        "type": "PiPLayout",
+        "type": "PiP",
         "config": {
             "pip_position": "bottom-right",
             "pip_size": 20,
@@ -294,51 +284,51 @@ def generate_comprehensive_layouts_showcase():
         "pipContent": create_demo_box_config("PiP\\n20%", "primary")
     })
 
-    # 15. VerticalLayout (9:16 for Shorts)
-    print("📐 15. VerticalLayout")
+    # 15. Vertical (9:16 for Shorts)
+    print("📐 15. Vertical")
     add_scene({
-        "type": "VerticalLayout",
+        "type": "Vertical",
         "config": {
-            "layout": "top-bottom",
-            "content_ratio": 60,
+            "layout_style": "top-bottom",
+            "top_ratio": 70,
             "gap": 10
         },
-        "topContent": create_demo_box_config("TOP\\n60%", "accent"),
-        "bottomContent": create_demo_box_config("BOTTOM\\n30%", "primary"),
-        "captionBar": create_demo_box_config("CAPTIONS\\n10%", "secondary")
+        "top": create_demo_box_config("TOP\\n70%", "accent"),
+        "bottom": create_demo_box_config("BOTTOM\\n30%", "primary")
     })
 
-    # 16. TimelineLayout
-    print("📐 16. TimelineLayout")
+    # 16. Timeline
+    print("📐 16. Timeline")
     add_scene({
-        "type": "TimelineLayout",
+        "type": "Timeline",
         "config": {
-            "timeline_height": 15,
-            "timeline_position": "bottom",
-            "show_progress": True
+            "height": 15,
+            "position": "bottom",
+            "current_time": 30,
+            "total_duration": 120
         },
-        "mainContent": create_demo_box_config("MAIN\\nCONTENT", "accent"),
+        "main_content": create_demo_box_config("MAIN\\nCONTENT", "accent"),
         "milestones": [
-            create_demo_box_config("M1", "primary"),
-            create_demo_box_config("M2", "primary"),
-            create_demo_box_config("M3", "primary")
+            {"time": 0, "label": "START"},
+            {"time": 60, "label": "MID"},
+            {"time": 120, "label": "END"}
         ]
     })
 
-    # 17. MosaicLayout
-    print("📐 17. MosaicLayout")
+    # 17. Mosaic
+    print("📐 17. Mosaic")
     add_scene({
-        "type": "MosaicLayout",
+        "type": "Mosaic",
         "config": {
             "style": "hero-corners",
             "gap": 15,
             "border_width": 2
         },
-        "children": [
-            create_demo_box_config("CLIP 1", "accent"),
-            create_demo_box_config("CLIP 2", "primary"),
-            create_demo_box_config("CLIP 3", "secondary"),
-            create_demo_box_config("CLIP 4", "primary")
+        "clips": [
+            {"content": create_demo_box_config("CLIP 1", "accent")},
+            {"content": create_demo_box_config("CLIP 2", "primary")},
+            {"content": create_demo_box_config("CLIP 3", "secondary")},
+            {"content": create_demo_box_config("CLIP 4", "primary")}
         ]
     })
 
@@ -390,16 +380,16 @@ def generate_comprehensive_layouts_showcase():
     print("   ✓ SplitScreen")
     print("   ✓ Container")
     print("\n   Specialized Layouts (10):")
-    print("   ✓ OverTheShoulderLayout")
-    print("   ✓ DialogueFrameLayout")
-    print("   ✓ StackedReactionLayout")
-    print("   ✓ HUDStyleLayout")
-    print("   ✓ PerformanceMultiCamLayout")
-    print("   ✓ FocusStripLayout")
-    print("   ✓ PiPLayout")
-    print("   ✓ VerticalLayout")
-    print("   ✓ TimelineLayout")
-    print("   ✓ MosaicLayout")
+    print("   ✓ OverTheShoulder")
+    print("   ✓ DialogueFrame")
+    print("   ✓ StackedReaction")
+    print("   ✓ HUDStyle")
+    print("   ✓ PerformanceMultiCam")
+    print("   ✓ FocusStrip")
+    print("   ✓ PiP")
+    print("   ✓ Vertical")
+    print("   ✓ Timeline")
+    print("   ✓ Mosaic")
 
     print(f"\n📦 Generated {len(result['component_types'])} component types:")
     for comp_type in sorted(result['component_types']):

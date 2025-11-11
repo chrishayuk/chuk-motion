@@ -1,4 +1,4 @@
-"""Tests for Terminal template generation."""
+"""Tests for CodeDiff template generation."""
 
 import pytest
 from tests.components.conftest import (
@@ -9,26 +9,26 @@ from tests.components.conftest import (
 )
 
 
-class TestTerminalBasic:
-    """Basic Terminal generation tests."""
+class TestCodeDiffBasic:
+    """Basic CodeDiff generation tests."""
 
     def test_basic_generation(self, component_builder, theme_name):
-        """Test basic Terminal generation."""
-        tsx = component_builder.build_component("Terminal", {}, theme_name)
+        """Test basic CodeDiff generation."""
+        tsx = component_builder.build_component("CodeDiff", {}, theme_name)
         assert tsx is not None
-        assert "Terminal" in tsx
+        assert "CodeDiff" in tsx
         assert_valid_typescript(tsx)
-        assert_has_interface(tsx, "Terminal")
+        assert_has_interface(tsx, "CodeDiff")
         assert_has_timing_props(tsx)
         assert_has_visibility_check(tsx)
 
 
-class TestTerminalBuilderMethod:
-    """Tests for Terminal builder method."""
+class TestCodeDiffBuilderMethod:
+    """Tests for CodeDiff builder method."""
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.demo_realism.Terminal.builder import add_to_composition
+        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
@@ -36,11 +36,11 @@ class TestTerminalBuilderMethod:
 
         assert result is builder
         assert len(builder.components) == 1
-        assert builder.components[0].component_type == "Terminal"
+        assert builder.components[0].component_type == "CodeDiff"
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.demo_realism.Terminal.builder import add_to_composition
+        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
@@ -48,33 +48,39 @@ class TestTerminalBuilderMethod:
             builder,
             start_time=1.0,
             duration=10.0,
-            commands='[{"command": "ls", "output": "file.txt"}]',
-            prompt="zsh",
-            custom_prompt=">",
-            title="My Terminal",
+            lines='[{"type": "add", "content": "new line"}]',
+            mode="split",
+            language="python",
+            show_line_numbers=False,
+            show_heatmap=True,
+            title="My Code Diff",
+            left_label="Old",
+            right_label="New",
             theme="light",
-            width=1000,
-            height=700,
+            width=1600,
+            height=900,
             position="top-left",
-            show_cursor=False,
-            type_speed=0.1,
+            animate_lines=False,
         )
 
         props = builder.components[0].props
-        assert props["commands"] == '[{"command": "ls", "output": "file.txt"}]'
-        assert props["prompt"] == "zsh"
-        assert props["customPrompt"] == ">"
-        assert props["title"] == "My Terminal"
+        assert props["lines"] == '[{"type": "add", "content": "new line"}]'
+        assert props["mode"] == "split"
+        assert props["language"] == "python"
+        assert props["showLineNumbers"] is False
+        assert props["showHeatmap"] is True
+        assert props["title"] == "My Code Diff"
+        assert props["leftLabel"] == "Old"
+        assert props["rightLabel"] == "New"
         assert props["theme"] == "light"
-        assert props["width"] == 1000
-        assert props["height"] == 700
+        assert props["width"] == 1600
+        assert props["height"] == 900
         assert props["position"] == "top-left"
-        assert props["showCursor"] is False
-        assert props["typeSpeed"] == 0.1
+        assert props["animateLines"] is False
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.demo_realism.Terminal.builder import add_to_composition
+        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
@@ -85,14 +91,14 @@ class TestTerminalBuilderMethod:
         assert component.duration_frames == 150  # 5.0 * 30fps
 
 
-class TestTerminalToolRegistration:
-    """Tests for Terminal MCP tool registration."""
+class TestCodeDiffToolRegistration:
+    """Tests for CodeDiff MCP tool registration."""
 
     def test_register_tool(self):
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.Terminal.tool import register_tool
+        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -106,8 +112,8 @@ class TestTerminalToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.Terminal.schema import METADATA
-        from chuk_mcp_remotion.components.demo_realism.Terminal.tool import register_tool
+        from chuk_mcp_remotion.components.code.CodeDiff.schema import METADATA
+        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -121,24 +127,27 @@ class TestTerminalToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        commands = json.dumps([{"command": "ls", "output": "file.txt"}])
+        lines = json.dumps([{"type": "add", "content": "new line"}])
         result = asyncio.run(tool_func(
             startFrame=0,
             durationInFrames=150,
-            commands=commands,
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
+            lines=lines,
+            mode="unified",
+            language="typescript",
+            showLineNumbers=True,
+            showHeatmap=False,
+            title="Code Comparison",
+            leftLabel="Before",
+            rightLabel="After",
             theme="dark",
-            width=900,
-            height=600,
+            width=1400,
+            height=800,
             position="center",
-            showCursor=True,
-            typeSpeed=0.05
+            animateLines=True
         ))
 
         assert "Added" in result
-        assert METADATA.name in result or "Terminal" in result
+        assert METADATA.name in result or "CodeDiff" in result
 
         # Verify component was added
         project_mock.add_component_to_track.assert_called_once()
@@ -148,7 +157,7 @@ class TestTerminalToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.Terminal.tool import register_tool
+        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -164,19 +173,22 @@ class TestTerminalToolRegistration:
         result = asyncio.run(tool_func(
             startFrame=0,
             durationInFrames=150,
-            commands="invalid json",  # Invalid JSON
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
+            lines="invalid json",  # Invalid JSON
+            mode="unified",
+            language="typescript",
+            showLineNumbers=True,
+            showHeatmap=False,
+            title="Code Comparison",
+            leftLabel="Before",
+            rightLabel="After",
             theme="dark",
-            width=900,
-            height=600,
+            width=1400,
+            height=800,
             position="center",
-            showCursor=True,
-            typeSpeed=0.05
+            animateLines=True
         ))
 
-        # Should not crash, should handle gracefully with empty list
+        # Should not crash, should handle gracefully
         assert result is not None
         assert "Added" in result
 
@@ -186,7 +198,7 @@ class TestTerminalToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.Terminal.tool import register_tool
+        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
         from chuk_mcp_remotion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -203,8 +215,7 @@ class TestTerminalToolRegistration:
                 asyncio.run(tool_func(
                     startFrame=0,
                     durationInFrames=150,
-                    commands="[]",
-                    prompt="bash"
+                    lines="[]"
                 ))
 
     def test_tool_execution_error_handling(self):
@@ -212,7 +223,7 @@ class TestTerminalToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.Terminal.tool import register_tool
+        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()
@@ -224,7 +235,11 @@ class TestTerminalToolRegistration:
 
         # The error should propagate
         try:
-            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
+            result = asyncio.run(tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                lines="[]"
+            ))
             # If we get here, check for error in result
             if result:
                 assert "error" in result.lower() or "Test error" in result

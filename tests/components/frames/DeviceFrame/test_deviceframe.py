@@ -28,7 +28,7 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.builder import add_to_composition
+        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
@@ -40,7 +40,7 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.builder import add_to_composition
+        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
@@ -68,7 +68,7 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.builder import add_to_composition
+        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
@@ -86,7 +86,7 @@ class TestDeviceFrameToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -99,8 +99,8 @@ class TestDeviceFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.schema import METADATA
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.DeviceFrame.schema import METADATA
+        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -138,7 +138,7 @@ class TestDeviceFrameToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
         from chuk_mcp_remotion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -163,7 +163,7 @@ class TestDeviceFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.DeviceFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()

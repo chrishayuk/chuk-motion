@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -56,13 +57,17 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid component JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert nested components to ComponentInstance objects
+                main_component = parse_nested_component(main_parsed)
+                focus_component = parse_nested_component(focus_parsed)
+
                 component = ComponentInstance(
                     component_type="FocusStrip",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "main_content": main_parsed,
-                        "focus_content": focus_parsed,
+                        "main_content": main_component,
+                        "focus_content": focus_component,
                         "position": position,
                         "strip_height": strip_height,
                         "gap": gap,

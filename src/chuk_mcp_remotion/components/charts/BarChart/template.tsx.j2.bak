@@ -1,0 +1,275 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/BarChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface BarChartProps {
+  data?: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+  xlabel?: string;
+  ylabel?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const BarChart: React.FC<BarChartProps> = ({
+  data = [],
+  title,
+  xlabel,
+  ylabel,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  // Calculate bounds
+  const values = data.map(d => d.value);
+  const maxValue = Math.max(...values);
+
+  // Chart dimensions
+  const chartWidth = 900;
+  const chartHeight = 500;
+  const padding = parseInt('[[ spacing.spacing['4xl'] ]]');
+  const barWidth = (chartWidth - 2 * padding) / data.length * 0.7;
+  const barSpacing = (chartWidth - 2 * padding) / data.length;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.9, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Default colors
+  const defaultColors = [
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] ]]', '[[ colors.accent[1] ]]',
+    '[[ colors.primary[2] ]]', '[[ colors.accent[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[3] ]]'
+  ];
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          filter: 'drop-shadow(0 20px 40px [[ colors.background.dark ]])'
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
+              color: '[[ colors.text.on_dark ]]',
+              marginBottom: parseInt('[[ spacing.spacing.xl ]]'),
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <svg
+          width={chartWidth}
+          height={chartHeight}
+          style={{
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
+            overflow: 'visible'
+          }}
+        >
+          <defs>
+            <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Background */}
+          <rect
+            x="0"
+            y="0"
+            width={chartWidth}
+            height={chartHeight}
+            fill="url(#bgGradient)"
+            rx="[[ spacing.border_radius.xl ]]"
+          />
+
+          {/* Grid lines */}
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+              const y = padding + ratio * (chartHeight - 2 * padding);
+              return (
+                <line
+                  key={`grid-${ratio}`}
+                  x1={padding}
+                  y1={y}
+                  x2={chartWidth - padding}
+                  y2={y}
+                />
+              );
+            })}
+          </g>
+
+          {/* Axes */}
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
+            <line
+              x1={padding}
+              y1={padding}
+              x2={padding}
+              y2={chartHeight - padding}
+            />
+            <line
+              x1={padding}
+              y1={chartHeight - padding}
+              x2={chartWidth - padding}
+              y2={chartHeight - padding}
+            />
+          </g>
+
+          {/* Bars */}
+          {data.map((item, idx) => {
+            const barDelay = idx * 4;
+            const barProgress = spring({
+              frame: Math.max(0, relativeFrame - barDelay),
+              fps,
+              config: { damping: 150, mass: 0.5, stiffness: 200 }
+            });
+
+            const x = padding + idx * barSpacing + (barSpacing - barWidth) / 2;
+            const barHeight = (item.value / maxValue) * (chartHeight - 2 * padding);
+            const animatedHeight = barHeight * barProgress;
+            const y = chartHeight - padding - animatedHeight;
+
+            const color = item.color || defaultColors[idx % defaultColors.length];
+
+            return (
+              <g key={idx}>
+                {/* Bar */}
+                <rect
+                  x={x}
+                  y={y}
+                  width={barWidth}
+                  height={animatedHeight}
+                  fill={color}
+                  rx="[[ spacing.spacing.xxs ]]"
+                  filter="url(#glow)"
+                  opacity={barProgress}
+                />
+
+                {/* Value label */}
+                <text
+                  x={x + barWidth / 2}
+                  y={y - 10}
+                  textAnchor="middle"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.bold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                  opacity={barProgress}
+                >
+                  {item.value}
+                </text>
+
+                {/* Category label */}
+                <text
+                  x={x + barWidth / 2}
+                  y={chartHeight - padding + 25}
+                  textAnchor="middle"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.medium ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                  opacity={barProgress}
+                >
+                  {item.label}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Axis labels */}
+          {xlabel && (
+            <text
+              x={chartWidth / 2}
+              y={chartHeight - 10}
+              textAnchor="middle"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+            >
+              {xlabel}
+            </text>
+          )}
+
+          {ylabel && (
+            <text
+              x="[[ spacing.spacing.lg ]]"
+              y={chartHeight / 2}
+              textAnchor="middle"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+              transform={`rotate(-90 [[ spacing.spacing.lg ]] ${chartHeight / 2})`}
+            >
+              {ylabel}
+            </text>
+          )}
+        </svg>
+      </div>
+    </AbsoluteFill>
+  );
+};

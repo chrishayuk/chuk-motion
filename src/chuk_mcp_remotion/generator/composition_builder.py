@@ -1175,6 +1175,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 "Vertical",
                 "Timeline",
                 "Mosaic",
+                # Frame components with content prop
+                "BrowserFrame",
+                "DeviceFrame",
+                "Terminal",
             ]
 
             if comp.component_type in layout_types:
@@ -1337,6 +1341,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "Vertical",
             "Timeline",
             "Mosaic",
+            # Frame components with content prop
+            "BrowserFrame",
+            "DeviceFrame",
+            "Terminal",
         ]
         has_children = comp.component_type in layout_types
 
@@ -1651,6 +1659,32 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 {spaces}  durationInFrames={{{comp.duration_frames}}}
 {children_str}
 {spaces}/>"""
+
+        # Handle frame components (BrowserFrame, DeviceFrame, Terminal)
+        elif comp.component_type in ["BrowserFrame", "DeviceFrame", "Terminal"]:
+            content = comp.props.get("content")
+            if isinstance(content, ComponentInstance):
+                content_jsx = self._render_component_jsx(content, indent + 4)
+                if props_str:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{props_str}
+{spaces}  content={{
+{content_jsx}
+{spaces}  }}
+{spaces}/>"""
+                else:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{spaces}  content={{
+{content_jsx}
+{spaces}  }}
+{spaces}/>"""
+            else:
+                # No content, render as simple component
+                return self._render_simple_component(comp, indent)
 
         # Fallback
         return self._render_simple_component(comp, indent)

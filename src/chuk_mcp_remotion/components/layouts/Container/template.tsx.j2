@@ -23,7 +23,7 @@ export const Container: React.FC<ContainerProps> = ({
 
   // Position mappings
   const defaultPadding = parseInt('[[ spacing.spacing['2xl'] ]]');
-  const padding = [[ config.padding if config.padding is not none else 'defaultPadding' ]];
+  const padding = [% if config.padding %][[ config.padding ]][% else %]defaultPadding[% endif %];
 
   const positions = {
     'center': {

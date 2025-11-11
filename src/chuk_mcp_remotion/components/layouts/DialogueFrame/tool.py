@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -57,14 +58,19 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid component JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert nested components to ComponentInstance objects
+                left_component = parse_nested_component(left_parsed)
+                right_component = parse_nested_component(right_parsed)
+                center_component = parse_nested_component(center_parsed)
+
                 component = ComponentInstance(
                     component_type="DialogueFrame",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "left_speaker": left_parsed,
-                        "right_speaker": right_parsed,
-                        "center_content": center_parsed,
+                        "left_speaker": left_component,
+                        "right_speaker": right_component,
+                        "center_content": center_component,
                         "speaker_size": speaker_size,
                         "gap": gap,
                         "padding": padding,

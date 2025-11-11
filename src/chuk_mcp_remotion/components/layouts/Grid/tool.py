@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -24,10 +25,31 @@ def register_tool(mcp, project_manager):
         """
         Add Grid to the composition.
 
-        Grid layout for multiple items
+        Grid layout for multiple items.
+
+        For video content in grid cells, use VideoContent component:
+        Example items with video:
+        [
+            {
+                "type": "VideoContent",
+                "config": {
+                    "src": "https://example.com/video1.mp4",
+                    "muted": true,
+                    "fit": "cover",
+                    "loop": true
+                }
+            },
+            {
+                "type": "VideoContent",
+                "config": {
+                    "src": "https://example.com/video2.mp4",
+                    "muted": true
+                }
+            }
+        ]
 
         Args:
-            items: JSON array of grid items
+            items: JSON array of grid items (format: [{"type": "ComponentName", "config": {...}}, ...])
             layout: Grid layout (2x2, 3x3, etc.)
             gap: Gap between grid items
             padding: Padding from edges
@@ -51,6 +73,14 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid items JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert array of item dicts to ComponentInstance objects
+                children_components = []
+                if isinstance(items_parsed, list):
+                    for item in items_parsed:
+                        child = parse_nested_component(item)
+                        if child is not None:
+                            children_components.append(child)
+
                 component = ComponentInstance(
                     component_type="Grid",
                     start_frame=0,
@@ -59,7 +89,7 @@ def register_tool(mcp, project_manager):
                         "layout": layout,
                         "gap": gap,
                         "padding": padding,
-                        "items": items_parsed,
+                        "children": children_components,
                     },
                     layer=0,
                 )

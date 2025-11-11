@@ -5,7 +5,7 @@ interface DeviceFrameProps {
   startFrame: number;
   durationInFrames: number;
   device: 'phone' | 'tablet' | 'laptop';
-  content: string;
+  content?: React.ReactNode;
   orientation: 'portrait' | 'landscape';
   scale: number;
   glare: boolean;
@@ -17,7 +17,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
   startFrame,
   durationInFrames,
   device = 'phone',
-  content = '',
+  content,
   orientation = 'portrait',
   scale = 1.0,
   glare = true,
@@ -100,7 +100,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
           position: 'relative',
           width: '100%',
           height: '100%',
-          filter: shadow ? 'drop-shadow(0 20px 60px '[[ colors.shadow.dark ]]')' : 'none',
+          filter: shadow ? `drop-shadow(0 20px 60px [[ colors.shadow.dark ]])` : 'none',
         }}
       >
         {/* Device bezel/frame */}
@@ -140,27 +140,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                   justifyContent: 'center',
                 }}
               >
-                {content.match(/\.(png|jpg|jpeg|gif|webp)$/i) ? (
-                  <img
-                    src={content}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      color: '[[ colors.text.on_dark ]]',
-                      fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-                      fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
-                      padding: '[[ spacing.spacing.md ]]',
-                    }}
-                  >
-                    {content}
-                  </div>
-                )}
+                {content}
               </div>
             )}
 
@@ -174,7 +154,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: 0,
                     right: 0,
                     height: '50%',
-                    background: 'linear-gradient(180deg, '[[ colors.border.light ]]' 0%, transparent 100%)',
+                    background: `linear-gradient(180deg, [[ colors.border.light ]] 0%, transparent 100%)`,
                     pointerEvents: 'none',
                   }}
                 />
@@ -185,7 +165,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     left: '15%',
                     width: '30%',
                     height: '40%',
-                    background: 'radial-gradient(ellipse at center, '[[ colors.border.light ]]' 0%, transparent 70%)',
+                    background: `radial-gradient(ellipse at center, [[ colors.border.light ]] 0%, transparent 70%)`,
                     transform: 'rotate(-25deg)',
                     pointerEvents: 'none',
                   }}

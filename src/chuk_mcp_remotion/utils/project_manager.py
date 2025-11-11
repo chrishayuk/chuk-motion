@@ -192,7 +192,8 @@ class ProjectManager:
         if hasattr(builder, "get_all_components"):
             # Timeline has get_all_components() method
             all_components = builder.get_all_components()
-            component_types = {c.component_type for c in all_components}
+            # Recursively find nested component types
+            component_types = self._find_all_component_types_recursive(all_components)
         elif hasattr(builder, "components"):
             # CompositionBuilder has components attribute
             component_types = builder._find_all_component_types(builder.components)  # type: ignore[attr-defined]
@@ -240,6 +241,27 @@ class ProjectManager:
         )
 
         return str(composition_file)
+
+    def _find_all_component_types_recursive(self, components: list) -> set:
+        """Recursively find all component types including nested children."""
+        types = set()
+
+        def collect_types(comp):
+            types.add(comp.component_type)
+
+            # Check for nested children in props
+            for key, value in comp.props.items():
+                if isinstance(value, ComponentInstance):
+                    collect_types(value)
+                elif isinstance(value, list):
+                    for item in value:
+                        if isinstance(item, ComponentInstance):
+                            collect_types(item)
+
+        for comp in components:
+            collect_types(comp)
+
+        return types
 
     def get_project_info(self) -> dict:
         """Get information about the current project."""

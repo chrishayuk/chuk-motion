@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -43,17 +44,25 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert nested components to ComponentInstance objects
+                main_component = parse_nested_component(main_parsed)
+                tl_component = parse_nested_component(tl_parsed)
+                tr_component = parse_nested_component(tr_parsed)
+                bl_component = parse_nested_component(bl_parsed)
+                br_component = parse_nested_component(br_parsed)
+                center_component = parse_nested_component(center_parsed)
+
                 component = ComponentInstance(
                     component_type="HUDStyle",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "main_content": main_parsed,
-                        "top_left": tl_parsed,
-                        "top_right": tr_parsed,
-                        "bottom_left": bl_parsed,
-                        "bottom_right": br_parsed,
-                        "center": center_parsed,
+                        "main_content": main_component,
+                        "top_left": tl_component,
+                        "top_right": tr_component,
+                        "bottom_left": bl_component,
+                        "bottom_right": br_component,
+                        "center": center_component,
                         "overlay_size": overlay_size,
                         "gap": gap,
                         "padding": padding,

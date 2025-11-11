@@ -246,23 +246,39 @@ async def remotion_generate_video() -> str:
             # Generate components
             theme = project_manager.current_timeline.theme
 
-            # Get unique component types from all tracks
-            component_types = {
-                c.component_type for c in project_manager.current_timeline.get_all_components()
-            }
+            # Helper to recursively find all component types including nested ones
+            def find_all_component_types(components):
+                types = set()
+                from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
+
+                def collect_types(comp):
+                    if isinstance(comp, ComponentInstance):
+                        types.add(comp.component_type)
+                        # Check for nested children in props
+                        for key, value in comp.props.items():
+                            if isinstance(value, ComponentInstance):
+                                collect_types(value)
+                            elif isinstance(value, list):
+                                for item in value:
+                                    if isinstance(item, ComponentInstance):
+                                        collect_types(item)
+
+                for comp in components:
+                    collect_types(comp)
+
+                return types
+
+            # Get unique component types from all tracks (including nested)
+            all_components = project_manager.current_timeline.get_all_components()
+            component_types = find_all_component_types(all_components)
 
             generated_files = []
 
             for comp_type in component_types:
                 # Get a sample config from the timeline
-                sample_component = next(
-                    c
-                    for c in project_manager.current_timeline.get_all_components()
-                    if c.component_type == comp_type
-                )
-
+                # For nested components, use empty config as templates handle it
                 file_path = project_manager.add_component_to_project(
-                    comp_type, sample_component.props, theme
+                    comp_type, {}, theme
                 )
                 generated_files.append(file_path)
 

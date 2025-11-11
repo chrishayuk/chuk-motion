@@ -277,6 +277,39 @@ class Timeline:
         """Convert frames to seconds."""
         return frames / self.fps
 
+    def _serialize_value(self, value: Any) -> Any:
+        """Recursively serialize values to JSON-compatible types."""
+        from dataclasses import asdict, is_dataclass
+
+        from pydantic import BaseModel
+
+        if isinstance(value, BaseModel):
+            # Recursively serialize Pydantic models using model_dump
+            try:
+                dumped = value.model_dump(mode="python")
+                # Recursively process the dumped dict in case it contains more BaseModels
+                return self._serialize_value(dumped)
+            except Exception:
+                # Fallback: try to convert to dict manually
+                return str(value)
+        elif is_dataclass(value) and not isinstance(value, type):
+            # Handle dataclasses (like ComponentInstance)
+            dumped = asdict(value)
+            # Recursively process the dumped dict
+            return self._serialize_value(dumped)
+        elif isinstance(value, dict):
+            # Recursively serialize dict values
+            return {k: self._serialize_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            # Recursively serialize list items
+            return [self._serialize_value(item) for item in value]
+        elif isinstance(value, tuple):
+            # Convert tuples to lists
+            return [self._serialize_value(item) for item in value]
+        else:
+            # Return primitive types as-is
+            return value
+
     def to_dict(self) -> dict[str, Any]:
         """
         Export timeline as dictionary.
@@ -309,7 +342,7 @@ class Timeline:
                     "start_time": self.frames_to_seconds(c.start_frame),
                     "duration": self.frames_to_seconds(c.duration_frames),
                     "layer": c.layer,
-                    "props": c.props,
+                    "props": self._serialize_value(c.props),
                 }
                 for c in self.get_all_components()
             ],

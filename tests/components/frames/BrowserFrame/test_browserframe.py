@@ -28,7 +28,7 @@ class TestBrowserFrameBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.builder import (
+        from chuk_mcp_remotion.components.frames.BrowserFrame.builder import (
             add_to_composition,
         )
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
@@ -42,7 +42,7 @@ class TestBrowserFrameBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.builder import (
+        from chuk_mcp_remotion.components.frames.BrowserFrame.builder import (
             add_to_composition,
         )
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
@@ -78,7 +78,7 @@ class TestBrowserFrameBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.builder import (
+        from chuk_mcp_remotion.components.frames.BrowserFrame.builder import (
             add_to_composition,
         )
         from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
@@ -98,7 +98,7 @@ class TestBrowserFrameToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.BrowserFrame.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -112,8 +112,8 @@ class TestBrowserFrameToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.schema import METADATA
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.BrowserFrame.schema import METADATA
+        from chuk_mcp_remotion.components.frames.BrowserFrame.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -154,7 +154,7 @@ class TestBrowserFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.BrowserFrame.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -192,7 +192,7 @@ class TestBrowserFrameToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.BrowserFrame.tool import register_tool
         from chuk_mcp_remotion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -217,7 +217,7 @@ class TestBrowserFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.demo_realism.BrowserFrame.tool import register_tool
+        from chuk_mcp_remotion.components.frames.BrowserFrame.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()
