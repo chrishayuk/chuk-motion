@@ -14,7 +14,7 @@ interface BrowserFrameProps {
   tabs?: TabConfig[] | string;
   showStatus: boolean;
   statusText: string;
-  content: string;
+  content?: React.ReactNode;
   width: number;
   height: number;
   position: string;
@@ -29,7 +29,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   tabs,
   showStatus = false,
   statusText = '',
-  content = '',
+  content,
   width = 1200,
   height = 800,
   position = 'center',
@@ -167,7 +167,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
           background: currentTheme.bg,
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
-          filter: shadow ? 'drop-shadow(0 10px 40px '[[ colors.shadow.dark ]]')' : 'none',
+          filter: shadow ? `drop-shadow(0 10px 40px [[ colors.shadow.dark ]])` : 'none',
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -356,29 +356,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             overflow: 'hidden',
           }}
         >
-          {content && (
-            content.match(/\.(png|jpg|jpeg|gif|webp)$/i) ? (
-              <img
-                src={content}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  color: currentTheme.text,
-                  fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-                  fontSize: 36,
-                  padding: '[[ spacing.spacing.lg ]]',
-                }}
-              >
-                {content}
-              </div>
-            )
-          )}
+          {content}
         </div>
 
         {/* Status bar */}

@@ -54,7 +54,7 @@ class ComponentBuilder:
             "code",
             "animations",
             "content",
-            "demo_realism",
+            "frames",
         ]
 
     def _to_camel_case(self, snake_str: str) -> str:

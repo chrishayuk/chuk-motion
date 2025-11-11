@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -52,6 +53,14 @@ def register_tool(mcp, project_manager):
             items_parsed = items_parsed[:9]
 
             try:
+                # Convert array of item dicts to ComponentInstance objects
+                children_components = []
+                if isinstance(items_parsed, list):
+                    for item in items_parsed:
+                        child = parse_nested_component(item)
+                        if child is not None:
+                            children_components.append(child)
+
                 component = ComponentInstance(
                     component_type="ThreeByThreeGrid",
                     start_frame=0,
@@ -59,7 +68,7 @@ def register_tool(mcp, project_manager):
                     props={
                         "gap": gap,
                         "padding": padding,
-                        "items": items_parsed,
+                        "children": children_components,
                     },
                     layer=0,
                 )

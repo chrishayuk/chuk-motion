@@ -1,0 +1,4 @@
+name: VideoContent
+category: content
+description: Video player component for displaying video content in layouts
+layer: 0

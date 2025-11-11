@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -33,12 +34,20 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid JSON: {str(e)}").model_dump_json()
 
             try:
+                # Convert array of clip dicts to ComponentInstance objects
+                clips_components = []
+                if isinstance(clips_parsed, list):
+                    for item in clips_parsed:
+                        comp = parse_nested_component(item)
+                        if comp is not None:
+                            clips_components.append(comp)
+
                 component = ComponentInstance(
                     component_type="Mosaic",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "clips": clips_parsed,
+                        "clips": clips_components,
                         "style": style,
                         "gap": gap,
                         "padding": padding,

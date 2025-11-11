@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Comprehensive YouTube Layouts Showcase
+Layouts with Video Showcase
 
-THE definitive showcase demonstrating ALL 17 layout types.
-Uses the dictionary-based scene API (like youtube_layouts.py).
+A visually stunning demonstration of all 17 layout types with actual video playback.
+Each cell shows video content instead of static boxes.
 
 Usage:
-    python examples/comprehensive_layouts_showcase.py
+    python examples/layouts_with_video_showcase.py
 """
 import sys
 from pathlib import Path
@@ -18,21 +18,37 @@ from chuk_mcp_remotion.utils.project_manager import ProjectManager
 import shutil
 
 
-def create_demo_box_config(label: str, color: str = "primary"):
-    """Helper to create DemoBox config dict."""
+# Sample video URLs (using Big Buck Bunny and other open source videos)
+SAMPLE_VIDEOS = [
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    "https://upload.wikimedia.org/wikipedia/commons/2/20/Wave_at_Alcaraz%E2%80%93Tsitsipas_practice_at_the_2023_French_Open.webm",  # Tennis
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
+    "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+]
+
+
+def create_video_config(video_index: int = 0, label: str = ""):
+    """Helper to create VideoContent config dict."""
     return {
-        "type": "DemoBox",
+        "type": "VideoContent",
         "config": {
-            "label": label,
-            "color": color
+            "src": SAMPLE_VIDEOS[video_index % len(SAMPLE_VIDEOS)],
+            "muted": True,
+            "fit": "cover",
+            "playback_rate": 1.0,
+            "loop": True  # Enable looping for all videos
         }
     }
 
 
-def generate_comprehensive_layouts_showcase():
-    """Generate THE comprehensive showcase with all 17 layouts."""
+def generate_layouts_with_video():
+    """Generate stunning video showcase with all 17 layouts."""
 
-    project_name = "comprehensive_layouts_showcase"
+    project_name = "layouts_with_video_showcase"
     project_manager = ProjectManager()
 
     # Clean up existing project
@@ -42,8 +58,8 @@ def generate_comprehensive_layouts_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"COMPREHENSIVE LAYOUTS SHOWCASE")
-    print(f"ALL 17 Layout Types")
+    print(f"LAYOUTS WITH VIDEO SHOWCASE")
+    print(f"ALL 17 Layout Types with Real Video")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -68,23 +84,23 @@ def generate_comprehensive_layouts_showcase():
     # ========================================
     # INTRODUCTION
     # ========================================
-    print("\n📐 Creating Introduction")
+    print("\n🎬 Creating Introduction")
     add_scene({
         "type": "TitleScene",
         "config": {
-            "text": "Complete Layout System",
-            "subtitle": "17 Professional Layouts for YouTube",
+            "text": "Layouts with Video",
+            "subtitle": "17 Professional Layouts • Real Video Content",
             "variant": "bold",
             "animation": "fade_zoom"
         }
     })
 
     # ========================================
-    # CORE LAYOUTS (with DemoBox placeholders)
+    # CORE LAYOUTS
     # ========================================
 
     # 1. Grid (2x2)
-    print("\n📐 1. Grid Layout (2x2)")
+    print("\n🎬 1. Grid Layout (2x2)")
     add_scene({
         "type": "Grid",
         "config": {
@@ -94,15 +110,15 @@ def generate_comprehensive_layouts_showcase():
             "border_width": 2
         },
         "children": [
-            create_demo_box_config("CELL 1", "primary"),
-            create_demo_box_config("CELL 2", "accent"),
-            create_demo_box_config("CELL 3", "secondary"),
-            create_demo_box_config("CELL 4", "primary")
+            create_video_config(0),
+            create_video_config(1),
+            create_video_config(2),
+            create_video_config(3)
         ]
     })
 
     # 2. ThreeByThreeGrid
-    print("📐 2. ThreeByThreeGrid")
+    print("🎬 2. ThreeByThreeGrid")
     add_scene({
         "type": "ThreeByThreeGrid",
         "config": {
@@ -110,11 +126,11 @@ def generate_comprehensive_layouts_showcase():
             "gap": 15,
             "border_width": 2
         },
-        "children": [create_demo_box_config(f"CELL {i+1}", "primary" if i % 2 == 0 else "accent") for i in range(9)]
+        "children": [create_video_config(i) for i in range(9)]
     })
 
     # 3. ThreeColumnLayout
-    print("📐 3. ThreeColumnLayout")
+    print("🎬 3. ThreeColumnLayout")
     add_scene({
         "type": "ThreeColumnLayout",
         "config": {
@@ -124,13 +140,13 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "left": create_demo_box_config("LEFT\\n30%", "primary"),
-        "center": create_demo_box_config("CENTER\\n40%", "accent"),
-        "right": create_demo_box_config("RIGHT\\n30%", "primary")
+        "left": create_video_config(0),
+        "center": create_video_config(1),
+        "right": create_video_config(2)
     })
 
     # 4. ThreeRowLayout
-    print("📐 4. ThreeRowLayout")
+    print("🎬 4. ThreeRowLayout")
     add_scene({
         "type": "ThreeRowLayout",
         "config": {
@@ -140,13 +156,13 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "top": create_demo_box_config("TOP 20%", "accent"),
-        "middle": create_demo_box_config("MIDDLE 60%", "primary"),
-        "bottom": create_demo_box_config("BOTTOM 20%", "accent")
+        "top": create_video_config(0),
+        "middle": create_video_config(1),
+        "bottom": create_video_config(2)
     })
 
     # 5. AsymmetricLayout
-    print("📐 5. AsymmetricLayout")
+    print("🎬 5. AsymmetricLayout")
     add_scene({
         "type": "AsymmetricLayout",
         "config": {
@@ -155,13 +171,13 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "main": create_demo_box_config("MAIN\\n67%", "accent"),
-        "top_side": create_demo_box_config("TOP SIDE", "primary"),
-        "bottom_side": create_demo_box_config("BOTTOM", "primary")
+        "main": create_video_config(0),
+        "top_side": create_video_config(1),
+        "bottom_side": create_video_config(2)
     })
 
     # 6. SplitScreen
-    print("📐 6. SplitScreen")
+    print("🎬 6. SplitScreen")
     add_scene({
         "type": "SplitScreen",
         "config": {
@@ -169,12 +185,12 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "divider_width": 3
         },
-        "left": create_demo_box_config("LEFT 50%", "primary"),
-        "right": create_demo_box_config("RIGHT 50%", "accent")
+        "left": create_video_config(0),
+        "right": create_video_config(1)
     })
 
     # 7. Container
-    print("📐 7. Container")
+    print("🎬 7. Container")
     add_scene({
         "type": "Container",
         "config": {
@@ -182,7 +198,7 @@ def generate_comprehensive_layouts_showcase():
             "border_width": 3,
             "border_radius": 12
         },
-        "children": create_demo_box_config("CENTERED\\nCONTENT", "accent")
+        "children": create_video_config(0)
     })
 
     # ========================================
@@ -190,7 +206,7 @@ def generate_comprehensive_layouts_showcase():
     # ========================================
 
     # 8. OverTheShoulder
-    print("📐 8. OverTheShoulder")
+    print("🎬 8. OverTheShoulder")
     add_scene({
         "type": "OverTheShoulder",
         "config": {
@@ -199,12 +215,12 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "screen_content": create_demo_box_config("SCREEN\\n65%", "accent"),
-        "shoulder_overlay": create_demo_box_config("HOST\\n35%", "primary")
+        "screen_content": create_video_config(0),
+        "shoulder_overlay": create_video_config(1)
     })
 
     # 9. DialogueFrame
-    print("📐 9. DialogueFrame")
+    print("🎬 9. DialogueFrame")
     add_scene({
         "type": "DialogueFrame",
         "config": {
@@ -212,12 +228,12 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "left_speaker": create_demo_box_config("PERSON A", "primary"),
-        "right_speaker": create_demo_box_config("PERSON B", "secondary")
+        "left_speaker": create_video_config(0),
+        "right_speaker": create_video_config(1)
     })
 
     # 10. StackedReaction
-    print("📐 10. StackedReaction")
+    print("🎬 10. StackedReaction")
     add_scene({
         "type": "StackedReaction",
         "config": {
@@ -225,41 +241,41 @@ def generate_comprehensive_layouts_showcase():
             "gap": 20,
             "border_width": 2
         },
-        "original_content": create_demo_box_config("ORIGINAL\\n65%", "accent"),
-        "reaction_content": create_demo_box_config("REACTOR\\n35%", "primary")
+        "original_content": create_video_config(0),
+        "reaction_content": create_video_config(1)
     })
 
     # 11. HUDStyle
-    print("📐 11. HUDStyle")
+    print("🎬 11. HUDStyle")
     add_scene({
         "type": "HUDStyle",
         "config": {
             "overlay_size": 15,
             "border_width": 2
         },
-        "main_content": create_demo_box_config("GAMEPLAY", "accent"),
-        "top_left": create_demo_box_config("CAM", "primary"),
-        "bottom_right": create_demo_box_config("CHAT", "secondary")
+        "main_content": create_video_config(0),
+        "top_left": create_video_config(1),
+        "bottom_right": create_video_config(2)
     })
 
     # 12. PerformanceMultiCam
-    print("📐 12. PerformanceMultiCam")
+    print("🎬 12. PerformanceMultiCam")
     add_scene({
         "type": "PerformanceMultiCam",
         "config": {
             "gap": 20,
             "border_width": 2
         },
-        "primary_cam": create_demo_box_config("FRONT", "accent"),
+        "primary_cam": create_video_config(0),
         "secondary_cams": [
-            create_demo_box_config("OVERHEAD", "primary"),
-            create_demo_box_config("HAND", "primary"),
-            create_demo_box_config("DETAIL", "primary")
+            create_video_config(1),
+            create_video_config(2),
+            create_video_config(3)
         ]
     })
 
     # 13. FocusStrip
-    print("📐 13. FocusStrip")
+    print("🎬 13. FocusStrip")
     add_scene({
         "type": "FocusStrip",
         "config": {
@@ -267,12 +283,12 @@ def generate_comprehensive_layouts_showcase():
             "position": "center",
             "border_width": 2
         },
-        "focus_content": create_demo_box_config("HOST\\nSTRIP 30%", "primary"),
-        "main_content": create_demo_box_config("B-ROLL\\nBACKGROUND", "accent")
+        "focus_content": create_video_config(0),
+        "main_content": create_video_config(1)
     })
 
     # 14. PiP
-    print("📐 14. PiP")
+    print("🎬 14. PiP")
     add_scene({
         "type": "PiP",
         "config": {
@@ -280,12 +296,12 @@ def generate_comprehensive_layouts_showcase():
             "pip_size": 20,
             "pip_border_width": 2
         },
-        "mainContent": create_demo_box_config("MAIN\\nCONTENT", "accent"),
-        "pipContent": create_demo_box_config("PiP\\n20%", "primary")
+        "mainContent": create_video_config(0),
+        "pipContent": create_video_config(1)
     })
 
     # 15. Vertical (9:16 for Shorts)
-    print("📐 15. Vertical")
+    print("🎬 15. Vertical")
     add_scene({
         "type": "Vertical",
         "config": {
@@ -293,12 +309,12 @@ def generate_comprehensive_layouts_showcase():
             "top_ratio": 70,
             "gap": 10
         },
-        "top": create_demo_box_config("TOP\\n70%", "accent"),
-        "bottom": create_demo_box_config("BOTTOM\\n30%", "primary")
+        "top": create_video_config(0),
+        "bottom": create_video_config(1)
     })
 
     # 16. Timeline
-    print("📐 16. Timeline")
+    print("🎬 16. Timeline")
     add_scene({
         "type": "Timeline",
         "config": {
@@ -307,7 +323,7 @@ def generate_comprehensive_layouts_showcase():
             "current_time": 30,
             "total_duration": 120
         },
-        "main_content": create_demo_box_config("MAIN\\nCONTENT", "accent"),
+        "main_content": create_video_config(0),
         "milestones": [
             {"time": 0, "label": "START"},
             {"time": 60, "label": "MID"},
@@ -316,7 +332,7 @@ def generate_comprehensive_layouts_showcase():
     })
 
     # 17. Mosaic
-    print("📐 17. Mosaic")
+    print("🎬 17. Mosaic")
     add_scene({
         "type": "Mosaic",
         "config": {
@@ -325,22 +341,22 @@ def generate_comprehensive_layouts_showcase():
             "border_width": 2
         },
         "clips": [
-            {"content": create_demo_box_config("CLIP 1", "accent")},
-            {"content": create_demo_box_config("CLIP 2", "primary")},
-            {"content": create_demo_box_config("CLIP 3", "secondary")},
-            {"content": create_demo_box_config("CLIP 4", "primary")}
+            {"content": create_video_config(0)},
+            {"content": create_video_config(1)},
+            {"content": create_video_config(2)},
+            {"content": create_video_config(3)}
         ]
     })
 
     # ========================================
     # FINAL TITLE
     # ========================================
-    print("\n📐 Creating Final Title")
+    print("\n🎬 Creating Final Title")
     add_scene({
         "type": "TitleScene",
         "config": {
             "text": "17 Professional Layouts",
-            "subtitle": "Build Any YouTube Video",
+            "subtitle": "Powered by Real Video",
             "variant": "glass",
             "animation": "zoom"
         }
@@ -354,7 +370,7 @@ def generate_comprehensive_layouts_showcase():
     result = project_manager.build_composition_from_scenes(scenes, theme=theme)
 
     print("\n" + "="*70)
-    print("✅ COMPREHENSIVE LAYOUTS SHOWCASE GENERATED!")
+    print("✅ LAYOUTS WITH VIDEO SHOWCASE GENERATED!")
     print("="*70)
     print(f"\n📁 Project location: {project_path}")
 
@@ -370,7 +386,7 @@ def generate_comprehensive_layouts_showcase():
     print(f"   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 All 17 Layout Types Demonstrated:")
+    print(f"\n🎨 All 17 Layout Types with Video:")
     print("   Core Layouts (7):")
     print("   ✓ Grid (flexible)")
     print("   ✓ ThreeByThreeGrid")
@@ -403,10 +419,10 @@ def generate_comprehensive_layouts_showcase():
     print("   npm start")
 
     print("\n💡 This showcase demonstrates:")
-    print("   ✓ ALL 17 layout types with DemoBox placeholders")
-    print("   ✓ Clean structure-focused visualization")
-    print("   ✓ Design token integration")
-    print("   ✓ Flexible configuration options")
+    print("   ✓ ALL 17 layout types with real video playback")
+    print("   ✓ Multiple video sources (Big Buck Bunny, Sintel, etc.)")
+    print("   ✓ Professional video handling with Remotion's OffthreadVideo")
+    print("   ✓ Visually stunning showcase of layout capabilities")
 
     print("\n" + "="*70)
 
@@ -415,11 +431,11 @@ def generate_comprehensive_layouts_showcase():
 
 def main():
     """Main entry point."""
-    print("\n🎬 Comprehensive YouTube Layouts Showcase Generator")
-    print("   THE definitive showcase of all 17 layout types\n")
+    print("\n🎬 Layouts with Video Showcase Generator")
+    print("   Stunning visual demo of all 17 layout types with real video\n")
 
     try:
-        project_path = generate_comprehensive_layouts_showcase()
+        project_path = generate_layouts_with_video()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

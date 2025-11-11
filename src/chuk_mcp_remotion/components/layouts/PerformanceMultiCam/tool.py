@@ -6,6 +6,7 @@ import json
 
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -39,13 +40,24 @@ def register_tool(mcp, project_manager):
                 secondary_parsed = secondary_parsed[:4]
 
             try:
+                # Convert nested components to ComponentInstance objects
+                primary_component = parse_nested_component(primary_parsed)
+
+                # Parse array of secondary cameras
+                secondary_components = []
+                if isinstance(secondary_parsed, list):
+                    for item in secondary_parsed:
+                        comp = parse_nested_component(item)
+                        if comp is not None:
+                            secondary_components.append(comp)
+
                 component = ComponentInstance(
                     component_type="PerformanceMultiCam",
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "primary_cam": primary_parsed,
-                        "secondary_cams": secondary_parsed,
+                        "primary_cam": primary_component,
+                        "secondary_cams": secondary_components,
                         "layout": layout,
                         "gap": gap,
                         "padding": padding,
