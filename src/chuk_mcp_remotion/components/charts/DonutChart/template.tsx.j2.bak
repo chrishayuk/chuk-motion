@@ -1,4 +1,4 @@
-{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/PieChart/template.tsx.j2 */}
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/DonutChart/template.tsx.j2 */}
 import React from 'react';
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 
@@ -8,16 +8,18 @@ interface DataPoint {
   color?: string;
 }
 
-interface PieChartProps {
+interface DonutChartProps {
   data?: Array<{ label: string; value: number; color?: string }>;
   title?: string;
+  centerText?: string;
   startFrame: number;
   durationInFrames: number;
 }
 
-export const PieChart: React.FC<PieChartProps> = ({
+export const DonutChart: React.FC<DonutChartProps> = ({
   data = [],
   title,
+  centerText,
   startFrame,
   durationInFrames
 }) => {
@@ -26,7 +28,7 @@ export const PieChart: React.FC<PieChartProps> = ({
   const relativeFrame = frame - startFrame;
 
   // Don't render if outside the time range
-  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
     return null;
   }
 
@@ -39,7 +41,8 @@ export const PieChart: React.FC<PieChartProps> = ({
 
   // Chart dimensions
   const chartSize = 500;
-  const radius = 200;
+  const outerRadius = 200;
+  const innerRadius = 120;
   const centerX = chartSize / 2;
   const centerY = chartSize / 2;
 
@@ -73,10 +76,10 @@ export const PieChart: React.FC<PieChartProps> = ({
     extrapolateRight: 'clamp'
   });
 
-  // Default colors from theme
+  // Default colors
   const defaultColors = [
-    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] if colors.primary|length > 1 else colors.accent[1] ]]', '[[ colors.accent[1] if colors.accent|length > 1 else colors.primary[0] ]]',
-    '[[ colors.semantic.warning ]]', '[[ colors.semantic.success ]]', '[[ colors.semantic.error ]]', '[[ colors.primary[2] if colors.primary|length > 2 else colors.accent[0] ]]'
+    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] ]]', '[[ colors.accent[1] ]]',
+    '[[ colors.primary[2] ]]', '[[ colors.accent[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[3] ]]'
   ];
 
   // Calculate slice paths
@@ -98,19 +101,28 @@ export const PieChart: React.FC<PieChartProps> = ({
     currentAngle += sliceAngle;
   });
 
-  // Function to create SVG arc path
-  const createArcPath = (startAngle: number, endAngle: number, r: number) => {
+  // Function to create SVG donut arc path
+  const createDonutPath = (startAngle: number, endAngle: number, outer: number, inner: number) => {
     const startRad = (startAngle * Math.PI) / 180;
     const endRad = (endAngle * Math.PI) / 180;
 
-    const x1 = centerX + r * Math.cos(startRad);
-    const y1 = centerY + r * Math.sin(startRad);
-    const x2 = centerX + r * Math.cos(endRad);
-    const y2 = centerY + r * Math.sin(endRad);
+    const x1Outer = centerX + outer * Math.cos(startRad);
+    const y1Outer = centerY + outer * Math.sin(startRad);
+    const x2Outer = centerX + outer * Math.cos(endRad);
+    const y2Outer = centerY + outer * Math.sin(endRad);
+
+    const x1Inner = centerX + inner * Math.cos(startRad);
+    const y1Inner = centerY + inner * Math.sin(startRad);
+    const x2Inner = centerX + inner * Math.cos(endRad);
+    const y2Inner = centerY + inner * Math.sin(endRad);
 
     const largeArc = endAngle - startAngle > 180 ? 1 : 0;
 
-    return `M ${centerX} ${centerY} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+    return `M ${x1Outer} ${y1Outer}
+            A ${outer} ${outer} 0 ${largeArc} 1 ${x2Outer} ${y2Outer}
+            L ${x2Inner} ${y2Inner}
+            A ${inner} ${inner} 0 ${largeArc} 0 ${x1Inner} ${y1Inner}
+            Z`;
   };
 
   return (
@@ -132,12 +144,12 @@ export const PieChart: React.FC<PieChartProps> = ({
         {title && (
           <h3
             style={{
-              fontSize: '[[ typography.font_sizes[typography.default_resolution].lg ]]',
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
               fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
-              textShadow: '0 2px 20px [[ colors.primary[0] ]]80',
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
               letterSpacing: '[[ typography.letter_spacing.tight ]]',
               margin: 0
             }}
@@ -147,70 +159,86 @@ export const PieChart: React.FC<PieChartProps> = ({
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: parseInt('[[ spacing.spacing['3xl'] ]]') }}>
-          {/* Pie chart */}
-          <svg
-            width={chartSize}
-            height={chartSize}
-            style={{
-              filter: `drop-shadow(0 10px 30px [[ colors.shadow.dark ]])`
-            }}
-          >
-            <defs>
-              <filter id="glowPie">
-                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
+          {/* Donut chart */}
+          <div style={{ position: 'relative' }}>
+            <svg
+              width={chartSize}
+              height={chartSize}
+              style={{
+                filter: 'drop-shadow(0 10px 30px [[ colors.background.dark ]])'
+              }}
+            >
+              <defs>
+                <filter id="glowDonut">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
 
-            {slices.map((slice, idx) => {
-              const sliceDelay = idx * 3;
-              const sliceProgress = spring({
-                frame: Math.max(0, relativeFrame - sliceDelay),
-                fps,
-                config: { damping: 150, mass: 0.5, stiffness: 200 }
-              });
+              {slices.map((slice, idx) => {
+                const sliceDelay = idx * 3;
+                const sliceProgress = spring({
+                  frame: Math.max(0, relativeFrame - sliceDelay),
+                  fps,
+                  config: { damping: 150, mass: 0.5, stiffness: 200 }
+                });
 
-              const animatedEndAngle = slice.startAngle + (slice.endAngle - slice.startAngle) * sliceProgress;
-              const path = createArcPath(slice.startAngle, animatedEndAngle, radius);
+                const animatedEndAngle = slice.startAngle + (slice.endAngle - slice.startAngle) * sliceProgress;
+                const path = createDonutPath(slice.startAngle, animatedEndAngle, outerRadius, innerRadius);
 
-              // Label position
-              const midAngle = (slice.startAngle + animatedEndAngle) / 2;
-              const labelRadius = radius * 0.7;
-              const labelX = centerX + labelRadius * Math.cos(midAngle * Math.PI / 180);
-              const labelY = centerY + labelRadius * Math.sin(midAngle * Math.PI / 180);
-
-              return (
-                <g key={idx}>
+                return (
                   <path
+                    key={idx}
                     d={path}
                     fill={slice.color}
                     stroke="[[ colors.border.light ]]"
                     strokeWidth="[[ spacing.border_width.medium ]]"
-                    filter="url(#glowPie)"
+                    filter="url(#glowDonut)"
                     opacity={sliceProgress}
                   />
-                  {sliceProgress > 0.5 && (
-                    <text
-                      x={labelX}
-                      y={labelY}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill="[[ colors.text.on_dark ]]"
-                      fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
-                      fontWeight="[[ typography.font_weights.bold ]]"
-                      fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
-                      opacity={interpolate(sliceProgress, [0.5, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}
-                    >
-                      {Math.round(slice.percentage * 100)}%
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
+                );
+              })}
+            </svg>
+
+            {/* Center text */}
+            {centerText && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  textAlign: 'center',
+                  opacity: interpolate(entranceProgress, [0, 1], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+                    fontWeight: '[[ typography.font_weights.black ]]',
+                    color: '[[ colors.text.on_dark ]]',
+                    lineHeight: 1,
+                    textShadow: '0 [[ spacing.border_width.medium ]] 10px [[ colors.background.dark ]]'
+                  }}
+                >
+                  {total}
+                </div>
+                <div
+                  style={{
+                    fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
+                    fontWeight: '[[ typography.font_weights.medium ]]',
+                    color: '[[ colors.text.muted ]]',
+                    marginTop: parseInt('[[ spacing.spacing.xs ]]')
+                  }}
+                >
+                  {centerText}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Legend */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: parseInt('[[ spacing.spacing.sm ]]') }}>
@@ -245,7 +273,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div
                       style={{
-                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                         fontWeight: '[[ typography.font_weights.semibold ]]',
                         color: '[[ colors.text.on_dark ]]',
                         lineHeight: '[[ typography.line_heights.tight ]]'
@@ -255,7 +283,7 @@ export const PieChart: React.FC<PieChartProps> = ({
                     </div>
                     <div
                       style={{
-                        fontSize: '[[ typography.font_sizes[typography.default_resolution].xs ]]',
+                        fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                         fontWeight: '[[ typography.font_weights.regular ]]',
                         color: '[[ colors.text.muted ]]'
                       }}

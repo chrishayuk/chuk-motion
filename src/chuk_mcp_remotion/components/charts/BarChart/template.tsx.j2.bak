@@ -30,7 +30,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   const relativeFrame = frame - startFrame;
 
   // Don't render if outside the time range
-  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
     return null;
   }
 

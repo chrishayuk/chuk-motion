@@ -1,15 +1,15 @@
-{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/BarChart/template.tsx.j2 */}
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/charts/LineChart/template.tsx.j2 */}
 import React from 'react';
 import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 
 interface DataPoint {
-  label: string;
-  value: number;
-  color?: string;
+  x: number;
+  y: number;
+  label?: string;
 }
 
-interface BarChartProps {
-  data?: Array<{ label: string; value: number; color?: string }>;
+interface LineChartProps {
+  data?: Array<[number, number] | { x: number; y: number; label?: string }>;
   title?: string;
   xlabel?: string;
   ylabel?: string;
@@ -17,7 +17,7 @@ interface BarChartProps {
   durationInFrames: number;
 }
 
-export const BarChart: React.FC<BarChartProps> = ({
+export const LineChart: React.FC<LineChartProps> = ({
   data = [],
   title,
   xlabel,
@@ -30,24 +30,32 @@ export const BarChart: React.FC<BarChartProps> = ({
   const relativeFrame = frame - startFrame;
 
   // Don't render if outside the time range
-  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
     return null;
   }
 
-  if (data.length === 0) {
+  // Convert data to DataPoint format
+  const dataPoints: DataPoint[] = data.map((point, idx) => {
+    if (Array.isArray(point)) {
+      return { x: point[0], y: point[1] };
+    } else {
+      return { x: point.x, y: point.y, label: point.label };
+    }
+  });
+
+  if (dataPoints.length === 0) {
     return null;
   }
 
   // Calculate bounds
-  const values = data.map(d => d.value);
-  const maxValue = Math.max(...values);
+  const yValues = dataPoints.map(p => p.y);
+  const yMin = Math.min(...yValues);
+  const yMax = Math.max(...yValues);
 
   // Chart dimensions
-  const chartWidth = 900;
-  const chartHeight = 500;
-  const padding = parseInt('[[ spacing.spacing['4xl'] ]]');
-  const barWidth = (chartWidth - 2 * padding) / data.length * 0.7;
-  const barSpacing = (chartWidth - 2 * padding) / data.length;
+  const chartWidth = 800;
+  const chartHeight = 400;
+  const padding = parseInt('[[ spacing.spacing['3xl'] ]]');
 
   // Entrance animation
   const entranceProgress = spring({
@@ -69,7 +77,7 @@ export const BarChart: React.FC<BarChartProps> = ({
   );
 
   const opacity = entranceProgress * exitProgress;
-  const scale = interpolate(entranceProgress, [0, 1], [0.9, 1], {
+  const scale = interpolate(entranceProgress, [0, 1], [0.85, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp'
   });
@@ -79,11 +87,35 @@ export const BarChart: React.FC<BarChartProps> = ({
     extrapolateRight: 'clamp'
   });
 
-  // Default colors
-  const defaultColors = [
-    '[[ colors.primary[0] ]]', '[[ colors.accent[0] ]]', '[[ colors.primary[1] ]]', '[[ colors.accent[1] ]]',
-    '[[ colors.primary[2] ]]', '[[ colors.accent[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[3] ]]'
-  ];
+  // Line drawing animation
+  const lineDelay = 10;
+  const lineProgress = spring({
+    frame: Math.max(0, relativeFrame - lineDelay),
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Scale coordinates to chart space
+  const scaleX = (x: number) => {
+    const normalized = x / (dataPoints.length - 1);
+    return padding + normalized * (chartWidth - 2 * padding);
+  };
+
+  const scaleY = (y: number) => {
+    const normalized = (y - yMin) / (yMax - yMin);
+    return chartHeight - padding - normalized * (chartHeight - 2 * padding);
+  };
+
+  // Generate path with animation
+  const numPointsToShow = Math.floor(lineProgress * dataPoints.length);
+  const visiblePoints = dataPoints.slice(0, Math.max(1, numPointsToShow));
+
+  // Create SVG path
+  const pathData = visiblePoints.map((point, idx) => {
+    const x = scaleX(point.x);
+    const y = scaleY(point.y);
+    return idx === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+  }).join(' ');
 
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
@@ -101,10 +133,10 @@ export const BarChart: React.FC<BarChartProps> = ({
         {title && (
           <h3
             style={{
-              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontWeight: '[[ typography.font_weights.bold ]]',
               color: '[[ colors.text.on_dark ]]',
-              marginBottom: parseInt('[[ spacing.spacing.xl ]]'),
+              marginBottom: parseInt('[[ spacing.spacing.lg ]]'),
               textAlign: 'center',
               transform: `translateY(${titleTranslateY}px)`,
               textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
@@ -129,6 +161,10 @@ export const BarChart: React.FC<BarChartProps> = ({
               <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
               <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
             </linearGradient>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="[[ colors.primary[0] ]]" />
+              <stop offset="100%" stopColor="[[ colors.accent[0] ]]" />
+            </linearGradient>
             <filter id="glow">
               <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
               <feMerge>
@@ -138,7 +174,7 @@ export const BarChart: React.FC<BarChartProps> = ({
             </filter>
           </defs>
 
-          {/* Background */}
+          {/* Background rect */}
           <rect
             x="0"
             y="0"
@@ -180,68 +216,60 @@ export const BarChart: React.FC<BarChartProps> = ({
             />
           </g>
 
-          {/* Bars */}
-          {data.map((item, idx) => {
-            const barDelay = idx * 4;
-            const barProgress = spring({
-              frame: Math.max(0, relativeFrame - barDelay),
-              fps,
-              config: { damping: 150, mass: 0.5, stiffness: 200 }
-            });
+          {/* Line path */}
+          <path
+            d={pathData}
+            fill="none"
+            stroke="url(#lineGradient)"
+            strokeWidth="[[ spacing.spacing.xxs ]]"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow)"
+            style={{ opacity: lineProgress }}
+          />
 
-            const x = padding + idx * barSpacing + (barSpacing - barWidth) / 2;
-            const barHeight = (item.value / maxValue) * (chartHeight - 2 * padding);
-            const animatedHeight = barHeight * barProgress;
-            const y = chartHeight - padding - animatedHeight;
-
-            const color = item.color || defaultColors[idx % defaultColors.length];
+          {/* Data points */}
+          {visiblePoints.map((point, idx) => {
+            const x = scaleX(point.x);
+            const y = scaleY(point.y);
+            const pointDelay = idx * 3;
+            const pointProgress = interpolate(
+              relativeFrame,
+              [pointDelay, pointDelay + 15],
+              [0, 1],
+              { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
+            );
+            const pulseScale = 1 + Math.sin((relativeFrame - pointDelay) * 0.1) * 0.1 * pointProgress;
 
             return (
-              <g key={idx}>
-                {/* Bar */}
-                <rect
-                  x={x}
-                  y={y}
-                  width={barWidth}
-                  height={animatedHeight}
-                  fill={color}
-                  rx="[[ spacing.spacing.xxs ]]"
-                  filter="url(#glow)"
-                  opacity={barProgress}
+              <g key={idx} style={{ opacity: pointProgress }}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r={10 * pulseScale}
+                  fill="[[ colors.accent[0] ]]"
+                  opacity={0.2}
                 />
-
-                {/* Value label */}
-                <text
-                  x={x + barWidth / 2}
-                  y={y - 10}
-                  textAnchor="middle"
-                  fill="[[ colors.text.on_dark ]]"
-                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
-                  fontWeight="[[ typography.font_weights.bold ]]"
-                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
-                  opacity={barProgress}
-                >
-                  {item.value}
-                </text>
-
-                {/* Category label */}
-                <text
-                  x={x + barWidth / 2}
-                  y={chartHeight - padding + 25}
-                  textAnchor="middle"
-                  fill="[[ colors.text.on_dark ]]"
-                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
-                  fontWeight="[[ typography.font_weights.medium ]]"
-                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
-                  opacity={barProgress}
-                >
-                  {item.label}
-                </text>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="7"
+                  fill="[[ colors.accent[0] ]]"
+                  stroke="[[ colors.background.dark ]]"
+                  strokeWidth="[[ spacing.border_width.medium ]]"
+                  filter="url(#glow)"
+                />
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="3"
+                  fill="[[ colors.text.muted ]]"
+                />
               </g>
             );
           })}
 
-          {/* Axis labels */}
+          {/* Labels */}
           {xlabel && (
             <text
               x={chartWidth / 2}

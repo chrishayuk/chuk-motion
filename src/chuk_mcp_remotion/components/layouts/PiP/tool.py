@@ -64,8 +64,8 @@ def register_tool(mcp, project_manager):
                     start_frame=0,
                     duration_frames=0,
                     props={
-                        "main_content": main_component,
-                        "pip_content": pip_component,
+                        "mainContent": main_component,
+                        "pipContent": pip_component,
                         "position": position,
                         "overlay_size": overlay_size,
                         "margin": margin,
