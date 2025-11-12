@@ -15,7 +15,7 @@
 
 - **🎨 Complete Design System**: Design tokens for colors, typography, spacing, and motion
 - **📱 Multi-Platform Support**: Safe margins for LinkedIn, TikTok, Instagram, YouTube
-- **🎬 37+ Video Components**: Charts, code blocks, overlays, layouts, animations, and demo realism
+- **🎬 43+ Video Components**: Charts, code blocks, overlays, layouts, animations, text animations, and demo realism
 - **🎨 7 Built-in Themes**: Tech, Finance, Education, Lifestyle, Gaming, Minimal, Business
 - **⚡ Track-Based Timeline**: Professional multi-track composition system
 - **🤖 LLM-Friendly**: Discoverable components with detailed schemas
@@ -110,6 +110,16 @@ Professional video layouts for multi-platform content:
 ### 🎬 Animations (1 component)
 - **Counter** - Animated number counter (4 animations: count_up, flip, slot_machine, digital)
 
+### ✨ Text Animations (6 components)
+Dynamic text effects inspired by ReactBits:
+
+- **TypewriterText** - Classic typewriter animation with optional blinking cursor
+- **StaggerText** - Staggered reveal with spring physics (character or word-based)
+- **WavyText** - Continuous wave motion with sine wave oscillation
+- **TrueFocus** - Word-by-word focus cycling with animated corner brackets
+- **DecryptedText** - Character scrambling reveal with multiple directions
+- **FuzzyText** - VHS glitch effects with scanlines and RGB split
+
 ### 🎭 Demo Realism (5 components)
 Realistic UI mockups and demonstrations:
 
@@ -122,7 +132,7 @@ Realistic UI mockups and demonstrations:
 ### 📦 Content (1 component)
 - **DemoBox** - Reusable content container for demos
 
-**Total: 37 production-ready components** - All using design tokens with 100% test coverage!
+**Total: 43 production-ready components** - All using design tokens with 100% test coverage!
 
 ## Installation
 
@@ -236,9 +246,12 @@ python examples/safe_margins_demo.py
 python examples/explore_design_system.py
 ```
 
-### Working Examples
+### Component Showcases
 
 ```bash
+# Complete text animations showcase (52.5 seconds)
+python examples/all_text_animations_demo.py
+
 # Fibonacci code typing demo
 python examples/fibonacci_demo.py
 ```
@@ -252,7 +265,7 @@ All examples use the **ProjectManager API** with the track-based timeline system
 - `remotion_get_project_info()` - Get current project info
 - `remotion_list_projects()` - List all projects
 
-### Component Tools (37 total)
+### Component Tools (43 total)
 
 #### Charts
 - `remotion_add_pie_chart(data, title, duration, track, gap_before)`
@@ -280,6 +293,14 @@ All examples use the **ProjectManager API** with the track-based timeline system
 
 #### Animations
 - `remotion_add_counter(start_value, end_value, prefix, suffix, decimals, animation, duration, track, gap_before)`
+
+#### Text Animations
+- `remotion_add_typewriter_text(text, font_size, font_weight, text_color, cursor_color, show_cursor, type_speed, position, align, duration, track, gap_before)`
+- `remotion_add_stagger_text(text, font_size, font_weight, text_color, stagger_by, stagger_delay, animation_type, position, align, duration, track, gap_before)`
+- `remotion_add_wavy_text(text, font_size, font_weight, text_color, wave_amplitude, wave_speed, wave_frequency, position, align, duration, track, gap_before)`
+- `remotion_add_true_focus(text, font_size, font_weight, text_color, word_duration, position, duration, track, gap_before)`
+- `remotion_add_decrypted_text(text, font_size, font_weight, text_color, reveal_direction, scramble_speed, position, duration, track, gap_before)`
+- `remotion_add_fuzzy_text(text, font_size, font_weight, text_color, glitch_intensity, animate, position, duration, track, gap_before)`
 
 ### Discovery Tools
 - `remotion_list_components(category)` - List available components
@@ -414,6 +435,8 @@ chuk-mcp-remotion/
 │   │   ├── code/            # 2 code components
 │   │   ├── layouts/         # 17 layout components ⭐
 │   │   ├── animations/      # 1 animation component
+│   │   ├── text-animations/ # 6 text animation components ⭐
+│   │   ├── frames/          # Frame components
 │   │   ├── demo_realism/    # 5 demo realism components ⭐
 │   │   └── content/         # 1 content component
 │   ├── generator/            # TSX generation
@@ -460,6 +483,15 @@ make test       # Run all tests
 
 ## Recent Updates ⭐
 
+### Text Animation Components (January 2025)
+- ✅ **6 new text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
+- ✅ Created dedicated `text-animations/` folder for better organization
+- ✅ Moved text animations from `overlays/` to `text-animations/`
+- ✅ Inspired by [ReactBits](https://www.reactbits.dev/text-animations)
+- ✅ All components use design tokens and spring physics
+- ✅ Complete demo with 20 scenes (52.5 seconds)
+- ✅ Total components: **43 production-ready components**
+
 ### Test Coverage Achievement (January 2025)
 - ✅ **100% test coverage** on all 17 layout component tools
 - ✅ **98% coverage** on token_manager.py (improved from 81%)
@@ -470,13 +502,14 @@ make test       # Run all tests
 
 ### Component Library Expansion (January 2025)
 - ✅ **17 layout components** (up from 3): AsymmetricLayout, Container, DialogueFrame, FocusStrip, Grid, HUDStyle, Mosaic, OverTheShoulder, PerformanceMultiCam, PiP, SplitScreen, StackedReaction, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, Timeline, Vertical
+- ✅ **6 text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
 - ✅ **5 demo realism components**: BeforeAfterSlider, BrowserFrame, CodeDiff, DeviceFrame, Terminal
 - ✅ **1 content component**: DemoBox
-- ✅ Total: **37 production-ready components**
+- ✅ Total: **43 production-ready components**
 
 ### Design System Integration (January 2025)
 - ✅ Created comprehensive spacing tokens with 7 platform safe margins
-- ✅ Applied design tokens to ALL 37 components (100% coverage)
+- ✅ Applied design tokens to ALL 43 components (100% coverage)
 - ✅ Fixed Jinja2 template rendering for token context
 - ✅ Updated all themes with spacing tokens
 - ✅ Fixed Pydantic v2 compatibility issues
@@ -484,13 +517,14 @@ make test       # Run all tests
 ### Time String Support (January 2025)
 - ✅ Support for time strings: "1s", "500ms", "1m"
 - ✅ Fixed `gap_before` string concatenation bug
-- ✅ Updated all 37 MCP tools to accept time strings
+- ✅ Updated all 43 MCP tools to accept time strings
 - ✅ Enhanced `seconds_to_frames()` with format parsing
 
 ### Example Files (January 2025)
 - ✅ Fixed ProjectManager API usage in all examples
 - ✅ Created design system showcase demo (90s)
 - ✅ Created platform safe margins demo (60s)
+- ✅ Created text animations showcase demo (52.5s)
 - ✅ Fixed EndScreen thumbnail handling
 
 ## Roadmap

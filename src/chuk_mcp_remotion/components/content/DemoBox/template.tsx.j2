@@ -10,7 +10,7 @@ interface DemoBoxProps {
 }
 
 export const DemoBox: React.FC<DemoBoxProps> = ({
-  label,
+  label = 'Demo Box',
   color = 'primary',
   startFrame = 0,
   durationInFrames = 150

@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -29,8 +29,8 @@ def register_tool(mcp, project_manager):
         Picture-in-Picture webcam overlay with customizable positions
 
         Args:
-            main_content: JSON component for main background
-            pip_content: JSON component for PiP overlay
+            main_content: JSON component for main background. Format: {"type": "ComponentName", "config": {...}}
+            pip_content: JSON component for PiP overlay. Same format as main_content
             position: Overlay position (bottom-right, bottom-left, top-right, top-left)
             overlay_size: Overlay size (percentage of screen)
             margin: Margin from edges

@@ -1,6 +1,6 @@
 """VideoContent MCP tool definition."""
+
 from pydantic import BaseModel, Field
-from typing import Optional
 
 
 class VideoContentConfig(BaseModel):
@@ -9,30 +9,30 @@ class VideoContentConfig(BaseModel):
     src: str = Field(
         description="Video source URL or path to static file (e.g. 'video.mp4')"
     )
-    volume: Optional[float] = Field(
+    volume: float | None = Field(
         default=1.0,
         description="Video volume (0.0 to 1.0)",
         ge=0.0,
         le=1.0
     )
-    playback_rate: Optional[float] = Field(
+    playback_rate: float | None = Field(
         default=1.0,
         description="Video playback speed (0.5 = half speed, 2.0 = double speed)",
         gt=0.0
     )
-    fit: Optional[str] = Field(
+    fit: str | None = Field(
         default="cover",
         description="How video fits in container: 'contain', 'cover', or 'fill'"
     )
-    muted: Optional[bool] = Field(
+    muted: bool | None = Field(
         default=False,
         description="Whether video should be muted"
     )
-    start_from: Optional[int] = Field(
+    start_from: int | None = Field(
         default=0,
         description="Frame offset to start video playback from"
     )
-    loop: Optional[bool] = Field(
+    loop: bool | None = Field(
         default=False,
         description="Whether to loop the video continuously"
     )

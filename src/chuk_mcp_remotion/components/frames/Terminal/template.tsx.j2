@@ -49,59 +49,8 @@ export const Terminal: React.FC<TerminalProps> = ({
   // Parse commands if it's a string
   const parsedCommands: CommandBlock[] = typeof commands === 'string' ? JSON.parse(commands) : commands;
 
-  // Theme configurations
-  const themeStyles = {
-    dark: {
-      bg: '#1e1e1e',
-      chrome: '#2d2d2d',
-      text: '#e0e0e0',
-      promptColor: '#4ec9b0',
-      outputColor: '#ce9178',
-      cursorColor: '#aeafad',
-    },
-    light: {
-      bg: '#ffffff',
-      chrome: '#f3f3f3',
-      text: '#333333',
-      promptColor: '#0070c1',
-      outputColor: '#098658',
-      cursorColor: '#000000',
-    },
-    dracula: {
-      bg: '#282a36',
-      chrome: '#44475a',
-      text: '#f8f8f2',
-      promptColor: '#50fa7b',
-      outputColor: '#8be9fd',
-      cursorColor: '#f8f8f2',
-    },
-    monokai: {
-      bg: '#272822',
-      chrome: '#3e3d32',
-      text: '#f8f8f2',
-      promptColor: '#a6e22e',
-      outputColor: '#66d9ef',
-      cursorColor: '#f8f8f0',
-    },
-    nord: {
-      bg: '#2e3440',
-      chrome: '#3b4252',
-      text: '#d8dee9',
-      promptColor: '#88c0d0',
-      outputColor: '#a3be8c',
-      cursorColor: '#d8dee9',
-    },
-    solarized: {
-      bg: '#002b36',
-      chrome: '#073642',
-      text: '#839496',
-      promptColor: '#859900',
-      outputColor: '#2aa198',
-      cursorColor: '#93a1a1',
-    },
-  };
-
-  const currentTheme = themeStyles[theme];
+  // Theme-specific variations using design tokens
+  const isDark = theme !== 'light';
 
   // Prompt variants
   const promptStrings: Record<string, string> = {
@@ -183,7 +132,7 @@ export const Terminal: React.FC<TerminalProps> = ({
         style={{
           width: '100%',
           height: '100%',
-          background: currentTheme.bg,
+          background: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
           filter: `drop-shadow(0 10px 40px [[ colors.shadow.dark ]])`,
@@ -195,11 +144,11 @@ export const Terminal: React.FC<TerminalProps> = ({
         <div
           style={{
             height: `${parseInt('[[ spacing.spacing['2xl'] ]]')}px`,
-            background: currentTheme.chrome,
+            background: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
             display: 'flex',
             alignItems: 'center',
             padding: '0 [[ spacing.spacing.md ]]',
-            borderBottom: `1px solid ${currentTheme.bg}`,
+            borderBottom: `1px solid [[ colors.border.medium ]]`,
           }}
         >
           {/* Window controls */}
@@ -212,7 +161,7 @@ export const Terminal: React.FC<TerminalProps> = ({
           {/* Title */}
           <div
             style={{
-              color: currentTheme.text,
+              color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
               fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               opacity: 0.8,
@@ -251,15 +200,15 @@ export const Terminal: React.FC<TerminalProps> = ({
               <div key={index} style={{ marginBottom: '[[ spacing.spacing.sm ]]' }}>
                 {/* Command line */}
                 <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                  <span style={{ color: currentTheme.promptColor, marginRight: '[[ spacing.spacing.xs ]]' }}>
+                  <span style={{ color: isDark ? '[[ colors.accent[0] ]]' : '[[ colors.primary[2] ]]', marginRight: '[[ spacing.spacing.xs ]]' }}>
                     {promptStr}
                   </span>
-                  <span style={{ color: currentTheme.text }}>
+                  <span style={{ color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]' }}>
                     {displayedCommand}
                     {showCommandCursor && (
                       <span
                         style={{
-                          background: currentTheme.cursorColor,
+                          background: isDark ? '[[ colors.accent[1] ]]' : '[[ colors.primary[1] ]]',
                           width: `${parseInt('[[ spacing.spacing.xs ]]')}px`,
                           height: '1em',
                           display: 'inline-block',
@@ -275,7 +224,7 @@ export const Terminal: React.FC<TerminalProps> = ({
                 {showOutput && cmd.output && (
                   <div
                     style={{
-                      color: currentTheme.outputColor,
+                      color: isDark ? '[[ colors.accent[2] ]]' : '[[ colors.primary[1] ]]',
                       marginTop: '[[ spacing.spacing.xs ]]',
                       marginLeft: '[[ spacing.spacing.md ]]',
                       whiteSpace: 'pre-wrap',
@@ -293,13 +242,13 @@ export const Terminal: React.FC<TerminalProps> = ({
           {parsedCommands.length > 0 &&
             relativeFrame >= commandTimings[parsedCommands.length - 1].outputStartFrame + 30 && (
               <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-                <span style={{ color: currentTheme.promptColor, marginRight: '[[ spacing.spacing.xs ]]' }}>
+                <span style={{ color: isDark ? '[[ colors.accent[0] ]]' : '[[ colors.primary[2] ]]', marginRight: '[[ spacing.spacing.xs ]]' }}>
                   {promptStr}
                 </span>
                 {cursorVisible && (
                   <span
                     style={{
-                      background: currentTheme.cursorColor,
+                      background: isDark ? '[[ colors.accent[1] ]]' : '[[ colors.primary[1] ]]',
                       width: `${parseInt('[[ spacing.spacing.xs ]]')}px`,
                       height: '1em',
                       display: 'inline-block',

@@ -1,0 +1,97 @@
+{
+  "name": "TrueFocus",
+  "description": "Dramatic text animation with word-by-word focus cycling. Blurs inactive words while highlighting the focused word with animated corner brackets and glow effect",
+  "category": "overlay",
+  "tags": ["text", "animation", "focus", "dramatic", "emphasis", "overlay"],
+  "examples": [
+    "Dramatic tagline reveals",
+    "Key message emphasis",
+    "Brand statement animations",
+    "Call-to-action highlights"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to animate (will be split into words)"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "3xl",
+      "options": ["xl", "2xl", "3xl", "4xl"],
+      "description": "Size of text"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "black",
+      "options": ["bold", "extrabold", "black"],
+      "description": "Weight of text"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses theme text color if not specified)"
+    },
+    "frame_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Color of corner brackets (uses primary color if not specified)"
+    },
+    "glow_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Glow effect color (uses primary color if not specified)"
+    },
+    "blur_amount": {
+      "type": "number",
+      "default": 5.0,
+      "description": "Blur intensity for inactive words in pixels"
+    },
+    "word_duration": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Duration each word stays focused in seconds"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "options": ["center", "top", "bottom"],
+      "description": "Vertical position"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes.xl|2xl|3xl|4xl",
+      "font_weights.bold|extrabold|black",
+      "primary_font.fonts",
+      "letter_spacing.tight",
+      "line_heights.tight"
+    ],
+    "colors": [
+      "text.on_dark",
+      "primary[0]"
+    ],
+    "spacing": [
+      "spacing.sm",
+      "spacing.lg",
+      "spacing.xl",
+      "spacing.xs",
+      "spacing['3xl']",
+      "border_width.thick",
+      "border_radius.xs"
+    ],
+    "motion": [
+      "default_spring.config.damping",
+      "default_spring.config.stiffness",
+      "default_spring.config.mass"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "Innovation Through Excellence",
+    "font_size": "3xl",
+    "word_duration": 1.5,
+    "position": "center",
+    "duration": 6.0
+  }
+}

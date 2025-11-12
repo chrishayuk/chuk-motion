@@ -250,7 +250,7 @@ class ProjectManager:
             types.add(comp.component_type)
 
             # Check for nested children in props
-            for key, value in comp.props.items():
+            for _key, value in comp.props.items():
                 if isinstance(value, ComponentInstance):
                     collect_types(value)
                 elif isinstance(value, list):
@@ -508,11 +508,20 @@ class ProjectManager:
             "clips",
             # Container
             "content",
+            # PixelTransition
+            "firstContent",
+            "secondContent",
         ]
 
         for key in specialized_keys:
+            # Check both scene level and config level (for components like PixelTransition)
+            child = None
             if key in scene:
                 child = scene[key]
+            elif key in scene.get("config", {}):
+                child = scene["config"][key]
+
+            if child is not None:
                 # Handle single child component
                 if isinstance(child, dict) and "type" in child:
                     component_types_needed.add(child["type"])

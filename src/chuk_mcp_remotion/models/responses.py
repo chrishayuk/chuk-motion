@@ -49,3 +49,10 @@ class OverlayComponentResponse(ComponentResponse):
 
     # Flexible model for various overlay props
     pass
+
+
+class FrameComponentResponse(ComponentResponse):
+    """Response model for frame components (DeviceFrame, BrowserFrame, Terminal, etc.)."""
+
+    position: str = Field(..., description="Position on screen")
+    theme: str | None = Field(None, description="Theme or device type")

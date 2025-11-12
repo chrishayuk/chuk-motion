@@ -6,6 +6,7 @@ from .responses import (
     ComponentResponse,
     CounterComponentResponse,
     ErrorResponse,
+    FrameComponentResponse,
     LayoutComponentResponse,
     OverlayComponentResponse,
 )
@@ -15,6 +16,7 @@ __all__ = [
     "ChartComponentResponse",
     "CodeComponentResponse",
     "CounterComponentResponse",
+    "FrameComponentResponse",
     "LayoutComponentResponse",
     "OverlayComponentResponse",
     "ErrorResponse",

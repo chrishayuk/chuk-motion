@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):

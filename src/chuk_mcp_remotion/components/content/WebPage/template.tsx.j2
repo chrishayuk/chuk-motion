@@ -1,0 +1,183 @@
+{/* chuk-mcp-remotion/src/chuk_mcp_remotion/components/content/WebPage/template.tsx.j2 */}
+import React from 'react';
+import { useCurrentFrame, interpolate, spring, useVideoConfig } from 'remotion';
+
+interface WebPageProps {
+  html?: string;
+  css?: string;
+  baseStyles?: boolean;
+  scale?: number;
+  scrollY?: number;
+  animateScroll?: boolean;
+  scrollDuration?: number;
+  theme?: 'light' | 'dark';
+  startFrame?: number;
+  durationInFrames?: number;
+}
+
+export const WebPage: React.FC<WebPageProps> = ({
+  html = '<div style="padding: 40px; text-align: center;"><h1>Hello World</h1><p>This is a web page.</p></div>',
+  css = '',
+  baseStyles = true,
+  scale = 1.0,
+  scrollY = 0,
+  animateScroll = false,
+  scrollDuration = 60,
+  theme = 'light',
+  startFrame = 0,
+  durationInFrames = 150
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const relativeFrame = frame - startFrame;
+
+  // Entrance animation
+  const entrance = spring({
+    frame: relativeFrame,
+    fps: fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]],
+    },
+  });
+
+  const opacity = interpolate(relativeFrame, [0, 20], [0, 1], { extrapolateRight: 'clamp' });
+
+  // Animated scroll
+  const currentScrollY = animateScroll
+    ? interpolate(relativeFrame, [0, scrollDuration], [0, scrollY], { extrapolateRight: 'clamp' })
+    : scrollY;
+
+  // Theme colors
+  const isDark = theme === 'dark';
+  const bgColor = isDark ? '[[ colors.background.dark ]]' : '[[ colors.background.light ]]';
+  const textColor = isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]';
+
+  // Base styles to make HTML look good
+  const defaultStyles = baseStyles ? `
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: '[[ "', '".join(typography.body_font.fonts) ]]';
+      font-size: [[ typography.font_sizes[typography.default_resolution].base ]]px;
+      line-height: [[ typography.line_heights.normal ]];
+      color: ${textColor};
+      background: ${bgColor};
+      padding: [[ spacing.spacing.xl ]]px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: '[[ "', '".join(typography.primary_font.fonts) ]]';
+      font-weight: [[ typography.font_weights.bold ]];
+      margin-bottom: [[ spacing.spacing.md ]]px;
+      color: ${textColor};
+    }
+    h1 {
+      font-size: [[ typography.font_sizes[typography.default_resolution]['2xl'] ]]px;
+      margin-bottom: [[ spacing.spacing.lg ]]px;
+    }
+    h2 {
+      font-size: [[ typography.font_sizes[typography.default_resolution].xl ]]px;
+    }
+    h3 {
+      font-size: [[ typography.font_sizes[typography.default_resolution].lg ]]px;
+    }
+    p {
+      margin-bottom: [[ spacing.spacing.md ]]px;
+      line-height: [[ typography.line_heights.relaxed ]];
+    }
+    a {
+      color: [[ colors.primary[0] ]];
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    button {
+      background: [[ colors.primary[0] ]];
+      color: [[ colors.text.on_dark ]];
+      border: none;
+      padding: [[ spacing.spacing.sm ]]px [[ spacing.spacing.lg ]]px;
+      border-radius: [[ spacing.border_radius.md ]]px;
+      font-family: '[[ "', '".join(typography.body_font.fonts) ]]';
+      font-size: [[ typography.font_sizes[typography.default_resolution].base ]]px;
+      cursor: pointer;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+    code {
+      background: ${isDark ? '[[ colors.background.glass ]]' : 'rgba(0, 0, 0, 0.05)'};
+      padding: [[ spacing.border_width.medium ]]px [[ spacing.spacing.xs ]]px;
+      border-radius: [[ spacing.border_radius.sm ]]px;
+      font-family: '[[ "', '".join(typography.code_font.fonts) ]]';
+      font-size: [[ typography.font_sizes[typography.default_resolution].sm ]]px;
+    }
+    pre {
+      background: ${isDark ? '[[ colors.background.glass ]]' : 'rgba(0, 0, 0, 0.05)'};
+      padding: [[ spacing.spacing.md ]]px;
+      border-radius: [[ spacing.border_radius.md ]]px;
+      overflow-x: auto;
+      margin-bottom: [[ spacing.spacing.md ]]px;
+    }
+    pre code {
+      background: transparent;
+      padding: 0;
+    }
+    ul, ol {
+      margin-left: [[ spacing.spacing.xl ]]px;
+      margin-bottom: [[ spacing.spacing.md ]]px;
+    }
+    li {
+      margin-bottom: [[ spacing.spacing.xs ]]px;
+    }
+  ` : '';
+
+  // Combine default styles with custom CSS
+  const fullCSS = defaultStyles + '\n' + css;
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        backgroundColor: bgColor,
+        opacity,
+        transform: `scale(${entrance * scale})`,
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            transform: `translateY(-${currentScrollY}px)`,
+            width: '100%',
+            minHeight: '100%',
+          }}
+        >
+          <style>{fullCSS}</style>
+          <div dangerouslySetInnerHTML={{ __html: html }} />
+        </div>
+      </div>
+    </div>
+  );
+};

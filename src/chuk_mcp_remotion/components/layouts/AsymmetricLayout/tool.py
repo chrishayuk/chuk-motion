@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -31,9 +31,16 @@ def register_tool(mcp, project_manager):
         Main feed (2/3) + two demo panels (1/3 stacked) - perfect for tutorials
 
         Args:
-            main: JSON component for main content
-            top_side: JSON component for top sidebar
-            bottom_side: JSON component for bottom sidebar
+            main: JSON component for main content. Format: {"type": "ComponentName", "config": {...}}
+                Example:
+                {
+                    "type": "VideoContent",
+                    "config": {
+                        "src": "main-video.mp4"
+                    }
+                }
+            top_side: JSON component for top sidebar. Same format as main
+            bottom_side: JSON component for bottom sidebar. Same format as main
             layout: Layout variant (main-left or main-right)
             main_ratio: Main content width (percentage)
             gap: Gap between panels

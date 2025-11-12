@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -33,23 +33,20 @@ def register_tool(mcp, project_manager):
 
         Layout component for side-by-side or top-bottom content.
 
-        For video content in panels, use VideoContent component:
-        Example left panel with video:
-        {
-            "type": "VideoContent",
-            "config": {
-                "src": "https://example.com/video.mp4",
-                "muted": true,
-                "fit": "cover",
-                "loop": true
-            }
-        }
-
         Args:
-            left: JSON component for left panel (format: {"type": "ComponentName", "config": {...}})
-            right: JSON component for right panel (format: {"type": "ComponentName", "config": {...}})
-            top: JSON component for top panel (format: {"type": "ComponentName", "config": {...}})
-            bottom: JSON component for bottom panel (format: {"type": "ComponentName", "config": {...}})
+            left: JSON component for left panel. Format: {"type": "ComponentName", "config": {...}}
+                Example with video:
+                {
+                    "type": "VideoContent",
+                    "config": {
+                        "src": "https://example.com/video.mp4",
+                        "muted": true,
+                        "fit": "cover"
+                    }
+                }
+            right: JSON component for right panel. Same format as left
+            top: JSON component for top panel. Same format as left
+            bottom: JSON component for bottom panel. Same format as left
             orientation: Orientation (horizontal or vertical, default: horizontal)
             ratio: Split ratio 0.0-1.0 (default: 0.5 for 50/50)
             gap: Gap between sections

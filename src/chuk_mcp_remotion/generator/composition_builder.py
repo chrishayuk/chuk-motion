@@ -1179,6 +1179,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 "BrowserFrame",
                 "DeviceFrame",
                 "Terminal",
+                # Transition components
+                "PixelTransition",
             ]
 
             if comp.component_type in layout_types:
@@ -1229,6 +1231,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "rightPanel",
                     "topPanel",
                     "bottomPanel",  # SplitScreen
+                    "firstContent",
+                    "secondContent",  # PixelTransition
                 ]
                 for key in specialized_keys:
                     child = comp.props.get(key)
@@ -1254,6 +1258,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "OverTheShoulder",
             "DialogueFrame",
             "StackedReaction",
+            "PixelTransition",
             "HUDStyle",
             "PerformanceMultiCam",
             "FocusStrip",
@@ -1313,6 +1318,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "rightPanel",
                     "topPanel",
                     "bottomPanel",  # SplitScreen
+                    "firstContent",
+                    "secondContent",  # PixelTransition
                 ]
                 for key in specialized_keys:
                     child = comp.props.get(key)
@@ -1345,6 +1352,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "BrowserFrame",
             "DeviceFrame",
             "Terminal",
+            # Transition components
+            "PixelTransition",
         ]
         has_children = comp.component_type in layout_types
 
@@ -1428,6 +1437,9 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "clips",
             # Container
             "content",
+            # PixelTransition
+            "firstContent",
+            "secondContent",
         ]
         props_lines = []
         for key, value in comp.props.items():
@@ -1685,6 +1697,46 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             else:
                 # No content, render as simple component
                 return self._render_simple_component(comp, indent)
+
+        # Handle transition components (PixelTransition)
+        elif comp.component_type == "PixelTransition":
+            first_content = comp.props.get("firstContent")
+            second_content = comp.props.get("secondContent")
+
+            first_jsx = (
+                self._render_component_jsx(first_content, indent + 4)
+                if isinstance(first_content, ComponentInstance)
+                else ""
+            )
+            second_jsx = (
+                self._render_component_jsx(second_content, indent + 4)
+                if isinstance(second_content, ComponentInstance)
+                else ""
+            )
+
+            if props_str:
+                return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{props_str}
+{spaces}  firstContent={{
+{first_jsx}
+{spaces}  }}
+{spaces}  secondContent={{
+{second_jsx}
+{spaces}  }}
+{spaces}/>"""
+            else:
+                return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{spaces}  firstContent={{
+{first_jsx}
+{spaces}  }}
+{spaces}  secondContent={{
+{second_jsx}
+{spaces}  }}
+{spaces}/>"""
 
         # Fallback
         return self._render_simple_component(comp, indent)

@@ -1,0 +1,172 @@
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, spring } from 'remotion';
+
+/**
+ * StaggerText Component
+ *
+ * Staggered reveal animation where characters or words appear one-by-one with
+ * delay and spring physics for smooth, professional appearance.
+ *
+ * Inspired by: https://www.reactbits.dev/text-animations/stagger
+ */
+
+interface StaggerTextProps {
+  text: string;
+  startFrame?: number;
+  durationInFrames?: number;
+  fontSize?: string;
+  fontWeight?: string;
+  textColor?: string;
+  staggerBy?: 'char' | 'word';
+  staggerDelay?: number;
+  animationType?: 'fade' | 'slide-up' | 'slide-down' | 'scale';
+  position?: 'center' | 'top' | 'bottom';
+  align?: 'left' | 'center' | 'right';
+}
+
+export const StaggerText: React.FC<StaggerTextProps> = ({
+  text,
+  startFrame = 0,
+  durationInFrames = 90,
+  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontWeight = '[[ typography.font_weights.bold ]]',
+  textColor = '[[ colors.text.on_dark ]]',
+  staggerBy = 'char',
+  staggerDelay = 2,
+  animationType = 'fade',
+  position = 'center',
+  align = 'center',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const units = useMemo(() => {
+    if (staggerBy === 'word') {
+      return text.split(' ').map((word, i) => ({
+        content: word,
+        index: i,
+        isSpace: false,
+      }));
+    } else {
+      return text.split('').map((char, i) => ({
+        content: char,
+        index: i,
+        isSpace: char === ' ',
+      }));
+    }
+  }, [text, staggerBy]);
+
+  const relativeFrame = frame - startFrame;
+
+  // Conditional returns AFTER all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Position styles
+  const getPositionStyles = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    };
+
+    switch (position) {
+      case 'top':
+        return { ...base, paddingTop: '[[ spacing.spacing['4xl'] ]]' };
+      case 'bottom':
+        return { ...base, paddingBottom: '[[ spacing.spacing['4xl'] ]]' };
+      case 'center':
+      default:
+        return base;
+    }
+  };
+
+  // Calculate animation for each unit
+  const getUnitStyle = (index: number): React.CSSProperties => {
+    // Start frame for this unit
+    const unitStartFrame = index * staggerDelay;
+
+    // Spring animation
+    const progress = spring({
+      frame: relativeFrame - unitStartFrame,
+      fps,
+      config: {
+        damping: [[ motion.default_spring.config.damping ]],
+        stiffness: [[ motion.default_spring.config.stiffness ]],
+        mass: [[ motion.default_spring.config.mass ]],
+      },
+    });
+
+    const baseStyle: React.CSSProperties = {
+      display: 'inline-block',
+      whiteSpace: staggerBy === 'word' ? 'nowrap' : 'pre',
+    };
+
+    if (relativeFrame < unitStartFrame) {
+      // Not started yet
+      return {
+        ...baseStyle,
+        opacity: 0,
+        transform: animationType === 'slide-up' ? 'translateY(20px)' :
+                   animationType === 'slide-down' ? 'translateY(-20px)' :
+                   animationType === 'scale' ? 'scale(0)' : 'none',
+      };
+    }
+
+    // Animated
+    switch (animationType) {
+      case 'slide-up':
+        return {
+          ...baseStyle,
+          opacity: progress,
+          transform: `translateY(${interpolate(progress, [0, 1], [20, 0])}px)`,
+        };
+      case 'slide-down':
+        return {
+          ...baseStyle,
+          opacity: progress,
+          transform: `translateY(${interpolate(progress, [0, 1], [-20, 0])}px)`,
+        };
+      case 'scale':
+        return {
+          ...baseStyle,
+          opacity: progress,
+          transform: `scale(${progress})`,
+        };
+      case 'fade':
+      default:
+        return {
+          ...baseStyle,
+          opacity: progress,
+        };
+    }
+  };
+
+  return (
+    <AbsoluteFill style={getPositionStyles()}>
+      <div
+        style={{
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize,
+          fontWeight,
+          color: textColor,
+          letterSpacing: '[[ typography.letter_spacing.wide ]]',
+          textAlign: align,
+          padding: '0 [[ spacing.spacing.xl ]]',
+          maxWidth: '90%',
+          lineHeight: '[[ typography.line_heights.relaxed ]]',
+        }}
+      >
+        {units.map((unit, index) => (
+          <span key={index} style={getUnitStyle(index)}>
+            {unit.content}
+            {staggerBy === 'word' && index < units.length - 1 && ' '}
+          </span>
+        ))}
+      </div>
+    </AbsoluteFill>
+  );
+};

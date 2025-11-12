@@ -1,0 +1,73 @@
+{
+  "name": "DecryptedText",
+  "description": "Animated text reveal with character scrambling effect. Characters progressively decrypt from random characters to the final text",
+  "category": "overlay",
+  "tags": ["text", "animation", "reveal", "scramble", "decrypt", "hacker", "glitch"],
+  "examples": [
+    "Dramatic text reveals",
+    "Code/hacker aesthetics",
+    "Mystery unveilings",
+    "System messages",
+    "Access granted screens"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to animate (characters will scramble then reveal)"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "3xl",
+      "description": "Font size (xl, 2xl, 3xl, 4xl)"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "bold",
+      "description": "Font weight (normal, medium, semibold, bold, extrabold, black)"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses on_dark color if not specified)"
+    },
+    "reveal_direction": {
+      "type": "string",
+      "default": "start",
+      "description": "Direction of reveal (start, end, center)"
+    },
+    "scramble_speed": {
+      "type": "number",
+      "default": 3.0,
+      "description": "Speed of character scrambling (higher = faster)"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "description": "Vertical position (center, top, bottom)"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes['3xl']",
+      "font_weights.bold",
+      "primary_font",
+      "letter_spacing.wide"
+    ],
+    "colors": [
+      "text.on_dark"
+    ],
+    "spacing": [
+      "spacing.xl",
+      "spacing['4xl']"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "Access Granted",
+    "font_size": "3xl",
+    "reveal_direction": "start",
+    "scramble_speed": 3.0,
+    "duration": 3.0
+  }
+}

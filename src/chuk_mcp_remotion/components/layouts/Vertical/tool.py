@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -30,8 +30,16 @@ def register_tool(mcp, project_manager):
         9:16 optimized for Shorts/TikTok/Reels with multiple layout styles
 
         Args:
-            top: JSON component for top section
-            bottom: JSON component for bottom section
+            top: JSON component for top section. Format: {"type": "ComponentName", "config": {...}}
+                Example:
+                {
+                    "type": "VideoContent",
+                    "config": {
+                        "src": "video.mp4",
+                        "muted": true
+                    }
+                }
+            bottom: JSON component for bottom section. Same format as top
             layout_style: Layout style (top-bottom, caption-content, content-caption, split-vertical)
             top_ratio: Top section ratio (percentage)
             gap: Gap between sections

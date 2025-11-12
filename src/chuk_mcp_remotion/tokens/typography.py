@@ -67,9 +67,9 @@ class FontSizeScale(BaseModel):
     base: str  # Body text
     lg: str  # Subheadings
     xl: str  # Headings
-    xxl: str = Field(validation_alias="2xl")  # Large headings
-    xxxl: str = Field(validation_alias="3xl")  # Title cards
-    xxxxl: str = Field(validation_alias="4xl")  # Hero titles
+    xxl: str = Field(alias="2xl")  # Large headings
+    xxxl: str = Field(alias="3xl")  # Title cards
+    xxxxl: str = Field(alias="4xl")  # Hero titles
 
 
 class FontSizes(BaseModel):

@@ -1,0 +1,209 @@
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, random } from 'remotion';
+
+/**
+ * FuzzyText Component
+ *
+ * Animated text with scanline distortion and glitch effects. Creates a fuzzy,
+ * VHS-style aesthetic with horizontal displacement per scanline.
+ *
+ * Inspired by: https://www.reactbits.dev/text-animations/fuzzy-text
+ */
+
+interface FuzzyTextProps {
+  text: string;
+  startFrame?: number;
+  durationInFrames?: number;
+  fontSize?: string;
+  fontWeight?: string;
+  textColor?: string;
+  glitchIntensity?: number;
+  scanlineHeight?: number;
+  animate?: boolean;
+  position?: 'center' | 'top' | 'bottom';
+}
+
+export const FuzzyText: React.FC<FuzzyTextProps> = ({
+  text,
+  startFrame = 0,
+  durationInFrames = 90,
+  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontWeight = '[[ typography.font_weights.bold ]]',
+  textColor = '[[ colors.text.on_dark ]]',
+  glitchIntensity = 5,
+  scanlineHeight = 2,
+  animate = true,
+  position = 'center',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const scanlines = useMemo(() => {
+    // Generate scanline offsets (one for each pixel row in the text area)
+    const lineCount = 100; // Approximate number of scanlines
+    return Array.from({ length: lineCount }, (_, i) => ({
+      index: i,
+      seed: i * 0.1, // Seed for random displacement
+    }));
+  }, []);
+
+  const relativeFrame = frame - startFrame;
+
+  // Conditional returns AFTER all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Calculate glitch offset based on frame (animate or static)
+  const glitchOffset = animate
+    ? Math.sin(relativeFrame * 0.2) * glitchIntensity
+    : glitchIntensity * 0.5;
+
+  // Generate random horizontal offsets for each scanline
+  const getScanlineOffset = (lineIndex: number): number => {
+    if (!animate) {
+      return random(`scanline-${lineIndex}`) * glitchIntensity - glitchIntensity / 2;
+    }
+
+    // Animated: vary offset per frame with some randomness
+    const timeFactor = relativeFrame * 0.1;
+    const randomFactor = random(`scanline-${lineIndex}-${Math.floor(relativeFrame / 5)}`);
+    return (Math.sin(timeFactor + lineIndex * 0.3) + randomFactor) * glitchIntensity;
+  };
+
+  // Position styles
+  const getPositionStyles = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    };
+
+    switch (position) {
+      case 'top':
+        return { ...base, paddingTop: '[[ spacing.spacing['4xl'] ]]' };
+      case 'bottom':
+        return { ...base, paddingBottom: '[[ spacing.spacing['4xl'] ]]' };
+      case 'center':
+      default:
+        return base;
+    }
+  };
+
+  // RGB split effect for glitchy aesthetic
+  const rgbSplitAmount = animate
+    ? interpolate(
+        Math.abs(Math.sin(relativeFrame * 0.15)),
+        [0, 1],
+        [0, glitchIntensity * 0.5]
+      )
+    : 0;
+
+  return (
+    <AbsoluteFill style={getPositionStyles()}>
+      {/* Base text layer */}
+      <div
+        style={{
+          position: 'relative',
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize,
+          fontWeight,
+          color: textColor,
+          letterSpacing: '[[ typography.letter_spacing.wide ]]',
+          textAlign: 'center',
+          padding: '0 [[ spacing.spacing.xl ]]',
+          maxWidth: '90%',
+        }}
+      >
+        {/* Main text with scanline effect */}
+        <div
+          style={{
+            position: 'relative',
+            clipPath: 'inset(0)',
+            filter: `blur(${glitchIntensity * 0.1}px)`,
+          }}
+        >
+          {text}
+        </div>
+
+        {/* RGB split layers for glitch effect */}
+        {animate && rgbSplitAmount > 0 && (
+          <>
+            {/* Red channel */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                color: '#FF0000',
+                mixBlendMode: 'screen',
+                opacity: 0.7,
+                transform: `translateX(${-rgbSplitAmount}px)`,
+              }}
+            >
+              {text}
+            </div>
+            {/* Blue channel */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                color: '#00FFFF',
+                mixBlendMode: 'screen',
+                opacity: 0.7,
+                transform: `translateX(${rgbSplitAmount}px)`,
+              }}
+            >
+              {text}
+            </div>
+          </>
+        )}
+
+        {/* Scanline overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            background: `repeating-linear-gradient(
+              0deg,
+              transparent,
+              transparent ${scanlineHeight}px,
+              rgba(0, 0, 0, 0.1) ${scanlineHeight}px,
+              rgba(0, 0, 0, 0.1) ${scanlineHeight * 2}px
+            )`,
+            opacity: 0.5,
+          }}
+        />
+
+        {/* Horizontal displacement lines */}
+        {animate && (
+          <div
+            style={{
+              position: 'absolute',
+              top: `${random(`glitch-line-${Math.floor(relativeFrame / 10)}`) * 100}%`,
+              left: 0,
+              width: '100%',
+              height: '2px',
+              background: 'white',
+              opacity: interpolate(
+                Math.sin(relativeFrame * 0.5),
+                [-1, 1],
+                [0, 0.3]
+              ),
+              transform: `translateX(${glitchOffset}px)`,
+            }}
+          />
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -24,7 +24,25 @@ def register_tool(mcp, project_manager):
         track: str = "main",
         gap_before: float | str | None = None,
     ) -> str:
-        """Add OverTheShoulder layout to the composition."""
+        """
+        Add OverTheShoulder layout to the composition.
+
+        Screen recording with presenter overlay in corner (tutorial style).
+
+        Args:
+            screen_content: JSON component for main screen content. Format: {"type": "ComponentName", "config": {...}}
+            shoulder_overlay: JSON component for presenter overlay. Same format as screen_content
+            overlay_position: Presenter position (bottom-left, bottom-right, etc.)
+            overlay_size: Presenter overlay size (percentage)
+            gap: Gap between elements
+            padding: Padding from edges
+            duration: Duration in seconds or time string
+            track: Track name (default: "main")
+            gap_before: Gap before component in seconds or time string
+
+        Returns:
+            JSON with component info
+        """
 
         def _add():
             if not project_manager.current_timeline:
