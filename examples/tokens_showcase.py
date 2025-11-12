@@ -3,7 +3,7 @@
 Token System Showcase
 =====================
 
-Comprehensive demonstration of the chuk-mcp-remotion token system.
+Comprehensive demonstration of the chuk-motion token system.
 
 This example showcases:
 - Typography tokens (font families, sizes, weights, text styles)
@@ -21,13 +21,13 @@ import asyncio
 
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
-from chuk_mcp_remotion.tokens.brand import get_brand_pack
-from chuk_mcp_remotion.tokens.captions import CAPTION_STYLES, get_caption_style
-from chuk_mcp_remotion.tokens.colors import COLOR_TOKENS
-from chuk_mcp_remotion.tokens.motion import MOTION_TOKENS
-from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
-from chuk_mcp_remotion.tokens.token_manager import TokenManager
-from chuk_mcp_remotion.tokens.typography import TYPOGRAPHY_TOKENS
+from chuk_motion.tokens.brand import get_brand_pack
+from chuk_motion.tokens.captions import CAPTION_STYLES, get_caption_style
+from chuk_motion.tokens.colors import COLOR_TOKENS
+from chuk_motion.tokens.motion import MOTION_TOKENS
+from chuk_motion.tokens.spacing import SPACING_TOKENS
+from chuk_motion.tokens.token_manager import TokenManager
+from chuk_motion.tokens.typography import TYPOGRAPHY_TOKENS
 
 
 async def main():
@@ -306,7 +306,7 @@ async def main():
 
     print("\nExample 3: Custom theme with brand pack")
     print("```python")
-    print("from chuk_mcp_remotion.tokens.brand import merge_brand_pack")
+    print("from chuk_motion.tokens.brand import merge_brand_pack")
     print()
     print('custom_brand = merge_brand_pack("tech_startup", {')
     print('    "logo": {"url": "client-logo.png"},')
@@ -349,7 +349,7 @@ async def main():
     print()
     print("For more details, see:")
     print("  - docs/tokens.md - Comprehensive token documentation")
-    print("  - src/chuk_mcp_remotion/tokens/ - Token source files")
+    print("  - src/chuk_motion/tokens/ - Token source files")
     print()
 
 

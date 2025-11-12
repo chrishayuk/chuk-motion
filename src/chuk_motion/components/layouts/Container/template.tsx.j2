@@ -1,0 +1,94 @@
+{/* chuk-motion/src/chuk_motion/components/layouts/Container/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface ContainerProps {
+  children: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const Container: React.FC<ContainerProps> = ({
+  children,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Position mappings
+  const defaultPadding = parseInt('[[ spacing.spacing['2xl'] ]]');
+  const padding = [% if config.padding %][[ config.padding ]][% else %]defaultPadding[% endif %];
+
+  const positions = {
+    'center': {
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)'
+    },
+    'top-left': {
+      top: padding,
+      left: padding
+    },
+    'top-center': {
+      top: padding,
+      left: '50%',
+      transform: 'translateX(-50%)'
+    },
+    'top-right': {
+      top: padding,
+      right: padding
+    },
+    'middle-left': {
+      top: '50%',
+      left: padding,
+      transform: 'translateY(-50%)'
+    },
+    'middle-right': {
+      top: '50%',
+      right: padding,
+      transform: 'translateY(-50%)'
+    },
+    'bottom-left': {
+      bottom: padding,
+      left: padding
+    },
+    'bottom-center': {
+      bottom: padding,
+      left: '50%',
+      transform: 'translateX(-50%)'
+    },
+    'bottom-right': {
+      bottom: padding,
+      right: padding
+    }
+  };
+
+  const positionStyle = positions['[[ config.position or "center" ]]'] || positions.center;
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          ...positionStyle,
+          width: '[[ config.width or "auto" ]]',
+          height: '[[ config.height or "auto" ]]',
+          [% if config.max_width %]
+          maxWidth: '[[ config.max_width ]]',
+          [% endif %]
+          [% if config.max_height %]
+          maxHeight: '[[ config.max_height ]]',
+          [% endif %]
+        }}
+      >
+        {children}
+      </div>
+    </AbsoluteFill>
+  );
+};

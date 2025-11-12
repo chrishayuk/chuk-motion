@@ -4,7 +4,7 @@
 
 ## Overview
 
-The chuk-mcp-remotion design token system provides a comprehensive, structured approach to video styling, motion, layout, and brand customization. This system ensures consistency across all generated videos while enabling platform-specific optimizations and client-specific white-labeling.
+The chuk-motion design token system provides a comprehensive, structured approach to video styling, motion, layout, and brand customization. This system ensures consistency across all generated videos while enabling platform-specific optimizations and client-specific white-labeling.
 
 Design tokens are the atomic building blocks of the design system:
 
@@ -51,7 +51,7 @@ Theme Tokens (complete system)
 
 ## Typography Tokens
 
-**Location**: `src/chuk_mcp_remotion/tokens/typography.py`
+**Location**: `src/chuk_motion/tokens/typography.py`
 
 Typography tokens define the text system optimized for video content at various resolutions.
 
@@ -60,7 +60,7 @@ Typography tokens define the text system optimized for video content at various 
 Four font categories for different content types:
 
 ```python
-from chuk_mcp_remotion.tokens.typography import TYPOGRAPHY_TOKENS
+from chuk_motion.tokens.typography import TYPOGRAPHY_TOKENS
 
 font_families = TYPOGRAPHY_TOKENS.font_families
 ```
@@ -175,7 +175,7 @@ caption = text_styles.caption
 
 ## Color Tokens
 
-**Location**: `src/chuk_mcp_remotion/tokens/colors.py`
+**Location**: `src/chuk_motion/tokens/colors.py`
 
 Color tokens define the visual palette for each theme. All colors are tested for readability and visual impact on screen.
 
@@ -193,7 +193,7 @@ Each color theme includes:
 ### Using Color Tokens
 
 ```python
-from chuk_mcp_remotion.tokens.colors import COLOR_TOKENS
+from chuk_motion.tokens.colors import COLOR_TOKENS
 
 # Access specific color
 tech_primary = COLOR_TOKENS["tech"]["primary"][0]  # #0066FF
@@ -239,7 +239,7 @@ primary_darker = COLOR_TOKENS["tech"]["primary"][2]  # #003D99
 
 ## Motion Tokens
 
-**Location**: `src/chuk_mcp_remotion/tokens/motion.py`
+**Location**: `src/chuk_motion/tokens/motion.py`
 
 Motion tokens standardize animation timing, easing, and choreography across all video content. All motion tokens are now Pydantic models for type safety and validation.
 
@@ -248,7 +248,7 @@ Motion tokens standardize animation timing, easing, and choreography across all 
 Standardized timing values for consistent animation speed.
 
 ```python
-from chuk_mcp_remotion.tokens.motion import MOTION_TOKENS
+from chuk_motion.tokens.motion import MOTION_TOKENS
 
 # Access as Pydantic model attributes
 MOTION_TOKENS.duration.instant         # 0ms (0 frames)
@@ -397,14 +397,14 @@ MOTION_TOKENS.platform_timing.presentation
 
 ## Spacing & Safe Areas
 
-**Location**: `src/chuk_mcp_remotion/tokens/spacing.py`
+**Location**: `src/chuk_motion/tokens/spacing.py`
 
 Comprehensive spacing system with platform-specific safe zones.
 
 ### Spacing Scale
 
 ```python
-from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
+from chuk_motion.tokens.spacing import SPACING_TOKENS
 
 SPACING_TOKENS.spacing.none   # 0
 SPACING_TOKENS.spacing.xxs    # 4px
@@ -493,14 +493,14 @@ SPACING_TOKENS.border_width.ultra      # 12px
 
 ## Brand Packs
 
-**Location**: `src/chuk_mcp_remotion/tokens/brand.py`
+**Location**: `src/chuk_motion/tokens/brand.py`
 
 White-labeling and client-specific customization system.
 
 ### Available Brand Packs
 
 ```python
-from chuk_mcp_remotion.tokens.brand import BRAND_PACKS
+from chuk_motion.tokens.brand import BRAND_PACKS
 
 BRAND_PACKS.default             # Clean, professional default
 BRAND_PACKS.tech_startup        # Modern, energetic tech
@@ -512,7 +512,7 @@ BRAND_PACKS.education           # Clear, approachable
 ### Using Brand Packs
 
 ```python
-from chuk_mcp_remotion.tokens.brand import get_brand_pack, merge_brand_pack
+from chuk_motion.tokens.brand import get_brand_pack, merge_brand_pack
 
 # Get a brand pack
 brand = get_brand_pack("tech_startup")
@@ -524,7 +524,7 @@ custom_brand = merge_brand_pack("tech_startup", {
 })
 
 # List all available packs
-from chuk_mcp_remotion.tokens.brand import list_brand_packs
+from chuk_motion.tokens.brand import list_brand_packs
 packs = list_brand_packs()
 ```
 
@@ -532,14 +532,14 @@ packs = list_brand_packs()
 
 ## Caption Styles
 
-**Location**: `src/chuk_mcp_remotion/tokens/captions.py`
+**Location**: `src/chuk_motion/tokens/captions.py`
 
 Platform-specific caption styling presets.
 
 ### Available Caption Styles
 
 ```python
-from chuk_mcp_remotion.tokens.captions import CAPTION_STYLES
+from chuk_motion.tokens.captions import CAPTION_STYLES
 
 CAPTION_STYLES.burst          # MrBeast / Ali Abdaal style
 CAPTION_STYLES.precise        # Kurzgesagt style
@@ -559,7 +559,7 @@ CAPTION_STYLES.classic        # Documentary style
 ### Using Caption Styles
 
 ```python
-from chuk_mcp_remotion.tokens.captions import get_caption_style, get_style_for_platform
+from chuk_motion.tokens.captions import get_caption_style, get_style_for_platform
 
 # Get a caption style
 style = get_caption_style("burst")
@@ -568,7 +568,7 @@ style = get_caption_style("burst")
 recommended = get_style_for_platform("tiktok")  # Returns "burst"
 
 # List all styles
-from chuk_mcp_remotion.tokens.captions import list_caption_styles
+from chuk_motion.tokens.captions import list_caption_styles
 styles = list_caption_styles()
 ```
 
@@ -580,8 +580,8 @@ styles = list_caption_styles()
 
 ```python
 # Import tokens
-from chuk_mcp_remotion.tokens.motion import MOTION_TOKENS
-from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
+from chuk_motion.tokens.motion import MOTION_TOKENS
+from chuk_motion.tokens.spacing import SPACING_TOKENS
 
 # Use in component - convert Pydantic model to dict
 entrance = spring({
@@ -598,9 +598,9 @@ margin_top = safe_area["top"]
 ### For MCP Server Integration
 
 ```python
-from chuk_mcp_remotion.tokens.brand import get_brand_pack
-from chuk_mcp_remotion.tokens.captions import get_style_for_platform
-from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
+from chuk_motion.tokens.brand import get_brand_pack
+from chuk_motion.tokens.captions import get_style_for_platform
+from chuk_motion.tokens.spacing import SPACING_TOKENS
 
 # Get platform-specific settings
 platform = "tiktok"
@@ -619,7 +619,7 @@ video = generate_video(
 ### Token Manager for Import/Export
 
 ```python
-from chuk_mcp_remotion.tokens.token_manager import TokenManager
+from chuk_motion.tokens.token_manager import TokenManager
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
 # Initialize
@@ -750,13 +750,13 @@ Captions:
 
 ## Source Files
 
-- Typography tokens: `src/chuk_mcp_remotion/tokens/typography.py`
-- Color tokens: `src/chuk_mcp_remotion/tokens/colors.py`
-- Motion tokens: `src/chuk_mcp_remotion/tokens/motion.py`
-- Spacing tokens: `src/chuk_mcp_remotion/tokens/spacing.py`
-- Brand packs: `src/chuk_mcp_remotion/tokens/brand.py`
-- Caption styles: `src/chuk_mcp_remotion/tokens/captions.py`
-- Token manager: `src/chuk_mcp_remotion/tokens/token_manager.py`
+- Typography tokens: `src/chuk_motion/tokens/typography.py`
+- Color tokens: `src/chuk_motion/tokens/colors.py`
+- Motion tokens: `src/chuk_motion/tokens/motion.py`
+- Spacing tokens: `src/chuk_motion/tokens/spacing.py`
+- Brand packs: `src/chuk_motion/tokens/brand.py`
+- Caption styles: `src/chuk_motion/tokens/captions.py`
+- Token manager: `src/chuk_motion/tokens/token_manager.py`
 
 ---
 

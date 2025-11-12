@@ -177,7 +177,7 @@ npm run build
 
 After viewing the showcase:
 1. Study the layouts that fit your use case
-2. Check layout-specific documentation in `src/chuk_mcp_remotion/components/layouts/`
+2. Check layout-specific documentation in `src/chuk_motion/components/layouts/`
 3. Use layouts in your own projects via MCP tools or composition builder
 4. Customize layouts by modifying props
 

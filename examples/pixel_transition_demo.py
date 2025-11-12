@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_mcp_remotion.utils.project_manager import ProjectManager
+from chuk_motion.utils.project_manager import ProjectManager
 import shutil
 
 

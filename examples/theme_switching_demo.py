@@ -18,7 +18,7 @@ Usage:
 
 import asyncio
 
-from chuk_mcp_remotion.themes.youtube_themes import YOUTUBE_THEMES
+from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 
 
 async def create_theme_comparison():

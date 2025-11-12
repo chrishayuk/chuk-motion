@@ -1,6 +1,6 @@
 # Theme System
 
-The theme system in `chuk-mcp-remotion` provides complete, production-ready design systems optimized for YouTube video content. Each theme combines color palettes, typography, and motion design into a cohesive visual language.
+The theme system in `chuk-motion` provides complete, production-ready design systems optimized for YouTube video content. Each theme combines color palettes, typography, and motion design into a cohesive visual language.
 
 ## Overview
 
@@ -48,7 +48,7 @@ Each theme includes:
 
 **Example Usage**:
 ```python
-from chuk_mcp_remotion.themes.youtube_themes import YOUTUBE_THEMES
+from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 
 tech_theme = YOUTUBE_THEMES["tech"]
 primary_color = tech_theme["colors"]["primary"][0]  # #0066FF
@@ -269,7 +269,7 @@ Each theme is defined as a Python dictionary with the following structure:
 ### Accessing Theme Data
 
 ```python
-from chuk_mcp_remotion.themes.youtube_themes import YOUTUBE_THEMES
+from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 
 # Get a specific theme
 tech_theme = YOUTUBE_THEMES["tech"]
@@ -313,7 +313,7 @@ The `ThemeManager` class provides centralized theme management with advanced fea
 ### Creating a Theme Manager
 
 ```python
-from chuk_mcp_remotion.themes.theme_manager import ThemeManager
+from chuk_motion.themes.theme_manager import ThemeManager
 
 # Create manager (automatically loads built-in themes)
 manager = ThemeManager()
@@ -612,4 +612,4 @@ custom_key = manager.create_custom_theme(
 
 ## Source Files
 
-Theme definitions: `src/chuk_mcp_remotion/themes/youtube_themes.py`
+Theme definitions: `src/chuk_motion/themes/youtube_themes.py`

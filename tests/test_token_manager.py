@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/test_token_manager.py
+# chuk-motion/tests/test_token_manager.py
 """
 Tests for TokenManager - token import/export functionality.
 """

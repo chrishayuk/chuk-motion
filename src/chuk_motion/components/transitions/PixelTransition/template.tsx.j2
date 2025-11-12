@@ -1,0 +1,146 @@
+{/* chuk-motion/src/chuk_motion/components/transitions/PixelTransition/template.tsx.j2 */}
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, interpolate, useVideoConfig } from 'remotion';
+
+interface PixelTransitionProps {
+  firstContent: React.ReactNode;
+  secondContent: React.ReactNode;
+  gridSize?: number;
+  pixelColor?: string;
+  transitionStart?: number;
+  transitionDuration?: number;
+  startFrame?: number;
+  durationInFrames?: number;
+}
+
+export const PixelTransition: React.FC<PixelTransitionProps> = ({
+  firstContent,
+  secondContent,
+  gridSize = 10,
+  pixelColor = '[[ colors.primary[0] ]]',
+  transitionStart = 60, // Start transition at 2 seconds (60 frames)
+  transitionDuration = 30, // Transition lasts 1 second (30 frames)
+  startFrame = 0,
+  durationInFrames = 150,
+}) => {
+  const frame = useCurrentFrame();
+  const { width, height } = useVideoConfig();
+
+  // Generate pixel grid data - memoized to prevent recalculation
+  // MUST be called before any conditional returns (React Rules of Hooks)
+  const pixels = useMemo(() => {
+    const pixelArray = [];
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        pixelArray.push({
+          id: `${row}-${col}`,
+          row,
+          col,
+          // Random offset for staggered animation
+          randomOffset: Math.random(),
+        });
+      }
+    }
+    return pixelArray;
+  }, [gridSize]);
+
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside time range (AFTER all hooks)
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Calculate pixel size
+  const pixelSize = 100 / gridSize;
+
+  // Animation phases:
+  // Phase 1: Pixels fade in (cover first content)
+  // Phase 2: Switch content while pixels are visible
+  // Phase 3: Pixels fade out (reveal second content)
+
+  const phase1End = transitionStart + transitionDuration / 2;
+  const phase2End = phase1End;
+  const phase3End = phase2End + transitionDuration / 2;
+
+  // Determine which content to show
+  const showSecondContent = relativeFrame >= phase2End;
+
+  return (
+    <AbsoluteFill>
+      {/* First Content - visible before transition midpoint */}
+      {!showSecondContent && (
+        <AbsoluteFill style={{ pointerEvents: 'none' }}>
+          {firstContent}
+        </AbsoluteFill>
+      )}
+
+      {/* Second Content - visible after transition midpoint */}
+      {showSecondContent && (
+        <AbsoluteFill style={{ pointerEvents: 'none' }}>
+          {secondContent}
+        </AbsoluteFill>
+      )}
+
+      {/* Pixel Grid Overlay */}
+      <AbsoluteFill style={{ pointerEvents: 'none' }}>
+        <svg width={width} height={height} style={{ position: 'absolute', top: 0, left: 0 }}>
+          {pixels.map((pixel) => {
+            // Stagger based on random offset
+            const staggerDelay = pixel.randomOffset * (transitionDuration / 2);
+
+            // Phase 1: Fade in
+            const phase1Start = transitionStart + staggerDelay;
+            const phase1Opacity = interpolate(
+              relativeFrame,
+              [phase1Start, phase1Start + 10],
+              [0, 1],
+              {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+              }
+            );
+
+            // Phase 3: Fade out
+            const phase3Start = phase2End + staggerDelay;
+            const phase3Opacity = interpolate(
+              relativeFrame,
+              [phase3Start, phase3Start + 10],
+              [1, 0],
+              {
+                extrapolateLeft: 'clamp',
+                extrapolateRight: 'clamp',
+              }
+            );
+
+            // Combine opacities based on phase
+            let opacity = 0;
+            if (relativeFrame < transitionStart) {
+              opacity = 0;
+            } else if (relativeFrame < phase1End) {
+              opacity = phase1Opacity;
+            } else if (relativeFrame < phase2End) {
+              opacity = 1;
+            } else if (relativeFrame < phase3End) {
+              opacity = phase3Opacity;
+            } else {
+              opacity = 0;
+            }
+
+            return (
+              <rect
+                key={pixel.id}
+                x={`${pixel.col * pixelSize}%`}
+                y={`${pixel.row * pixelSize}%`}
+                width={`${pixelSize}%`}
+                height={`${pixelSize}%`}
+                fill={pixelColor}
+                opacity={opacity}
+              />
+            );
+          })}
+        </svg>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};

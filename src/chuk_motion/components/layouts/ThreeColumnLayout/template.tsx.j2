@@ -1,0 +1,108 @@
+{/* chuk-motion/src/chuk_motion/components/layouts/ThreeColumnLayout/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface ThreeColumnLayoutProps {
+  left?: React.ReactNode;
+  center?: React.ReactNode;
+  right?: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+  left_width?: number;
+  center_width?: number;
+  right_width?: number;
+  padding?: number;
+  gap?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const ThreeColumnLayout: React.FC<ThreeColumnLayoutProps> = ({
+  left,
+  center,
+  right,
+  startFrame,
+  durationInFrames,
+  left_width = 25,
+  center_width = 50,
+  right_width = 25,
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  gap = parseInt('[[ spacing.spacing.md ]]'),
+  border_width,
+  border_color = '[[ colors.border.light ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: padding,
+          left: padding,
+          right: padding,
+          bottom: padding,
+          display: 'flex',
+          flexDirection: 'row',
+          gap: gap,
+          width: `calc(100% - ${padding * 2}px)`,
+          height: `calc(100% - ${padding * 2}px)`,
+        }}
+      >
+        {left && (
+          <div style={{
+            width: `${left_width}%`,
+            height: '100%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {left}
+          </div>
+        )}
+        {center && (
+          <div style={{
+            width: `${center_width}%`,
+            height: '100%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {center}
+          </div>
+        )}
+        {right && (
+          <div style={{
+            width: `${right_width}%`,
+            height: '100%',
+            display: 'flex',
+            overflow: 'hidden',
+            position: 'relative',
+            ...(border_width && {
+              border: `${border_width}px solid ${border_color}`,
+              borderRadius: border_radius
+            }),
+          }}>
+            {right}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

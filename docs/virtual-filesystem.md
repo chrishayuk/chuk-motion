@@ -38,7 +38,7 @@ The virtual filesystem (VFS) abstracts file operations behind a consistent API t
     └──────┘    └─────────┘ └──────┘ └────┘
 ```
 
-## Usage in chuk-mcp-remotion
+## Usage in chuk-motion
 
 ### Initialization
 

@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/conftest.py
+# chuk-motion/tests/conftest.py
 """
 Pytest configuration and shared fixtures.
 """
@@ -9,24 +9,24 @@ from unittest.mock import Mock
 import pytest
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
-from chuk_mcp_remotion.themes.models import Theme, ThemeMotion, ThemeTypography
-from chuk_mcp_remotion.themes.theme_manager import ThemeManager
-from chuk_mcp_remotion.tokens.colors import (
+from chuk_motion.themes.models import Theme, ThemeMotion, ThemeTypography
+from chuk_motion.themes.theme_manager import ThemeManager
+from chuk_motion.tokens.colors import (
     BackgroundColors,
     ColorTheme,
     SemanticColors,
     TextColors,
 )
-from chuk_mcp_remotion.tokens.motion import (
+from chuk_motion.tokens.motion import (
     DurationConfig,
     EasingConfig,
     RemotionSpringConfig,
     SpringConfig,
 )
-from chuk_mcp_remotion.tokens.spacing import SPACING_TOKENS
-from chuk_mcp_remotion.tokens.token_manager import TokenManager
-from chuk_mcp_remotion.tokens.typography import FontFamily
-from chuk_mcp_remotion.utils.project_manager import ProjectManager
+from chuk_motion.tokens.spacing import SPACING_TOKENS
+from chuk_motion.tokens.token_manager import TokenManager
+from chuk_motion.tokens.typography import FontFamily
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 @pytest.fixture

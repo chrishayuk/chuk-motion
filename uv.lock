@@ -302,7 +302,27 @@ wheels = [
 ]
 
 [[package]]
-name = "chuk-mcp-remotion"
+name = "chuk-mcp-server"
+version = "0.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "chuk-mcp" },
+    { name = "chuk-sessions" },
+    { name = "httptools" },
+    { name = "orjson" },
+    { name = "psutil" },
+    { name = "python-multipart" },
+    { name = "starlette" },
+    { name = "uvicorn" },
+    { name = "uvloop" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f5/75/7139023d68ad855956432bbb6adaefe567400c77040e39043abc4916291c/chuk_mcp_server-0.6.tar.gz", hash = "sha256:0473a7d13864529e44d6edee05986dd86074005e9c8e2f955d12626415e9e73b", size = 409788, upload-time = "2025-11-03T01:25:07.315Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/a0/61dbfcc111d1b7489893d5899789395e916879292bc5a0af7d8f32109838/chuk_mcp_server-0.6-py3-none-any.whl", hash = "sha256:d44bb836bead3ea6cec891e8577f8e0c33657146cf4d78112191fb34a334493e", size = 136477, upload-time = "2025-11-03T01:25:04.915Z" },
+]
+
+[[package]]
+name = "chuk-motion"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
@@ -367,26 +387,6 @@ dev = [
     { name = "pytest-mock", specifier = ">=3.10.0" },
     { name = "ruff", specifier = ">=0.3.0" },
     { name = "types-pyyaml", specifier = ">=6.0.0" },
-]
-
-[[package]]
-name = "chuk-mcp-server"
-version = "0.6"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "chuk-mcp" },
-    { name = "chuk-sessions" },
-    { name = "httptools" },
-    { name = "orjson" },
-    { name = "psutil" },
-    { name = "python-multipart" },
-    { name = "starlette" },
-    { name = "uvicorn" },
-    { name = "uvloop" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f5/75/7139023d68ad855956432bbb6adaefe567400c77040e39043abc4916291c/chuk_mcp_server-0.6.tar.gz", hash = "sha256:0473a7d13864529e44d6edee05986dd86074005e9c8e2f955d12626415e9e73b", size = 409788, upload-time = "2025-11-03T01:25:07.315Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/a0/61dbfcc111d1b7489893d5899789395e916879292bc5a0af7d8f32109838/chuk_mcp_server-0.6-py3-none-any.whl", hash = "sha256:d44bb836bead3ea6cec891e8577f8e0c33657146cf4d78112191fb34a334493e", size = 136477, upload-time = "2025-11-03T01:25:04.915Z" },
 ]
 
 [[package]]

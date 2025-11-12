@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/Grid/test_grid.py
+# chuk-motion/src/chuk_motion/components/layouts/Grid/test_grid.py
 """
 Tests for Grid layout template generation.
 """
@@ -142,8 +142,8 @@ class TestGridBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.layouts.Grid.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Grid.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         items = ["item1", "item2"]
@@ -156,8 +156,8 @@ class TestGridBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.layouts.Grid.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Grid.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         items = ["item1", "item2", "item3"]
@@ -173,8 +173,8 @@ class TestGridBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.layouts.Grid.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Grid.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, items=[], start_time=2.0, duration=5.0)
@@ -191,7 +191,7 @@ class TestGridToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.components.layouts.Grid.tool import register_tool
 
         mcp = Mock()
         project_manager = Mock()
@@ -206,8 +206,8 @@ class TestGridToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
-        from chuk_mcp_remotion.generator.timeline import Timeline
+        from chuk_motion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
@@ -230,7 +230,7 @@ class TestGridToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.components.layouts.Grid.tool import register_tool
 
         mcp = Mock()
         project_manager = Mock()
@@ -251,8 +251,8 @@ class TestGridToolRegistration:
         import json
         from unittest.mock import Mock, patch
 
-        from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
-        from chuk_mcp_remotion.generator.timeline import Timeline
+        from chuk_motion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
@@ -276,8 +276,8 @@ class TestGridToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Grid.tool import register_tool
-        from chuk_mcp_remotion.generator.timeline import Timeline
+        from chuk_motion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()

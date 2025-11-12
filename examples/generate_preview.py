@@ -11,7 +11,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_mcp_remotion import COLOR_TOKENS, COMPONENT_REGISTRY, YOUTUBE_THEMES
+from chuk_motion import COLOR_TOKENS, COMPONENT_REGISTRY, YOUTUBE_THEMES
 
 
 def generate_theme_preview_html() -> str:
@@ -289,7 +289,7 @@ def generate_theme_preview_html() -> str:
 
     html_parts.append("""
         <div style="text-align: center; margin-top: 80px; padding: 40px; color: #8b92a4;">
-            <p>Built with ❤️ using <strong>chuk-mcp-remotion</strong></p>
+            <p>Built with ❤️ using <strong>chuk-motion</strong></p>
             <p style="margin-top: 10px;">AI-powered video generation for YouTube</p>
         </div>
     </div>

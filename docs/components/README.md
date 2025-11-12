@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains comprehensive documentation for all Remotion components in the chuk-mcp-remotion generator system. Each component has its own documentation file with usage examples, props reference, and best practices.
+This directory contains comprehensive documentation for all Remotion components in the chuk-motion generator system. Each component has its own documentation file with usage examples, props reference, and best practices.
 
 ## Quick Start
 
@@ -207,8 +207,8 @@ See existing docs for examples:
 
 - [Component Design Principles](./COMPONENT_DESIGN.md)
 - [Template Testing Guide](../../tests/templates/README_TEMPLATE_TESTS.md)
-- [Theme System](../../src/chuk_mcp_remotion/themes/youtube_themes.py)
-- [Component Builder](../../src/chuk_mcp_remotion/generator/component_builder.py)
+- [Theme System](../../src/chuk_motion/themes/youtube_themes.py)
+- [Component Builder](../../src/chuk_motion/generator/component_builder.py)
 
 ---
 

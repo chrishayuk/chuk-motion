@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/test_token_tools.py
+# chuk-motion/tests/test_token_tools.py
 """
 Tests for token MCP tools.
 """
@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from chuk_mcp_remotion.tools.token_tools import register_token_tools
+from chuk_motion.tools.token_tools import register_token_tools
 
 
 @pytest.mark.asyncio

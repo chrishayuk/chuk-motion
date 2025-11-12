@@ -29,7 +29,7 @@ Comprehensive audit of all component templates (40 files) for hardcoded values t
 ### ✅ Fixed Components
 
 #### 1. StylizedWebPage (12 violations → 0)
-**File:** `src/chuk_mcp_remotion/components/content/StylizedWebPage/template.tsx.j2`
+**File:** `src/chuk_motion/components/content/StylizedWebPage/template.tsx.j2`
 
 **Fixes applied:**
 - Replaced hardcoded spacing values with tokens:
@@ -52,7 +52,7 @@ Comprehensive audit of all component templates (40 files) for hardcoded values t
 **Impact:** Component now fully adheres to design system, with better theme consistency.
 
 #### 2. BeforeAfterSlider (1 violation → 0)
-**File:** `src/chuk_mcp_remotion/components/layouts/BeforeAfterSlider/template.tsx.j2`
+**File:** `src/chuk_motion/components/layouts/BeforeAfterSlider/template.tsx.j2`
 
 **Fix applied:**
 - Line 139: `'#333'` → `colors.text.on_light` (slider handle icon color)
@@ -64,7 +64,7 @@ Comprehensive audit of all component templates (40 files) for hardcoded values t
 ### 🟡 Remaining Components (Special Case)
 
 #### 3. CodeDiff (36 violations - SYNTAX HIGHLIGHTING)
-**File:** `src/chuk_mcp_remotion/components/code/CodeDiff/template.tsx.j2`
+**File:** `src/chuk_motion/components/code/CodeDiff/template.tsx.j2`
 
 **Nature of violations:**
 All 36 violations are syntax highlighting colors for code editor themes:
@@ -91,7 +91,7 @@ All 36 violations are syntax highlighting colors for code editor themes:
 If we add many more code themes, consider creating a syntax theme token system. Current 4 themes don't justify the complexity.
 
 #### 4. TypingCode (20 violations - SYNTAX HIGHLIGHTING)
-**File:** `src/chuk_mcp_remotion/components/code/TypingCode/template.tsx.j2`
+**File:** `src/chuk_motion/components/code/TypingCode/template.tsx.j2`
 
 **Nature of violations:**
 Similar to CodeDiff - syntax highlighting colors for code display.
@@ -228,16 +228,16 @@ Components with acceptable hardcoded syntax highlighting:
 ## Files Changed
 
 ### Modified
-1. `src/chuk_mcp_remotion/components/content/StylizedWebPage/template.tsx.j2`
+1. `src/chuk_motion/components/content/StylizedWebPage/template.tsx.j2`
    - Replaced 12 hardcoded values with design tokens
 
-2. `src/chuk_mcp_remotion/components/layouts/BeforeAfterSlider/template.tsx.j2`
+2. `src/chuk_motion/components/layouts/BeforeAfterSlider/template.tsx.j2`
    - Replaced 1 hardcoded color with token
 
-3. `src/chuk_mcp_remotion/tokens/typography.py`
+3. `src/chuk_motion/tokens/typography.py`
    - Fixed font size alias serialization (validation_alias → alias)
 
-4. `src/chuk_mcp_remotion/generator/component_builder.py`
+4. `src/chuk_motion/generator/component_builder.py`
    - Added `by_alias=True` to model_dump() calls
 
 ### Created

@@ -1,4 +1,4 @@
-# Examples - chuk-mcp-remotion
+# Examples - chuk-motion
 
 Complete examples showcasing the design system, components, and video generation capabilities.
 
@@ -246,4 +246,4 @@ Study `ultimate_product_launch.py` for complex multi-track compositions.
 
 ---
 
-**Made with ❤️ using chuk-mcp-remotion**
+**Made with ❤️ using chuk-motion**

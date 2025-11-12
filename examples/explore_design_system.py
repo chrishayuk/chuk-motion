@@ -13,7 +13,7 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_mcp_remotion import (
+from chuk_motion import (
     COLOR_TOKENS,
     TYPOGRAPHY_TOKENS,
     MOTION_TOKENS,

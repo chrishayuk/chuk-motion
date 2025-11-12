@@ -19,14 +19,14 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
-from chuk_mcp_remotion.themes.youtube_themes import YOUTUBE_THEMES
+from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 
 
 async def create_design_system_showcase():
     """Create a comprehensive design system showcase video."""
 
-    from chuk_mcp_remotion.utils.project_manager import ProjectManager
+    from chuk_motion.utils.project_manager import ProjectManager
     import shutil
 
     manager = ProjectManager()

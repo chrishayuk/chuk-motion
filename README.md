@@ -1,4 +1,4 @@
-# chuk-mcp-remotion
+# chuk-motion
 
 > AI-powered video generation with Remotion - A design-system-first approach to creating professional multi-platform videos
 
@@ -9,7 +9,7 @@
 
 ## Overview
 
-`chuk-mcp-remotion` is an MCP (Model Context Protocol) server that brings the power of [Remotion](https://www.remotion.dev) video generation to AI assistants like Claude. It provides a **design-system-first approach** with comprehensive design tokens, enabling AI to create professional, animated videos optimized for **YouTube, TikTok, LinkedIn, Instagram Stories**, and more.
+`chuk-motion` is an MCP (Model Context Protocol) server that brings the power of [Remotion](https://www.remotion.dev) video generation to AI assistants like Claude. It provides a **design-system-first approach** with comprehensive design tokens, enabling AI to create professional, animated videos optimized for **YouTube, TikTok, LinkedIn, Instagram Stories**, and more.
 
 ### Key Features
 
@@ -146,8 +146,8 @@ Realistic UI mockups and demonstrations:
 
 ```bash
 # Clone the repository
-git clone https://github.com/chrishayuk/chuk-mcp-remotion.git
-cd chuk-mcp-remotion
+git clone https://github.com/chrishayuk/chuk-motion.git
+cd chuk-motion
 
 # Install dependencies with uv (recommended)
 uv pip install -e .
@@ -169,12 +169,12 @@ pip install -e .
 
 **STDIO Mode** (for Claude Desktop):
 ```bash
-python -m chuk_mcp_remotion.server stdio
+python -m chuk_motion.server stdio
 ```
 
 **HTTP Mode** (for testing/development):
 ```bash
-python -m chuk_mcp_remotion.server http --port 8000
+python -m chuk_motion.server http --port 8000
 ```
 
 ### 2. Create a Project
@@ -404,7 +404,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
   "mcpServers": {
     "remotion": {
       "command": "python",
-      "args": ["-m", "chuk_mcp_remotion.server", "stdio"],
+      "args": ["-m", "chuk_motion.server", "stdio"],
       "env": {
         "MCP_STDIO": "1"
       }
@@ -418,8 +418,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 ### Project Structure
 
 ```
-chuk-mcp-remotion/
-├── src/chuk_mcp_remotion/
+chuk-motion/
+├── src/chuk_motion/
 │   ├── server.py              # Main MCP server
 │   ├── tokens/                # Design tokens ⭐
 │   │   ├── colors.py         # Color palettes (7 themes)
@@ -574,7 +574,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- **GitHub**: https://github.com/chrishayuk/chuk-mcp-remotion
+- **GitHub**: https://github.com/chrishayuk/chuk-motion
 - **Related Projects**:
   - [chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server) - Zero-config MCP framework
   - [chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx) - PowerPoint MCP server

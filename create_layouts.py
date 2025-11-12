@@ -94,7 +94,7 @@ def create_schema_file(component_name, config):
     pydantic_fields.append('    start_time: float = Field(description="When to show (seconds)")')
     pydantic_fields.append('    duration: float | None = Field(5.0, description="How long to show (seconds)")')
 
-    content = f'''# chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/{component_name}/schema.py
+    content = f'''# chuk-motion/src/chuk_motion/components/layouts/{component_name}/schema.py
 """{component_name} component schema and Pydantic models."""
 
 from typing import Any
@@ -153,7 +153,7 @@ def create_builder_file(component_name, config):
     props_items = [f'"{k}": {k}' for k in config["props"].keys()]
     props_items.extend(['"start_time": start_time', '"duration": duration'])
 
-    content = f'''# chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/{component_name}/builder.py
+    content = f'''# chuk-motion/src/chuk_motion/components/layouts/{component_name}/builder.py
 """{component_name} composition builder method."""
 
 from typing import TYPE_CHECKING, Any
@@ -228,14 +228,14 @@ def create_tool_file(component_name, config):
         else:
             props_items.append(f'                        "{prop_name}": {prop_name}')
 
-    content = f'''# chuk-mcp-remotion/src/chuk_mcp_remotion/components/layouts/{component_name}/tool.py
+    content = f'''# chuk-motion/src/chuk_motion/components/layouts/{component_name}/tool.py
 """{component_name} MCP tool."""
 
 import asyncio
 import json
 
-from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
-from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
 def register_tool(mcp, project_manager):
@@ -317,7 +317,7 @@ __all__ = [
 
 
 def main():
-    base_path = "src/chuk_mcp_remotion/components/layouts"
+    base_path = "src/chuk_motion/components/layouts"
 
     for component_name, config in LAYOUTS.items():
         component_path = os.path.join(base_path, component_name)

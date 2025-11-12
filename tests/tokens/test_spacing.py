@@ -6,7 +6,7 @@ Comprehensive tests for spacing token system.
 import pytest
 from pydantic import ValidationError
 
-from chuk_mcp_remotion.tokens.spacing import (
+from chuk_motion.tokens.spacing import (
     SPACING_TOKENS,
     AttentionZone,
     CriticalZone,

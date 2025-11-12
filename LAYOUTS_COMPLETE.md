@@ -86,7 +86,7 @@ border_radius = parseInt('[[ spacing.border_radius.md ]]')  // 8px
 ## Directory Structure
 
 ```
-src/chuk_mcp_remotion/components/layouts/
+src/chuk_motion/components/layouts/
 ├── AsymmetricLayout/
 │   ├── __init__.py
 │   ├── builder.py
@@ -152,7 +152,7 @@ src/chuk_mcp_remotion/components/layouts/
 To test a layout:
 
 ```python
-from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+from chuk_motion.generator.composition_builder import CompositionBuilder
 
 builder = CompositionBuilder(fps=30)
 builder.add_vertical(

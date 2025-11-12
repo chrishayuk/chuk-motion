@@ -136,7 +136,7 @@ uv run pytest tests/templates/test_template_grid.py -v
 
 ### Run with coverage:
 ```bash
-uv run pytest tests/templates/ --cov=chuk_mcp_remotion.generator
+uv run pytest tests/templates/ --cov=chuk_motion.generator
 ```
 
 ### Run tests in parallel (faster):

@@ -27,8 +27,8 @@ class TestTimelineBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.layouts.Timeline.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Timeline.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, start_time=0.0)
@@ -39,8 +39,8 @@ class TestTimelineBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.layouts.Timeline.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Timeline.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         test_milestones = [{"time": 1.0, "label": "Event 1"}]
@@ -66,8 +66,8 @@ class TestTimelineBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.layouts.Timeline.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.layouts.Timeline.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, start_time=2.0, duration=5.0)
@@ -84,7 +84,7 @@ class TestTimelineToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Timeline.tool import register_tool
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -98,7 +98,7 @@ class TestTimelineToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Timeline.tool import register_tool
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
@@ -128,7 +128,7 @@ class TestTimelineToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Timeline.tool import register_tool
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
 
         # Mock ProjectManager with no current_timeline
         pm_mock = Mock()
@@ -149,7 +149,7 @@ class TestTimelineToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Timeline.tool import register_tool
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
@@ -170,7 +170,7 @@ class TestTimelineToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.Timeline.tool import register_tool
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()

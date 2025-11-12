@@ -10,7 +10,7 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_mcp_remotion import (
+from chuk_motion import (
     COLOR_TOKENS,
     TYPOGRAPHY_TOKENS,
     MOTION_TOKENS,
@@ -290,7 +290,7 @@ def main():
         choice = input("\nYour choice (0-3): ")
 
         if choice == "0":
-            print("\n✨ Thanks for exploring! Build amazing videos with chuk-mcp-remotion!\n")
+            print("\n✨ Thanks for exploring! Build amazing videos with chuk-motion!\n")
             break
 
         if choice in menu:

@@ -5,44 +5,44 @@
 ### Core Layouts (6)
 1. **Container** ✅ (existing)
    - Basic wrapper/frame
-   - Location: `src/chuk_mcp_remotion/components/layouts/Container/`
+   - Location: `src/chuk_motion/components/layouts/Container/`
 
 2. **Grid** ✅ (existing)
    - Multi-layout grid system (1x2, 2x1, 2x2, 3x2, 2x3, 3x3, 4x2, 2x4)
-   - Location: `src/chuk_mcp_remotion/components/layouts/Grid/`
+   - Location: `src/chuk_motion/components/layouts/Grid/`
 
 3. **SplitScreen** ✅ (existing)
    - Two-pane split
-   - Location: `src/chuk_mcp_remotion/components/layouts/SplitScreen/`
+   - Location: `src/chuk_motion/components/layouts/SplitScreen/`
 
 4. **ThreeByThreeGrid** ✅ NEW
    - Perfect 3x3 grid (9 cells)
-   - Location: `src/chuk_mcp_remotion/components/layouts/ThreeByThreeGrid/`
+   - Location: `src/chuk_motion/components/layouts/ThreeByThreeGrid/`
 
 5. **ThreeColumnLayout** ✅ NEW
    - Sidebar + Main + Sidebar arrangements with configurable widths
    - Props: `left`, `center`, `right`, `left_width`, `center_width`, `right_width`
-   - Location: `src/chuk_mcp_remotion/components/layouts/ThreeColumnLayout/`
+   - Location: `src/chuk_motion/components/layouts/ThreeColumnLayout/`
 
 6. **ThreeRowLayout** ✅ NEW
    - Header + Main + Footer arrangements with configurable heights
    - Props: `top`, `middle`, `bottom`, `top_height`, `middle_height`, `bottom_height`
-   - Location: `src/chuk_mcp_remotion/components/layouts/ThreeRowLayout/`
+   - Location: `src/chuk_motion/components/layouts/ThreeRowLayout/`
 
 ### Specialized Layouts (3)
 7. **AsymmetricLayout** ✅ NEW
    - Main feed (2/3) + two demo panels (1/3 stacked)
    - Perfect for tutorials
    - Props: `main`, `top_side`, `bottom_side`, `layout` (main-left/main-right), `main_ratio`
-   - Location: `src/chuk_mcp_remotion/components/layouts/AsymmetricLayout/`
+   - Location: `src/chuk_motion/components/layouts/AsymmetricLayout/`
 
 8. **PiP (Picture-in-Picture)** ✅ NEW
    - Webcam overlay with positions (bottom-right, bottom-left, top-right, top-left)
    - Props: `main_content`, `pip_content`, `position`, `overlay_size`, `margin`
-   - Location: `src/chuk_mcp_remotion/components/layouts/PiP/`
+   - Location: `src/chuk_motion/components/layouts/PiP/`
 
 9. **Layouts exported in __init__.py** ✅ UPDATED
-   - Location: `src/chuk_mcp_remotion/components/layouts/__init__.py`
+   - Location: `src/chuk_motion/components/layouts/__init__.py`
 
 ## 🚧 Remaining Layouts to Migrate (8 total)
 
@@ -99,7 +99,7 @@ For each remaining layout, follow this pattern (see `LAYOUT_MIGRATION_GUIDE.md` 
 
 2. **Create directory structure**:
    ```bash
-   mkdir -p src/chuk_mcp_remotion/components/layouts/{LayoutName}
+   mkdir -p src/chuk_motion/components/layouts/{LayoutName}
    ```
 
 3. **Create 5 required files**:
@@ -124,7 +124,7 @@ For each remaining layout, follow this pattern (see `LAYOUT_MIGRATION_GUIDE.md` 
    - ✅ Return LayoutComponentResponse from tools
 
 6. **Update exports**:
-   - Add new layout to `src/chuk_mcp_remotion/components/layouts/__init__.py`
+   - Add new layout to `src/chuk_motion/components/layouts/__init__.py`
 
 7. **Register tools** (if not auto-registered):
    - Check tool registration system
@@ -147,7 +147,7 @@ border_radius = parseInt('[[ spacing.border_radius.md ]]')  // 8px
 ```
 
 ### File Locations
-- **Layouts**: `src/chuk_mcp_remotion/components/layouts/{LayoutName}/`
+- **Layouts**: `src/chuk_motion/components/layouts/{LayoutName}/`
 - **Tests**: `tests/templates/layouts/test_{layoutname}.py`
 - **Test fixtures**: `tests/components/layouts/{LayoutName}/test_{layoutname}.py` (create these)
 - **Migration guide**: `LAYOUT_MIGRATION_GUIDE.md`

@@ -11,7 +11,7 @@ RED := \033[0;31m
 NC := \033[0m # No Color
 
 # Project settings
-PROJECT_NAME := chuk-mcp-remotion
+PROJECT_NAME := chuk-motion
 PYTHON := python3
 UV := uv
 PYTEST := pytest
@@ -77,7 +77,7 @@ test-watch: ## Run tests in watch mode
 
 coverage: ## Generate test coverage report
 	@echo "$(BLUE)Generating coverage report...$(NC)"
-	$(UV) run $(PYTEST) tests/ --cov=src/chuk_mcp_remotion --cov-report=html --cov-report=term
+	$(UV) run $(PYTEST) tests/ --cov=src/chuk_motion --cov-report=html --cov-report=term
 	@echo "$(GREEN)✓ Coverage report generated in htmlcov/$(NC)"
 
 ##@ Code Quality
@@ -100,7 +100,7 @@ format-check: ## Check code formatting without changes
 
 typecheck: ## Run type checking with mypy
 	@echo "$(BLUE)Running type checks...$(NC)"
-	$(UV) run $(MYPY) src/chuk_mcp_remotion
+	$(UV) run $(MYPY) src/chuk_motion
 	@echo "$(GREEN)✓ Type checking passed$(NC)"
 
 quality: lint format-check typecheck ## Run all quality checks

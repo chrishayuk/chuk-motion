@@ -9,7 +9,7 @@ with numbered title slides before each demo.
 import shutil
 from pathlib import Path
 
-from chuk_mcp_remotion.utils.project_manager import ProjectManager
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def create_demo_box(label, color="primary"):

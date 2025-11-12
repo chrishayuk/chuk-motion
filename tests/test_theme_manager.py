@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/test_theme_manager.py
+# chuk-motion/tests/test_theme_manager.py
 """
 Tests for ThemeManager class.
 """
@@ -7,8 +7,8 @@ import json
 
 import pytest
 
-from chuk_mcp_remotion.themes.models import Theme
-from chuk_mcp_remotion.themes.theme_manager import ThemeManager
+from chuk_motion.themes.models import Theme
+from chuk_motion.themes.theme_manager import ThemeManager
 
 
 class TestTheme:

@@ -330,7 +330,7 @@ This guide covers 6 additional specialized layouts for narrative, reaction, gami
 ## 🔧 Implementation Example
 
 ```python
-from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+from chuk_motion.generator.composition_builder import CompositionBuilder
 
 # Example: Creating a coding tutorial with Over-the-Shoulder layout
 tutorial_scene = {

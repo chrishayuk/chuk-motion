@@ -27,10 +27,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(
@@ -47,10 +47,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -95,10 +95,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(
@@ -121,7 +121,7 @@ class TestBeforeAfterSliderToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -134,7 +134,7 @@ class TestBeforeAfterSliderToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -188,8 +188,8 @@ class TestBeforeAfterSliderToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
-        from chuk_mcp_remotion.utils.project_manager import ProjectManager
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)
@@ -217,7 +217,7 @@ class TestBeforeAfterSliderToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()

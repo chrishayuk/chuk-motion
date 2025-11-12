@@ -248,7 +248,7 @@ For each layout, create:
 - [ ] `tool.py` with MCP tool registration
 - [ ] `template.tsx.j2` with React component
 - [ ] `__init__.py` with exports
-- [ ] Update `src/chuk_mcp_remotion/components/layouts/__init__.py`
+- [ ] Update `src/chuk_motion/components/layouts/__init__.py`
 - [ ] Test with sample composition
 
 ## Testing
