@@ -109,12 +109,12 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
             position: 'absolute',
             inset: 0,
             background: device === 'laptop'
-              ? 'linear-gradient(145deg, #2a2a2a, #1a1a1a)'
-              : 'linear-gradient(145deg, #3a3a3a, #1a1a1a)',
+              ? 'linear-gradient(145deg, [[ colors.background.dark ]], [[ colors.background.darker ]])'
+              : 'linear-gradient(145deg, [[ colors.background.glass ]], [[ colors.background.darker ]])',
             borderRadius: `${dims.radius}px`,
             padding: `${dims.bezel}px`,
             [% if device == 'laptop' %]
-            borderTop: '[[ spacing.border_width.medium ]] solid #444',
+            borderTop: '[[ spacing.border_width.medium ]] solid [[ colors.border.strong ]]',
             [% endif %]
           }}
         >
@@ -136,8 +136,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                   position: 'absolute',
                   inset: 0,
                   display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  flexDirection: 'column',
                 }}
               >
                 {content}
@@ -187,7 +186,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                     transform: 'translateX(-50%)',
                     width: '35%',
                     height: '28px',
-                    background: '#0a0a0a',
+                    background: '[[ colors.background.darker ]]',
                     borderRadius: `0 0 [[ spacing.spacing.lg ]]px [[ spacing.spacing.lg ]]px`,
                     zIndex: 10,
                   }}
@@ -201,7 +200,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                       transform: 'translateX(-50%)',
                       width: '40%',
                       height: parseInt('[[ spacing.spacing.xxs ]]'),
-                      background: '#1a1a1a',
+                      background: '[[ colors.background.dark ]]',
                       borderRadius: '[[ spacing.border_width.medium ]]',
                     }}
                   />
@@ -213,8 +212,8 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                       right: '20%',
                       width: parseInt('[[ spacing.spacing.xs ]]'),
                       height: parseInt('[[ spacing.spacing.xs ]]'),
-                      background: '#0a0a0a',
-                      border: '[[ spacing.border_width.thin ]] solid #2a2a2a',
+                      background: '[[ colors.background.darker ]]',
+                      border: '[[ spacing.border_width.thin ]] solid [[ colors.background.dark ]]',
                       borderRadius: '50%',
                     }}
                   />
@@ -235,8 +234,8 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
                   transform: 'translateX(-50%)',
                   width: '6px',
                   height: '6px',
-                  background: '#0a0a0a',
-                  border: '[[ spacing.border_width.thin ]] solid #333',
+                  background: '[[ colors.background.darker ]]',
+                  border: '[[ spacing.border_width.thin ]] solid [[ colors.border.strong ]]',
                   borderRadius: '50%',
                 }}
               />
@@ -254,7 +253,7 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({
               transform: 'translateX(-50%)',
               width: '110%',
               height: parseInt('[[ spacing.spacing.lg ]]'),
-              background: 'linear-gradient(145deg, #2a2a2a, #1a1a1a)',
+              background: 'linear-gradient(145deg, [[ colors.background.dark ]], [[ colors.background.darker ]])',
               borderRadius: `0 0 [[ spacing.border_radius.lg ]]px [[ spacing.border_radius.lg ]]px`,
               marginTop: '[[ spacing.border_width.medium ]]',
             }}

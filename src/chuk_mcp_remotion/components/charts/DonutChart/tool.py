@@ -22,26 +22,28 @@ def register_tool(mcp, project_manager):
         gap_before: float | str | None = None,
     ) -> str:
         """
-        Add an animated bar chart to the composition.
+        Add an animated donut chart to the composition.
 
-        Animated vertical bar chart for comparing categories.
+        Animated donut chart for showing proportions with a center hole.
+
+        Valid props: data, title, duration, track, gap_before
+        Invalid props: variant, style, color, theme, animation, xlabel, ylabel (these don't exist)
 
         Args:
-            data: JSON array of data points
+            data: JSON array of {label, value} objects. Optionally include "color" per slice.
+                Format: [{"label": "Free", "value": 55}, {"label": "Pro", "value": 30}]
             title: Optional chart title
-            xlabel: Optional x-axis label
-            ylabel: Optional y-axis label
-            duration: How long to animate (seconds)
+            duration: How long to animate (seconds) or time string
             track: Track name (default: "main")
-            gap_before: Gap before component in seconds
+            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
 
         Example:
             await remotion_add_donut_chart(
-                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}]',
-                title="Example Chart",
+                data='[{"label": "Free", "value": 55}, {"label": "Pro", "value": 30}, {"label": "Enterprise", "value": 15}]',
+                title="Plan Distribution",
                 duration=4.0
             )
         """

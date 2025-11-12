@@ -1,0 +1,78 @@
+{
+  "name": "FuzzyText",
+  "description": "Animated text with scanline distortion and glitch effects. Creates a fuzzy, VHS-style aesthetic with horizontal displacement and RGB split",
+  "category": "overlay",
+  "tags": ["text", "glitch", "VHS", "scanline", "retro", "cyberpunk", "distortion"],
+  "examples": [
+    "Retro VHS aesthetics",
+    "Glitch art effects",
+    "Cyberpunk themes",
+    "System error messages",
+    "80s/90s retro titles"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to display with fuzzy effect"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "3xl",
+      "description": "Font size (xl, 2xl, 3xl, 4xl)"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "bold",
+      "description": "Font weight (normal, medium, semibold, bold, extrabold, black)"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses on_dark color if not specified)"
+    },
+    "glitch_intensity": {
+      "type": "number",
+      "default": 5.0,
+      "description": "Intensity of glitch displacement (0-20)"
+    },
+    "scanline_height": {
+      "type": "number",
+      "default": 2.0,
+      "description": "Height of scanlines in pixels"
+    },
+    "animate": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to animate the glitch effect"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "description": "Vertical position (center, top, bottom)"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes['3xl']",
+      "font_weights.bold",
+      "primary_font",
+      "letter_spacing.wide"
+    ],
+    "colors": [
+      "text.on_dark"
+    ],
+    "spacing": [
+      "spacing.xl",
+      "spacing['4xl']"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "GLITCH EFFECT",
+    "font_size": "3xl",
+    "glitch_intensity": 5.0,
+    "animate": true,
+    "duration": 3.0
+  }
+}

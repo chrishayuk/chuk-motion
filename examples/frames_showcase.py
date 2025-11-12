@@ -73,12 +73,51 @@ def generate_frames_showcase():
     # ========================================
     print("\n🎬 Browser Frame Examples")
 
-    # BrowserFrame with CodeBlock
+    # BrowserFrame showing landing page with real HTML
     add_scene({
         "type": "BrowserFrame",
         "config": {
-            "url": "https://example.com/code",
+            "url": "https://example.com",
             "browser_type": "chrome",
+            "show_controls": True,
+            "theme": "light"
+        },
+        "content": {
+            "type": "WebPage",
+            "config": {
+                "html": '''
+<div style="max-width: 1200px; margin: 0 auto; text-align: center; padding: 60px 20px;">
+  <h1 style="font-size: 56px; margin-bottom: 20px;">Welcome to Example.com</h1>
+  <p style="font-size: 24px; opacity: 0.8; margin-bottom: 40px;">Modern Web Solutions for Your Business</p>
+  <button style="font-size: 18px; padding: 16px 32px;">Get Started →</button>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 80px; text-align: left;">
+    <div style="padding: 30px; background: rgba(0,0,0,0.03); border-radius: 12px;">
+      <h3 style="margin-bottom: 12px;">🚀 Fast</h3>
+      <p>Lightning-fast performance that scales with your needs.</p>
+    </div>
+    <div style="padding: 30px; background: rgba(0,0,0,0.03); border-radius: 12px;">
+      <h3 style="margin-bottom: 12px;">🔒 Secure</h3>
+      <p>Enterprise-grade security built into every layer.</p>
+    </div>
+    <div style="padding: 30px; background: rgba(0,0,0,0.03); border-radius: 12px;">
+      <h3 style="margin-bottom: 12px;">💎 Reliable</h3>
+      <p>99.9% uptime with automatic failover protection.</p>
+    </div>
+  </div>
+</div>
+                ''',
+                "theme": "light"
+            }
+        }
+    })
+
+    # BrowserFrame showing code editor/IDE
+    add_scene({
+        "type": "BrowserFrame",
+        "config": {
+            "url": "localhost:3000/editor",
+            "browser_type": "arc",
             "show_controls": True,
             "theme": "dark"
         },
@@ -99,51 +138,36 @@ console.log(fibonacci(10));''',
         }
     })
 
-    # BrowserFrame with TypingCode animation
+    # BrowserFrame showing documentation site with StylizedWebPage
     add_scene({
         "type": "BrowserFrame",
         "config": {
-            "url": "localhost:3000",
-            "browser_type": "safari",
+            "url": "docs.example.com/api",
+            "browser_type": "chrome",
             "show_controls": True,
             "theme": "light"
         },
         "content": {
-            "type": "TypingCode",
+            "type": "StylizedWebPage",
             "config": {
-                "code": '''import React from 'react';
-
-export const App = () => {
-  return <h1>Hello World!</h1>;
-};''',
-                "language": "typescript",
+                "title": "API Docs",
+                "subtitle": "Complete API Reference",
+                "showHeader": True,
+                "showSidebar": True,
+                "showFooter": False,
+                "headerText": "Getting Started • API • Examples",
+                "sidebarItems": ["Authentication", "Users", "Posts", "Comments"],
+                "contentLines": [
+                    "GET /api/users - List all users",
+                    "",
+                    "POST /api/auth - Authenticate user",
+                    "",
+                    "DELETE /api/sessions - End session",
+                    "",
+                    "PUT /api/users/:id - Update user"
+                ],
                 "theme": "light",
-                "typing_speed": 2
-            }
-        }
-    }, duration=150)
-
-    # BrowserFrame with CodeBlock
-    add_scene({
-        "type": "BrowserFrame",
-        "config": {
-            "url": "docs.example.com",
-            "browser_type": "firefox",
-            "show_controls": True,
-            "theme": "dark"
-        },
-        "content": {
-            "type": "CodeBlock",
-            "config": {
-                "code": '''# Getting Started
-
-This documentation guides you through
-the basics of using our API.
-
-Visit: docs.example.com''',
-                "language": "markdown",
-                "theme": "dark",
-                "show_line_numbers": False
+                "accentColor": "primary"
             }
         }
     })
@@ -153,7 +177,7 @@ Visit: docs.example.com''',
     # ========================================
     print("\n🎬 Device Frame Examples")
 
-    # DeviceFrame - iPhone with content
+    # DeviceFrame - iPhone with video player
     add_scene({
         "type": "DeviceFrame",
         "config": {
@@ -164,15 +188,13 @@ Visit: docs.example.com''',
         "content": {
             "type": "DemoBox",
             "config": {
-                "text": "Mobile App\n\nDesigned for iOS",
-                "font_size": 32,
-                "line_height": 1.5,
-                "alignment": "center"
+                "label": "▶ Now Playing\n\nTutorial Video\n00:42 / 05:30\n\n━━━━●────",
+                "color": "primary"
             }
         }
     })
 
-    # DeviceFrame - iPad landscape
+    # DeviceFrame - iPad with app interface
     add_scene({
         "type": "DeviceFrame",
         "config": {
@@ -181,22 +203,15 @@ Visit: docs.example.com''',
             "show_notch": False
         },
         "content": {
-            "type": "CodeBlock",
+            "type": "DemoBox",
             "config": {
-                "code": '''class DataManager {
-  async fetchData() {
-    const response = await fetch('/api/data');
-    return response.json();
-  }
-}''',
-                "language": "typescript",
-                "theme": "dark",
-                "show_line_numbers": True
+                "label": "📱 Mobile Dashboard\n\nUsers: 1,234\nRevenue: $56.7K\nActive: 892\n\nView Analytics →",
+                "color": "accent"
             }
         }
     })
 
-    # DeviceFrame - Android phone
+    # DeviceFrame - Android with streaming app
     add_scene({
         "type": "DeviceFrame",
         "config": {
@@ -207,10 +222,8 @@ Visit: docs.example.com''',
         "content": {
             "type": "DemoBox",
             "config": {
-                "text": "Cross-Platform\n\nWorks on Android too!",
-                "font_size": 28,
-                "line_height": 1.5,
-                "alignment": "center"
+                "label": "🎬 Video Library\n\nRecommended\n━━━━━━━━\nTrending\n━━━━━━━━\nSubscriptions",
+                "color": "secondary"
             }
         }
     })
@@ -220,74 +233,53 @@ Visit: docs.example.com''',
     # ========================================
     print("\n🎬 Terminal Examples")
 
-    # Terminal with simple command
+    # Terminal showing npm commands
     add_scene({
         "type": "Terminal",
         "config": {
-            "title": "bash",
+            "title": "bash - npm",
             "theme": "dark",
             "show_header": True
         },
         "content": {
-            "type": "CodeBlock",
+            "type": "DemoBox",
             "config": {
-                "code": '''$ npm install remotion
-+ remotion@4.0.0
-added 245 packages in 12s
-
-$ npm start
-Server running on http://localhost:3000''',
-                "language": "bash",
-                "theme": "dark",
-                "show_line_numbers": False
+                "label": "$ npm install remotion\n+ remotion@4.0.0\nadded 245 packages in 12s\n\n$ npm start\nServer running on localhost:3000 ✓",
+                "color": "primary"
             }
         }
     })
 
-    # Terminal with typing animation
+    # Terminal showing git workflow
     add_scene({
         "type": "Terminal",
         "config": {
-            "title": "zsh",
-            "theme": "dark",
+            "title": "zsh - git",
+            "theme": "dracula",
             "show_header": True
         },
         "content": {
-            "type": "TypingCode",
+            "type": "DemoBox",
             "config": {
-                "code": '''$ git clone https://github.com/user/repo.git
-Cloning into 'repo'...
-remote: Counting objects: 100%
-Receiving objects: 100% (1234/1234)
-
-$ cd repo && npm install''',
-                "language": "bash",
-                "theme": "dark",
-                "typing_speed": 3
+                "label": "❯ git status\nOn branch main\nChanges not staged\n\n❯ git add .\n\n❯ git commit -m \"Update\"\n[main a1b2c3d] Update\n3 files changed, 42 insertions(+)",
+                "color": "accent"
             }
         }
-    }, duration=150)
+    })
 
-    # Terminal with Python code
+    # Terminal showing docker commands
     add_scene({
         "type": "Terminal",
         "config": {
-            "title": "python",
-            "theme": "dark",
+            "title": "bash - docker",
+            "theme": "monokai",
             "show_header": True
         },
         "content": {
-            "type": "CodeBlock",
+            "type": "DemoBox",
             "config": {
-                "code": '''>>> def greet(name):
-...     return f"Hello, {name}!"
-...
->>> greet("World")
-'Hello, World!'
->>> exit()''',
-                "language": "python",
-                "theme": "dark",
-                "show_line_numbers": False
+                "label": "$ docker ps\nCONTAINER ID  IMAGE   STATUS\nf3a2b1c4d5e6  nginx   Up 2h\n\n$ docker logs f3a2b1c4d5e6\nServer started ✓\nListening on port 80",
+                "color": "secondary"
             }
         }
     })
@@ -297,7 +289,7 @@ $ cd repo && npm install''',
     # ========================================
     print("\n🎬 Combined Frame Layouts")
 
-    # SplitScreen with Browser and Terminal
+    # SplitScreen with Browser and Terminal showing dev workflow
     add_scene({
         "type": "SplitScreen",
         "config": {
@@ -311,39 +303,28 @@ $ cd repo && npm install''',
                 "url": "localhost:3000",
                 "browser_type": "chrome",
                 "show_controls": True,
-                "theme": "dark"
+                "theme": "light"
             },
             "content": {
                 "type": "DemoBox",
                 "config": {
-                    "text": "Live Preview\n\nYour app is running",
-                    "font_size": 28,
-                    "alignment": "center"
+                    "label": "🚀 Live Preview\n\nApp Running\nHot Reload: ON\n\nlocalhost:3000",
+                    "color": "accent"
                 }
             }
         },
         "right": {
             "type": "Terminal",
             "config": {
-                "title": "npm",
+                "title": "bash - dev server",
                 "theme": "dark",
                 "show_header": True
             },
             "content": {
-                "type": "CodeBlock",
+                "type": "DemoBox",
                 "config": {
-                    "code": '''$ npm run dev
-
-> dev
-> vite
-
-  VITE ready in 543 ms
-
-  Local:   http://localhost:3000
-  Network: use --host to expose''',
-                    "language": "bash",
-                    "theme": "dark",
-                    "show_line_numbers": False
+                    "label": "$ npm run dev\n\nVITE ready in 543ms\n\nLocal: http://localhost:3000\nNetwork: use --host",
+                    "color": "primary"
                 }
             }
         }
@@ -369,9 +350,8 @@ $ cd repo && npm install''',
                 "content": {
                     "type": "DemoBox",
                     "config": {
-                        "text": "iPhone\nPortrait",
-                        "font_size": 24,
-                        "alignment": "center"
+                        "label": "iPhone\nPortrait",
+                        "color": "primary"
                     }
                 }
             },
@@ -385,9 +365,8 @@ $ cd repo && npm install''',
                 "content": {
                     "type": "DemoBox",
                     "config": {
-                        "text": "iPad\nLandscape",
-                        "font_size": 24,
-                        "alignment": "center"
+                        "label": "iPad\nLandscape",
+                        "color": "accent"
                     }
                 }
             },
@@ -401,9 +380,8 @@ $ cd repo && npm install''',
                 "content": {
                     "type": "DemoBox",
                     "config": {
-                        "text": "Android\nPortrait",
-                        "font_size": 24,
-                        "alignment": "center"
+                        "label": "Android\nPortrait",
+                        "color": "secondary"
                     }
                 }
             },
@@ -418,9 +396,8 @@ $ cd repo && npm install''',
                 "content": {
                     "type": "DemoBox",
                     "config": {
-                        "text": "Desktop\nBrowser",
-                        "font_size": 24,
-                        "alignment": "center"
+                        "label": "Desktop\nBrowser",
+                        "color": "primary"
                     }
                 }
             }

@@ -26,22 +26,28 @@ def register_tool(mcp, project_manager):
 
         Animated vertical bar chart for comparing categories.
 
+        Valid props: data, title, xlabel, ylabel, duration, track, gap_before
+        Invalid props: variant, style, color, theme, animation (these don't exist)
+
         Args:
-            data: JSON array of data points
+            data: JSON array of {label, value} objects. Optionally include "color" per bar.
+                Format: [{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}]
+                With colors: [{"label": "Q1", "value": 45, "color": "#FF0000"}]
             title: Optional chart title
             xlabel: Optional x-axis label
             ylabel: Optional y-axis label
-            duration: How long to animate (seconds)
+            duration: How long to animate (seconds) or time string
             track: Track name (default: "main")
-            gap_before: Gap before component in seconds
+            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
 
         Example:
             await remotion_add_bar_chart(
-                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}]',
-                title="Example Chart",
+                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}, {"label": "Q3", "value": 89}]',
+                title="Quarterly Sales",
+                ylabel="Revenue ($K)",
                 duration=4.0
             )
         """

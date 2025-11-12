@@ -18,7 +18,21 @@ def register_tool(mcp, project_manager):
         track: str = "main",
         gap_before: float | str | None = None,
     ) -> str:
-        """Add DemoBox to the composition."""
+        """
+        Add DemoBox to the composition.
+
+        Colored box component for demonstrations and placeholders.
+
+        Args:
+            label: Text label to display in the box
+            color: Color variant (primary, secondary, etc.)
+            duration: Duration in seconds or time string (e.g., "2s", "500ms")
+            track: Track name (default: "main")
+            gap_before: Gap before component in seconds or time string
+
+        Returns:
+            JSON with component info
+        """
 
         def _add():
             if not project_manager.current_timeline:

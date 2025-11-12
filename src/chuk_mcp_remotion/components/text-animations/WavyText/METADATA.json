@@ -1,0 +1,84 @@
+{
+  "name": "WavyText",
+  "description": "Continuous wave motion animation on characters. Each character oscillates vertically with a phase offset to create a wave effect",
+  "category": "text-animation",
+  "tags": ["text", "wave", "motion", "animation", "playful", "fun"],
+  "examples": [
+    "Fun titles",
+    "Music videos",
+    "Creative content",
+    "Playful effects",
+    "Party/celebration themes"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to animate with wave"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "4xl",
+      "description": "Font size (xl, 2xl, 3xl, 4xl)"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "bold",
+      "description": "Font weight (normal, medium, semibold, bold, extrabold, black)"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses on_dark color if not specified)"
+    },
+    "wave_amplitude": {
+      "type": "number",
+      "default": 20.0,
+      "description": "Height of wave oscillation in pixels"
+    },
+    "wave_speed": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Speed of wave motion"
+    },
+    "wave_frequency": {
+      "type": "number",
+      "default": 0.3,
+      "description": "Frequency of wave (spacing between peaks)"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "description": "Vertical position (center, top, bottom)"
+    },
+    "align": {
+      "type": "string",
+      "default": "center",
+      "description": "Text alignment (left, center, right)"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes['4xl']",
+      "font_weights.bold",
+      "primary_font",
+      "letter_spacing.wide"
+    ],
+    "colors": [
+      "text.on_dark"
+    ],
+    "spacing": [
+      "spacing.xl",
+      "spacing['4xl']"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "WAVE",
+    "font_size": "4xl",
+    "wave_amplitude": 20.0,
+    "wave_speed": 1.0,
+    "wave_frequency": 0.3,
+    "duration": 3.0
+  }
+}

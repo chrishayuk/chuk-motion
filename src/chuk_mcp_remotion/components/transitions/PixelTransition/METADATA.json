@@ -1,0 +1,59 @@
+{
+  "name": "PixelTransition",
+  "description": "Pixelated dissolve transition effect between two pieces of content. Pixels animate in with random stagger to cover first content, then animate out to reveal second content",
+  "category": "transition",
+  "tags": ["transition", "pixel", "dissolve", "reveal", "animation", "effect"],
+  "examples": [
+    "Scene transitions",
+    "Content reveals",
+    "Before/after showcases",
+    "Dramatic content switches",
+    "Retro-style transitions"
+  ],
+  "props": {
+    "first_content": {
+      "type": "component",
+      "required": true,
+      "description": "First content component (shown initially)"
+    },
+    "second_content": {
+      "type": "component",
+      "required": true,
+      "description": "Second content component (revealed after transition)"
+    },
+    "grid_size": {
+      "type": "number",
+      "default": 10,
+      "description": "Number of pixels per row/column (10 = 10x10 = 100 pixels)"
+    },
+    "pixel_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Color of transition pixels (uses primary color if not specified)"
+    },
+    "transition_start": {
+      "type": "number",
+      "default": 2.0,
+      "description": "When to start transition in seconds"
+    },
+    "transition_duration": {
+      "type": "number",
+      "default": 1.0,
+      "description": "Duration of transition animation in seconds"
+    }
+  },
+  "design_tokens_used": {
+    "colors": [
+      "primary[0]"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "first_content": "{\"type\":\"TitleScene\",\"config\":{\"text\":\"Before\",\"variant\":\"bold\"}}",
+    "second_content": "{\"type\":\"TitleScene\",\"config\":{\"text\":\"After\",\"variant\":\"glass\"}}",
+    "grid_size": 12,
+    "transition_start": 2.0,
+    "transition_duration": 1.0,
+    "duration": 5.0
+  }
+}

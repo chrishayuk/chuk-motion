@@ -1,6 +1,5 @@
 """Tests for DeviceFrame template generation."""
 
-import pytest
 from tests.components.conftest import (
     assert_has_interface,
     assert_has_timing_props,
@@ -99,7 +98,6 @@ class TestDeviceFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.DeviceFrame.schema import METADATA
         from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
 
         # Mock ProjectManager and Project
@@ -126,8 +124,15 @@ class TestDeviceFrameToolRegistration:
             position="center"
         ))
 
-        assert "Added" in result
-        assert METADATA.name in result or "DeviceFrame" in result
+        # Parse JSON response
+        import json
+        response = json.loads(result)
+
+        # Check FrameComponentResponse structure
+        assert "component" in response
+        assert "position" in response
+        assert "start_time" in response
+        assert "duration" in response
 
         # Verify component was added
         project_mock.add_component_to_track.assert_called_once()
@@ -150,13 +155,15 @@ class TestDeviceFrameToolRegistration:
 
             tool_func = mcp_mock.tool.call_args[0][0]
 
-            # Should raise an AttributeError when no project is set
-            with pytest.raises(AttributeError):
-                asyncio.run(tool_func(
-                    startFrame=0,
-                    durationInFrames=150,
-                    device="phone"
-                ))
+            # Should return an error response when no project is set
+            result = asyncio.run(tool_func(
+                startFrame=0,
+                durationInFrames=150
+            ))
+
+            import json
+            response = json.loads(result)
+            assert "error" in response
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""

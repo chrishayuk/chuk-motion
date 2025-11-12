@@ -1,6 +1,5 @@
 """Tests for CodeDiff template generation."""
 
-import pytest
 from tests.components.conftest import (
     assert_has_interface,
     assert_has_timing_props,
@@ -112,7 +111,6 @@ class TestCodeDiffToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.schema import METADATA
         from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager and Project
@@ -146,8 +144,16 @@ class TestCodeDiffToolRegistration:
             animateLines=True
         ))
 
-        assert "Added" in result
-        assert METADATA.name in result or "CodeDiff" in result
+        # Parse JSON response
+        import json
+        response = json.loads(result)
+
+        # Check Pydantic response structure
+        assert response["component"] == "CodeDiff"
+        assert "start_time" in response
+        assert "duration" in response
+        assert isinstance(response["start_time"], (int, float))
+        assert isinstance(response["duration"], (int, float))
 
         # Verify component was added
         project_mock.add_component_to_track.assert_called_once()
@@ -188,9 +194,11 @@ class TestCodeDiffToolRegistration:
             animateLines=True
         ))
 
-        # Should not crash, should handle gracefully
+        # Should not crash, should handle gracefully and return success (invalid JSON becomes empty array)
+        import json
         assert result is not None
-        assert "Added" in result
+        response = json.loads(result)
+        assert response["component"] == "CodeDiff"
 
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
@@ -210,13 +218,16 @@ class TestCodeDiffToolRegistration:
 
             tool_func = mcp_mock.tool.call_args[0][0]
 
-            # Should raise an AttributeError when no project is set
-            with pytest.raises(AttributeError):
-                asyncio.run(tool_func(
-                    startFrame=0,
-                    durationInFrames=150,
-                    lines="[]"
-                ))
+            # Should return an error response when no project is set
+            result = asyncio.run(tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                lines="[]"
+            ))
+
+            import json
+            response = json.loads(result)
+            assert "error" in response
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""

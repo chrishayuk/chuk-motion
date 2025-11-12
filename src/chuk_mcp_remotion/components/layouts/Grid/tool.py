@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -27,29 +27,26 @@ def register_tool(mcp, project_manager):
 
         Grid layout for multiple items.
 
-        For video content in grid cells, use VideoContent component:
-        Example items with video:
-        [
-            {
-                "type": "VideoContent",
-                "config": {
-                    "src": "https://example.com/video1.mp4",
-                    "muted": true,
-                    "fit": "cover",
-                    "loop": true
-                }
-            },
-            {
-                "type": "VideoContent",
-                "config": {
-                    "src": "https://example.com/video2.mp4",
-                    "muted": true
-                }
-            }
-        ]
-
         Args:
-            items: JSON array of grid items (format: [{"type": "ComponentName", "config": {...}}, ...])
+            items: JSON array of grid items. Format: [{"type": "ComponentName", "config": {...}}, ...]
+                Example with videos:
+                [
+                    {
+                        "type": "VideoContent",
+                        "config": {
+                            "src": "https://example.com/video1.mp4",
+                            "muted": true,
+                            "fit": "cover"
+                        }
+                    },
+                    {
+                        "type": "VideoContent",
+                        "config": {
+                            "src": "https://example.com/video2.mp4",
+                            "muted": true
+                        }
+                    }
+                ]
             layout: Grid layout (2x2, 3x3, etc.)
             gap: Gap between grid items
             padding: Padding from edges

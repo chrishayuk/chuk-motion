@@ -1,0 +1,122 @@
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+
+/**
+ * WavyText Component
+ *
+ * Continuous wave motion animation on characters. Each character oscillates
+ * vertically with a phase offset to create a wave effect.
+ *
+ * Inspired by: https://www.reactbits.dev/text-animations/wavy-text
+ */
+
+interface WavyTextProps {
+  text: string;
+  startFrame?: number;
+  durationInFrames?: number;
+  fontSize?: string;
+  fontWeight?: string;
+  textColor?: string;
+  waveAmplitude?: number;
+  waveSpeed?: number;
+  waveFrequency?: number;
+  position?: 'center' | 'top' | 'bottom';
+  align?: 'left' | 'center' | 'right';
+}
+
+export const WavyText: React.FC<WavyTextProps> = ({
+  text,
+  startFrame = 0,
+  durationInFrames = 90,
+  fontSize = '[[ typography.font_sizes['4xl'] ]]',
+  fontWeight = '[[ typography.font_weights.bold ]]',
+  textColor = '[[ colors.text.on_dark ]]',
+  waveAmplitude = 20,
+  waveSpeed = 1.0,
+  waveFrequency = 0.3,
+  position = 'center',
+  align = 'center',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const chars = useMemo(() => text.split(''), [text]);
+
+  const relativeFrame = frame - startFrame;
+
+  // Conditional returns AFTER all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Position styles
+  const getPositionStyles = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    };
+
+    switch (position) {
+      case 'top':
+        return { ...base, paddingTop: '[[ spacing.spacing['4xl'] ]]' };
+      case 'bottom':
+        return { ...base, paddingBottom: '[[ spacing.spacing['4xl'] ]]' };
+      case 'center':
+      default:
+        return base;
+    }
+  };
+
+  // Calculate wave position for each character
+  const getWaveOffset = (index: number): number => {
+    // Create a sine wave that moves over time
+    // phase = character index * frequency
+    // time = relativeFrame * speed
+    const phase = index * waveFrequency;
+    const time = relativeFrame * waveSpeed * 0.05; // Scale down for smoother motion
+
+    return Math.sin(phase + time) * waveAmplitude;
+  };
+
+  return (
+    <AbsoluteFill style={getPositionStyles()}>
+      <div
+        style={{
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize,
+          fontWeight,
+          color: textColor,
+          letterSpacing: '[[ typography.letter_spacing.wide ]]',
+          textAlign: align,
+          padding: '0 [[ spacing.spacing.xl ]]',
+          maxWidth: '90%',
+          display: 'inline-flex',
+          flexWrap: 'wrap',
+          justifyContent: align === 'left' ? 'flex-start' :
+                         align === 'right' ? 'flex-end' : 'center',
+        }}
+      >
+        {chars.map((char, index) => {
+          const offset = getWaveOffset(index);
+
+          return (
+            <span
+              key={index}
+              style={{
+                display: 'inline-block',
+                transform: `translateY(${offset}px)`,
+                whiteSpace: char === ' ' ? 'pre' : 'normal',
+                minWidth: char === ' ' ? '0.3em' : undefined,
+              }}
+            >
+              {char === ' ' ? '\u00A0' : char}
+            </span>
+          );
+        })}
+      </div>
+    </AbsoluteFill>
+  );
+};

@@ -1,0 +1,84 @@
+{
+  "name": "TypewriterText",
+  "description": "Classic typewriter animation with cursor. Characters appear one-by-one as if being typed",
+  "category": "text-animation",
+  "tags": ["text", "typing", "typewriter", "cursor", "animation", "reveal"],
+  "examples": [
+    "Code demonstrations",
+    "Dialogue and captions",
+    "Storytelling sequences",
+    "Terminal/CLI effects",
+    "Step-by-step instructions"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to type out (supports multiline with \\n)"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "3xl",
+      "description": "Font size (xl, 2xl, 3xl, 4xl)"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "medium",
+      "description": "Font weight (normal, medium, semibold, bold)"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses on_dark color if not specified)"
+    },
+    "cursor_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Cursor color (uses text color if not specified)"
+    },
+    "show_cursor": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to show blinking cursor"
+    },
+    "type_speed": {
+      "type": "number",
+      "default": 2.0,
+      "description": "Characters per second"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "description": "Screen position (center, top, bottom, left)"
+    },
+    "align": {
+      "type": "string",
+      "default": "left",
+      "description": "Text alignment (left, center, right)"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes['3xl']",
+      "font_weights.medium",
+      "primary_font",
+      "letter_spacing.normal"
+    ],
+    "colors": [
+      "text.on_dark"
+    ],
+    "spacing": [
+      "spacing.xs",
+      "spacing['2xl']",
+      "spacing['4xl']"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "Hello, World!",
+    "font_size": "3xl",
+    "type_speed": 2.0,
+    "show_cursor": true,
+    "duration": 3.0
+  }
+}

@@ -255,7 +255,7 @@ async def remotion_generate_video() -> str:
                     if isinstance(comp, ComponentInstance):
                         types.add(comp.component_type)
                         # Check for nested children in props
-                        for key, value in comp.props.items():
+                        for _key, value in comp.props.items():
                             if isinstance(value, ComponentInstance):
                                 collect_types(value)
                             elif isinstance(value, list):

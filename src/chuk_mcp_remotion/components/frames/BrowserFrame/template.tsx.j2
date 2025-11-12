@@ -48,65 +48,12 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   // Parse tabs if it's a string
   const parsedTabs: TabConfig[] = typeof tabs === 'string' ? JSON.parse(tabs) : (tabs || []);
 
-  // Theme configurations
-  const themeStyles = {
-    light: {
-      bg: '#f5f5f5',
-      chrome: '#e8e8e8',
-      text: '#333',
-      urlBg: '#fff',
-      tabActive: '#fff',
-      tabInactive: '#d8d8d8',
-      button: '#d0d0d0',
-    },
-    dark: {
-      bg: '#1e1e1e',
-      chrome: '#2d2d2d',
-      text: '#e0e0e0',
-      urlBg: '#3a3a3a',
-      tabActive: '#3a3a3a',
-      tabInactive: '#252525',
-      button: '#404040',
-    },
-    chrome: {
-      bg: '#202124',
-      chrome: '#292a2d',
-      text: '#e8eaed',
-      urlBg: '#303134',
-      tabActive: '#35363a',
-      tabInactive: '#202124',
-      button: '#35363a',
-    },
-    firefox: {
-      bg: '#1c1b22',
-      chrome: '#2b2a33',
-      text: '#fbfbfe',
-      urlBg: '#42414d',
-      tabActive: '#42414d',
-      tabInactive: '#1c1b22',
-      button: '#52525e',
-    },
-    safari: {
-      bg: '#f6f6f6',
-      chrome: '#ececec',
-      text: '#333',
-      urlBg: '#fff',
-      tabActive: '#fff',
-      tabInactive: '#e0e0e0',
-      button: '#d8d8d8',
-    },
-    arc: {
-      bg: '#1a1a1a',
-      chrome: '#2a2a2a',
-      text: '#ffffff',
-      urlBg: '#363636',
-      tabActive: '#404040',
-      tabInactive: '#252525',
-      button: '#363636',
-    },
-  };
+  // Theme-specific variations using design tokens
+  const isDark = theme === 'dark' || theme === 'chrome' || theme === 'firefox' || theme === 'arc';
+  const isBrowserTheme = theme === 'chrome' || theme === 'firefox' || theme === 'arc';
 
-  const currentTheme = themeStyles[theme];
+  // Window button colors based on theme
+  const showColoredButtons = theme === 'safari' || theme === 'arc';
 
   // Default tabs if none provided
   const defaultTabs: TabConfig[] = parsedTabs.length > 0 ? parsedTabs : [
@@ -146,7 +93,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
   const opacity = interpolate(relativeFrame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
   const scaleAnimation = interpolate(entrance, [0, 1], [0.95, 1]);
 
-  const chromeHeight = 120;
+  const chromeHeight = 140;
   const statusHeight = showStatus ? parseInt('[[ spacing.spacing.xl ]]') : 0;
   const contentHeight = height - chromeHeight - statusHeight;
 
@@ -164,7 +111,7 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
         style={{
           width: '100%',
           height: '100%',
-          background: currentTheme.bg,
+          background: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
           borderRadius: '[[ spacing.border_radius.lg ]]',
           overflow: 'hidden',
           filter: shadow ? `drop-shadow(0 10px 40px [[ colors.shadow.dark ]])` : 'none',
@@ -176,8 +123,8 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
         <div
           style={{
             height: `${chromeHeight}px`,
-            background: currentTheme.chrome,
-            borderBottom: `1px solid ${currentTheme.button}`,
+            background: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
+            borderBottom: `1px solid [[ colors.border.medium ]]`,
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -192,18 +139,18 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             }}
           >
             {/* Window controls */}
-            <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.sm ]]' }}>
-              {theme === 'safari' || theme === 'arc' ? (
+            <div style={{ display: 'flex', gap: '[[ spacing.spacing.xs ]]', marginRight: '[[ spacing.spacing.md ]]' }}>
+              {showColoredButtons ? (
                 <>
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.semantic.error ]]' }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.semantic.warning ]]' }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.semantic.success ]]' }} />
                 </>
               ) : (
                 <>
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
-                  <div style={{ width: parseInt('[[ spacing.border_radius.lg ]]'), height: parseInt('[[ spacing.border_radius.lg ]]'), borderRadius: '50%', background: currentTheme.button }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.border.strong ]]' }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.border.strong ]]' }} />
+                  <div style={{ width: 14, height: 14, borderRadius: '50%', background: '[[ colors.border.strong ]]' }} />
                 </>
               )}
             </div>
@@ -214,14 +161,16 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                 <div
                   key={index}
                   style={{
-                    background: tab.active ? currentTheme.tabActive : currentTheme.tabInactive,
+                    background: tab.active
+                      ? (isDark ? '[[ colors.background.glass ]]' : '[[ colors.background.light ]]')
+                      : (isDark ? '[[ colors.background.darker ]]' : 'rgba(0, 0, 0, 0.05)'),
                     padding: '[[ spacing.spacing.xs ]] [[ spacing.spacing.md ]]',
                     borderRadius: '[[ spacing.border_radius.sm ]] [[ spacing.border_radius.sm ]] 0 0',
-                    color: currentTheme.text,
+                    color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                     fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                     fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
-                    minWidth: '120px',
-                    maxWidth: '200px',
+                    minWidth: '180px',
+                    maxWidth: '250px',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
@@ -239,11 +188,11 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                 width: parseInt('[[ spacing.spacing.lg ]]'),
                 height: parseInt('[[ spacing.spacing.lg ]]'),
                 borderRadius: '[[ spacing.border_radius.sm ]]',
-                background: currentTheme.button,
+                background: '[[ colors.border.strong ]]',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: currentTheme.text,
+                color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                 fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
               }}
             >
@@ -267,11 +216,11 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                   width: parseInt('[[ spacing.spacing.xl ]]'),
                   height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
-                  background: currentTheme.button,
+                  background: '[[ colors.border.strong ]]',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: currentTheme.text,
+                  color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                   fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
@@ -282,11 +231,11 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                   width: parseInt('[[ spacing.spacing.xl ]]'),
                   height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
-                  background: currentTheme.button,
+                  background: '[[ colors.border.strong ]]',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: currentTheme.text,
+                  color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                   fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
@@ -297,11 +246,11 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                   width: parseInt('[[ spacing.spacing.xl ]]'),
                   height: parseInt('[[ spacing.spacing.xl ]]'),
                   borderRadius: '[[ spacing.border_radius.sm ]]',
-                  background: currentTheme.button,
+                  background: '[[ colors.border.strong ]]',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: currentTheme.text,
+                  color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                   fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
                 }}
               >
@@ -313,13 +262,13 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
             <div
               style={{
                 flex: 1,
-                height: 36,
-                background: currentTheme.urlBg,
+                height: 42,
+                background: isDark ? '[[ colors.background.glass ]]' : '[[ colors.background.light ]]',
                 borderRadius: '[[ spacing.border_radius.full ]]',
                 display: 'flex',
                 alignItems: 'center',
                 padding: '0 [[ spacing.spacing.md ]]',
-                color: currentTheme.text,
+                color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                 fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                 fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               }}
@@ -334,11 +283,11 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
                 width: parseInt('[[ spacing.spacing.xl ]]'),
                 height: parseInt('[[ spacing.spacing.xl ]]'),
                 borderRadius: '[[ spacing.border_radius.sm ]]',
-                background: currentTheme.button,
+                background: '[[ colors.border.strong ]]',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: currentTheme.text,
+                color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
                 fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xs ]]'),
               }}
             >
@@ -351,12 +300,23 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
         <div
           style={{
             flex: 1,
-            background: currentTheme.bg,
+            background: isDark ? '[[ colors.background.dark ]]' : '[[ colors.background.light ]]',
             position: 'relative',
             overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {content}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {content}
+          </div>
         </div>
 
         {/* Status bar */}
@@ -364,12 +324,12 @@ export const BrowserFrame: React.FC<BrowserFrameProps> = ({
           <div
             style={{
               height: `${statusHeight}px`,
-              background: currentTheme.chrome,
-              borderTop: `1px solid ${currentTheme.button}`,
+              background: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
+              borderTop: `1px solid [[ colors.border.medium ]]`,
               display: 'flex',
               alignItems: 'center',
               padding: '0 [[ spacing.spacing.md ]]',
-              color: currentTheme.text,
+              color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
               fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
               fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
               opacity: 0.8,

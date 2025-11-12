@@ -26,24 +26,25 @@ def register_tool(mcp, project_manager):
 
         Animated pie chart for showing proportions and percentages.
 
+        Valid props: data, title, duration, track, gap_before
+        Invalid props: variant, style, color, theme, animation, xlabel, ylabel (these don't exist)
+
         Args:
-            data: JSON array of data points with label and value
+            data: JSON array of {label, value} objects. Optionally include "color" per slice.
+                Format: [{"label": "North", "value": 40}, {"label": "South", "value": 25}]
             title: Optional chart title
-            xlabel: Optional x-axis label (not typically used for pie charts)
-            ylabel: Optional y-axis label (not typically used for pie charts)
-            duration: How long to animate (seconds or time string like "2s", "500ms")
+            duration: How long to animate (seconds) or time string
             track: Track name (default: "main")
-            gap_before: Gap before component (seconds or time string like "1s", "500ms")
+            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
 
         Example:
             await remotion_add_pie_chart(
-                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 30}]',
-                title="Market Share",
-                duration=4.0,
-                gap_before="1s"
+                data='[{"label": "North", "value": 40}, {"label": "South", "value": 25}, {"label": "East", "value": 20}]',
+                title="Regional Sales",
+                duration=4.0
             )
         """
 

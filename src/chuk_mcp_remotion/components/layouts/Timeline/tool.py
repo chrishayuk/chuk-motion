@@ -4,9 +4,9 @@
 import asyncio
 import json
 
+from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
 from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
-from chuk_mcp_remotion.components.component_helpers import parse_nested_component
 
 
 def register_tool(mcp, project_manager):
@@ -24,7 +24,25 @@ def register_tool(mcp, project_manager):
         track: str = "main",
         gap_before: float | str | None = None,
     ) -> str:
-        """Add Timeline layout to the composition."""
+        """
+        Add Timeline layout to the composition.
+
+        Timeline visualization with main content and milestone markers.
+
+        Args:
+            main_content: JSON component for main content area. Format: {"type": "ComponentName", "config": {...}}
+            milestones: JSON array of milestone component objects. Format: [{"type": "...", "config": {...}}, ...]
+            current_time: Current time position on timeline
+            total_duration: Total timeline duration
+            position: Timeline position (top, bottom)
+            height: Timeline bar height in pixels
+            duration: Duration in seconds or time string (e.g., "5s", "1000ms")
+            track: Track name (default: "main")
+            gap_before: Gap before component in seconds or time string
+
+        Returns:
+            JSON with component info
+        """
 
         def _add():
             if not project_manager.current_timeline:

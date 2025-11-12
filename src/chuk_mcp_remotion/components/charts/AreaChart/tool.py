@@ -22,26 +22,33 @@ def register_tool(mcp, project_manager):
         gap_before: float | str | None = None,
     ) -> str:
         """
-        Add an animated bar chart to the composition.
+        Add an animated area chart to the composition.
 
-        Animated vertical bar chart for comparing categories.
+        Animated area chart for showing volume and trends over time.
+
+        IMPORTANT: Data format is [x, y] or {x, y, label}. NOT {label, value}!
+
+        Valid props: data, title, xlabel, ylabel, duration, track, gap_before
+        Invalid props: variant, style, color, theme (these don't exist)
 
         Args:
-            data: JSON array of data points
+            data: JSON array of [x, y] pairs or {x, y, label} objects.
+                Format: [[0, 10], [1, 25], [2, 45]] or
+                        [{"x": 0, "y": 10, "label": "Week 1"}, {"x": 1, "y": 25, "label": "Week 2"}]
             title: Optional chart title
             xlabel: Optional x-axis label
             ylabel: Optional y-axis label
-            duration: How long to animate (seconds)
+            duration: How long to animate (seconds) or time string
             track: Track name (default: "main")
-            gap_before: Gap before component in seconds
+            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
 
         Example:
             await remotion_add_area_chart(
-                data='[{"label": "Q1", "value": 45}, {"label": "Q2", "value": 67}]',
-                title="Example Chart",
+                data='[[0, 15], [1, 30], [2, 45], [3, 60]]',
+                title="Engagement Growth",
                 duration=4.0
             )
         """

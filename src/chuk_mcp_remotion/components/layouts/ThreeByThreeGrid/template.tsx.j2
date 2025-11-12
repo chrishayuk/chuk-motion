@@ -59,24 +59,36 @@ export const ThreeByThreeGrid: React.FC<ThreeByThreeGridProps> = ({
           justifyItems: justify_items,
         }}
       >
-        {gridChildren.map((child, idx) => (
-          <div key={idx} style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
-            position: 'relative',
-            ...(border_width && {
-              border: `${border_width}px solid ${border_color}`,
-              borderRadius: border_radius
-            }),
-            ...(cell_background && { background: cell_background }),
-          }}>
-            {child}
-          </div>
-        ))}
+        {gridChildren.map((child, idx) => {
+          // Clone child element with updated props to inherit parent's duration
+          const childWithDuration = React.isValidElement(child)
+            ? React.cloneElement(child as React.ReactElement<any>, {
+                startFrame: child.props.startFrame !== undefined ? child.props.startFrame : startFrame,
+                durationInFrames: child.props.durationInFrames !== undefined && child.props.durationInFrames > 0
+                  ? child.props.durationInFrames
+                  : durationInFrames,
+              })
+            : child;
+
+          return (
+            <div key={idx} style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              position: 'relative',
+              ...(border_width && {
+                border: `${border_width}px solid ${border_color}`,
+                borderRadius: border_radius
+              }),
+              ...(cell_background && { background: cell_background }),
+            }}>
+              {childWithDuration}
+            </div>
+          );
+        })}
       </div>
     </AbsoluteFill>
   );

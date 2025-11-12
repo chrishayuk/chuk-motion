@@ -1,0 +1,90 @@
+{
+  "name": "StaggerText",
+  "description": "Staggered reveal animation where characters or words appear one-by-one with spring physics for smooth, professional appearance",
+  "category": "text-animation",
+  "tags": ["text", "stagger", "reveal", "animation", "spring", "professional"],
+  "examples": [
+    "Title reveals",
+    "Bullet point lists",
+    "Professional presentations",
+    "Step-by-step reveals",
+    "Impact statements"
+  ],
+  "props": {
+    "text": {
+      "type": "string",
+      "required": true,
+      "description": "Text to animate"
+    },
+    "font_size": {
+      "type": "string",
+      "default": "3xl",
+      "description": "Font size (xl, 2xl, 3xl, 4xl)"
+    },
+    "font_weight": {
+      "type": "string",
+      "default": "bold",
+      "description": "Font weight (normal, medium, semibold, bold, extrabold, black)"
+    },
+    "text_color": {
+      "type": "string",
+      "optional": true,
+      "description": "Text color (uses on_dark color if not specified)"
+    },
+    "stagger_by": {
+      "type": "string",
+      "default": "char",
+      "description": "Stagger by character or word (char, word)"
+    },
+    "stagger_delay": {
+      "type": "number",
+      "default": 2.0,
+      "description": "Delay in frames between units"
+    },
+    "animation_type": {
+      "type": "string",
+      "default": "fade",
+      "description": "Animation style (fade, slide-up, slide-down, scale)"
+    },
+    "position": {
+      "type": "string",
+      "default": "center",
+      "description": "Vertical position (center, top, bottom)"
+    },
+    "align": {
+      "type": "string",
+      "default": "center",
+      "description": "Text alignment (left, center, right)"
+    }
+  },
+  "design_tokens_used": {
+    "typography": [
+      "font_sizes['3xl']",
+      "font_weights.bold",
+      "primary_font",
+      "letter_spacing.wide",
+      "line_heights.relaxed"
+    ],
+    "colors": [
+      "text.on_dark"
+    ],
+    "spacing": [
+      "spacing.xl",
+      "spacing['4xl']"
+    ],
+    "motion": [
+      "default_spring.damping",
+      "default_spring.stiffness",
+      "default_spring.mass"
+    ]
+  },
+  "hardcoded_exceptions": [],
+  "demo_config": {
+    "text": "Welcome",
+    "font_size": "3xl",
+    "stagger_by": "char",
+    "stagger_delay": 2.0,
+    "animation_type": "slide-up",
+    "duration": 3.0
+  }
+}

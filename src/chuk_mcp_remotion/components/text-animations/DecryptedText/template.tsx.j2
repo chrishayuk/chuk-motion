@@ -1,0 +1,144 @@
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+
+/**
+ * DecryptedText Component
+ *
+ * Animated text reveal with character scrambling effect. Characters progressively
+ * decrypt from random characters to the final text.
+ *
+ * Inspired by: https://www.reactbits.dev/text-animations/decrypted-text
+ */
+
+interface DecryptedTextProps {
+  text: string;
+  startFrame?: number;
+  durationInFrames?: number;
+  fontSize?: string;
+  fontWeight?: string;
+  textColor?: string;
+  revealDirection?: 'start' | 'end' | 'center';
+  scrambleSpeed?: number;
+  position?: 'center' | 'top' | 'bottom';
+}
+
+const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+
+export const DecryptedText: React.FC<DecryptedTextProps> = ({
+  text,
+  startFrame = 0,
+  durationInFrames = 90,
+  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontWeight = '[[ typography.font_weights.bold ]]',
+  textColor = '[[ colors.text.on_dark ]]',
+  revealDirection = 'start',
+  scrambleSpeed = 3,
+  position = 'center',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const chars = useMemo(() => text.split(''), [text]);
+  const charCount = chars.length;
+
+  const relativeFrame = frame - startFrame;
+
+  // Conditional returns AFTER all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Calculate reveal progress (0 to 1)
+  const revealProgress = interpolate(
+    relativeFrame,
+    [0, durationInFrames],
+    [0, 1],
+    { extrapolateRight: 'clamp' }
+  );
+
+  // Determine which characters are revealed based on direction
+  const getRevealedCount = () => {
+    return Math.floor(revealProgress * charCount);
+  };
+
+  const isCharRevealed = (index: number): boolean => {
+    const revealedCount = getRevealedCount();
+
+    switch (revealDirection) {
+      case 'start':
+        return index < revealedCount;
+      case 'end':
+        return index >= charCount - revealedCount;
+      case 'center': {
+        const centerIndex = Math.floor(charCount / 2);
+        const spread = Math.floor(revealedCount / 2);
+        return Math.abs(index - centerIndex) <= spread;
+      }
+      default:
+        return false;
+    }
+  };
+
+  // Generate scrambled character
+  const getScrambledChar = (index: number): string => {
+    if (isCharRevealed(index)) {
+      return chars[index];
+    }
+
+    // Use frame + index as seed for consistent scrambling per character
+    const seed = (relativeFrame * scrambleSpeed + index * 7) % CHARACTERS.length;
+    return chars[index] === ' ' ? ' ' : CHARACTERS[Math.floor(seed)];
+  };
+
+  // Position styles
+  const getPositionStyles = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '100%',
+    };
+
+    switch (position) {
+      case 'top':
+        return { ...base, paddingTop: '[[ spacing.spacing['4xl'] ]]' };
+      case 'bottom':
+        return { ...base, paddingBottom: '[[ spacing.spacing['4xl'] ]]' };
+      case 'center':
+      default:
+        return base;
+    }
+  };
+
+  return (
+    <AbsoluteFill style={getPositionStyles()}>
+      <div
+        style={{
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize,
+          fontWeight,
+          color: textColor,
+          letterSpacing: '[[ typography.letter_spacing.wide ]]',
+          textAlign: 'center',
+          padding: '0 [[ spacing.spacing.xl ]]',
+          maxWidth: '90%',
+        }}
+      >
+        {chars.map((char, index) => (
+          <span
+            key={index}
+            style={{
+              display: 'inline-block',
+              minWidth: char === ' ' ? '[[ spacing.spacing.md ]]' : undefined,
+              opacity: isCharRevealed(index) ? 1 : 0.7,
+              transition: 'opacity 0.1s',
+            }}
+          >
+            {getScrambledChar(index)}
+          </span>
+        ))}
+      </div>
+    </AbsoluteFill>
+  );
+};

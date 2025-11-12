@@ -1,0 +1,138 @@
+import React, { useMemo } from 'react';
+import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate } from 'remotion';
+
+/**
+ * TypewriterText Component
+ *
+ * Classic typewriter animation with cursor. Characters appear one-by-one as if
+ * being typed, with optional blinking cursor.
+ *
+ * Inspired by: https://www.reactbits.dev/text-animations/typewriter
+ */
+
+interface TypewriterTextProps {
+  text: string;
+  startFrame?: number;
+  durationInFrames?: number;
+  fontSize?: string;
+  fontWeight?: string;
+  textColor?: string;
+  cursorColor?: string;
+  showCursor?: boolean;
+  typeSpeed?: number;
+  position?: 'center' | 'top' | 'bottom' | 'left';
+  align?: 'left' | 'center' | 'right';
+}
+
+export const TypewriterText: React.FC<TypewriterTextProps> = ({
+  text,
+  startFrame = 0,
+  durationInFrames = 90,
+  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontWeight = '[[ typography.font_weights.medium ]]',
+  textColor = '[[ colors.text.on_dark ]]',
+  cursorColor,
+  showCursor = true,
+  typeSpeed = 2.0,
+  position = 'center',
+  align = 'left',
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  const chars = useMemo(() => text.split(''), [text]);
+  const charCount = chars.length;
+
+  const relativeFrame = frame - startFrame;
+
+  // Conditional returns AFTER all hooks
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Calculate how many characters to show based on type speed
+  // typeSpeed = characters per second
+  const charsPerFrame = typeSpeed / fps;
+  const visibleChars = Math.floor(relativeFrame * charsPerFrame);
+  const displayText = chars.slice(0, Math.min(visibleChars, charCount)).join('');
+
+  // Cursor blink (visible for 15 frames, hidden for 15 frames)
+  const cursorVisible = showCursor && Math.floor(relativeFrame / 15) % 2 === 0;
+
+  // Show cursor while typing or if still animating
+  const showCursorNow = showCursor && (visibleChars < charCount || cursorVisible);
+
+  // Position styles
+  const getPositionStyles = (): React.CSSProperties => {
+    const base: React.CSSProperties = {
+      display: 'flex',
+      width: '100%',
+      padding: '0 [[ spacing.spacing['2xl'] ]]',
+    };
+
+    switch (position) {
+      case 'top':
+        return {
+          ...base,
+          alignItems: 'flex-start',
+          paddingTop: '[[ spacing.spacing['4xl'] ]]',
+        };
+      case 'bottom':
+        return {
+          ...base,
+          alignItems: 'flex-end',
+          paddingBottom: '[[ spacing.spacing['4xl'] ]]',
+        };
+      case 'left':
+        return {
+          ...base,
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+        };
+      case 'center':
+      default:
+        return {
+          ...base,
+          alignItems: 'center',
+          justifyContent: 'center',
+        };
+    }
+  };
+
+  // Text alignment
+  const textAlign = align;
+
+  return (
+    <AbsoluteFill style={getPositionStyles()}>
+      <div
+        style={{
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          fontSize,
+          fontWeight,
+          color: textColor,
+          letterSpacing: '[[ typography.letter_spacing.normal ]]',
+          textAlign,
+          maxWidth: position === 'left' ? '90%' : '80%',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+        }}
+      >
+        {displayText}
+        {showCursorNow && (
+          <span
+            style={{
+              display: 'inline-block',
+              width: '3px',
+              height: '1em',
+              backgroundColor: cursorColor || textColor,
+              marginLeft: '[[ spacing.spacing.xs ]]',
+              verticalAlign: 'text-bottom',
+              animation: visibleChars >= charCount ? 'blink 1s infinite' : 'none',
+            }}
+          />
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};

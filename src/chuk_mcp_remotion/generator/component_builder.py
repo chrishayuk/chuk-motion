@@ -55,6 +55,8 @@ class ComponentBuilder:
             "animations",
             "content",
             "frames",
+            "transitions",
+            "text-animations",
         ]
 
     def _to_camel_case(self, snake_str: str) -> str:
@@ -132,7 +134,7 @@ class ComponentBuilder:
         # Build typography context with font_sizes for template compatibility
         # This maintains backwards compatibility with existing templates that expect typography.font_sizes
         typography_context = theme.typography.model_dump()
-        typography_context["font_sizes"] = TYPOGRAPHY_TOKENS.font_sizes.model_dump()
+        typography_context["font_sizes"] = TYPOGRAPHY_TOKENS.font_sizes.model_dump(by_alias=True)
         typography_context["font_weights"] = TYPOGRAPHY_TOKENS.font_weights.model_dump()
         typography_context["line_heights"] = TYPOGRAPHY_TOKENS.line_heights.model_dump()
         typography_context["letter_spacing"] = TYPOGRAPHY_TOKENS.letter_spacing.model_dump()
@@ -144,8 +146,8 @@ class ComponentBuilder:
             colors=theme.colors.model_dump(),
             typography=typography_context,
             motion=theme.motion.model_dump(),
-            spacing=SPACING_TOKENS.model_dump(),
-            font_sizes=font_sizes.model_dump(),
+            spacing=SPACING_TOKENS.model_dump(by_alias=True),
+            font_sizes=font_sizes.model_dump(by_alias=True),
             # Also include global token singletons for convenience
             TYPOGRAPHY_TOKENS=TYPOGRAPHY_TOKENS,
             SPACING_TOKENS=SPACING_TOKENS,

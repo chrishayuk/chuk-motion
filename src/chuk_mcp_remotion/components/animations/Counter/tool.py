@@ -32,11 +32,11 @@ def register_tool(mcp, project_manager):
             start_value: Starting number (default: 0)
             prefix: Text before number (e.g., "$")
             suffix: Text after number (e.g., "%")
-            decimals: Number of decimal places
+            decimals: Number of decimal places (integer)
             animation: Animation style
-            duration: Duration in seconds
+            duration: Duration in seconds or time string (e.g., "2s", "500ms")
             track: Track name (default: "main")
-            gap_before: Gap before component in seconds
+            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
