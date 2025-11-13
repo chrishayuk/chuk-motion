@@ -8,11 +8,19 @@ from pydantic import BaseModel, Field
 from ...base import ComponentMetadata
 
 
+class MilestoneConfig(BaseModel):
+    """Configuration for a timeline milestone."""
+
+    time: float = Field(..., description="Time position on timeline (seconds)")
+    label: str = Field(..., description="Milestone label text")
+    icon: str | None = Field(None, description="Optional icon identifier")
+
+
 class TimelineProps(BaseModel):
     """Properties for Timeline component."""
 
     main_content: Any | None = Field(None, description="Background content")
-    milestones: list[dict] | None = Field(
+    milestones: list[MilestoneConfig] | None = Field(
         None, description="List of milestone objects with {time, label, icon}"
     )
     current_time: float | None = Field(0, description="Current progress time")

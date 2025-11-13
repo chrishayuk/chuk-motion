@@ -8,10 +8,13 @@ from pathlib import Path
 from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel
 
 from ..themes.youtube_themes import YOUTUBE_THEMES
 from ..tokens.spacing import SPACING_TOKENS
 from ..tokens.typography import TYPOGRAPHY_TOKENS
+from ..tokens.motion import MOTION_TOKENS, MotionTokens
+from ..themes.models import ThemeMotion
 
 
 class ComponentBuilder:
@@ -139,18 +142,52 @@ class ComponentBuilder:
         typography_context["line_heights"] = TYPOGRAPHY_TOKENS.line_heights.model_dump()
         typography_context["letter_spacing"] = TYPOGRAPHY_TOKENS.letter_spacing.model_dump()
 
+        # Create Pydantic model for combined motion context
+        # Combines full motion tokens with theme-specific defaults
+        class CombinedMotionContext(BaseModel):
+            """Combined motion tokens and theme defaults for template rendering."""
+            # Full motion tokens
+            duration: Any  # DurationTokens
+            easing: Any  # EasingTokens
+            spring_configs: Any  # SpringConfigs
+            enter: Any  # EnterExitTokens
+            exit: Any  # EnterExitTokens
+            tempo: Any  # TempoTokens
+            platform_timing: Any  # PlatformTiming
+            # Theme-specific defaults
+            default_spring: Any
+            default_easing: Any
+            default_duration: Any
+
+            class Config:
+                arbitrary_types_allowed = True
+
+        motion_context = CombinedMotionContext(
+            duration=MOTION_TOKENS.duration,
+            easing=MOTION_TOKENS.easing,
+            spring_configs=MOTION_TOKENS.spring_configs,
+            enter=MOTION_TOKENS.enter,
+            exit=MOTION_TOKENS.exit,
+            tempo=MOTION_TOKENS.tempo,
+            platform_timing=MOTION_TOKENS.platform_timing,
+            default_spring=theme.motion.default_spring,
+            default_easing=theme.motion.default_easing,
+            default_duration=theme.motion.default_duration,
+        )
+
         # Render template - convert Pydantic models to dicts for Jinja2 template compatibility
         tsx_code = template.render(
             config=config,
             theme=theme.model_dump(),
             colors=theme.colors.model_dump(),
             typography=typography_context,
-            motion=theme.motion.model_dump(),
+            motion=motion_context,  # Now includes full motion tokens + theme defaults
             spacing=SPACING_TOKENS.model_dump(by_alias=True),
             font_sizes=font_sizes.model_dump(by_alias=True),
             # Also include global token singletons for convenience
             TYPOGRAPHY_TOKENS=TYPOGRAPHY_TOKENS,
             SPACING_TOKENS=SPACING_TOKENS,
+            MOTION_TOKENS=MOTION_TOKENS,
         )
 
         return tsx_code

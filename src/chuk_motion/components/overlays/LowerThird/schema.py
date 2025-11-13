@@ -1,7 +1,7 @@
 # chuk-motion/src/chuk_motion/components/overlays/LowerThird/schema.py
 """LowerThird component schema and Pydantic models."""
 
-from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,12 +11,16 @@ from ...base import ComponentMetadata
 class LowerThirdProps(BaseModel):
     """Properties for LowerThird component."""
 
-    name: str = Field(description="Main name/text (larger)")
+    name: str = Field(description="Main name/text (larger)", min_length=1)
     title: str | None = Field(None, description="Subtitle/title (smaller, below name)")
-    variant: Any | None = Field("glass", description="Visual style")
-    position: Any | None = Field("bottom_left", description="Screen position")
-    start_time: float = Field(description="When to show (seconds)")
-    duration: float | None = Field(5.0, description="How long to show (seconds)")
+    variant: Literal["minimal", "standard", "glass", "bold", "animated"] | None = Field(
+        "glass", description="Visual style"
+    )
+    position: Literal["bottom_left", "bottom_center", "bottom_right", "top_left", "top_center"] | None = Field(
+        "bottom_left", description="Screen position"
+    )
+    start_time: float = Field(description="When to show (seconds)", ge=0.0)
+    duration: float | None = Field(5.0, description="How long to show (seconds)", gt=0.0)
 
     class Config:
         extra = "forbid"

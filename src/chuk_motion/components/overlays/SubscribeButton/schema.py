@@ -1,7 +1,7 @@
 # chuk-motion/src/chuk_motion/components/overlays/SubscribeButton/schema.py
 """SubscribeButton component schema and Pydantic models."""
 
-from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,12 +11,18 @@ from ...base import ComponentMetadata
 class SubscribeButtonProps(BaseModel):
     """Properties for SubscribeButton component."""
 
-    variant: Any | None = Field("standard", description="Button style")
-    animation: Any | None = Field("bounce", description="Animation style")
-    position: Any | None = Field("bottom_right", description="Screen position")
-    start_time: float = Field(description="When to show (seconds)")
-    duration: float | None = Field(3.0, description="How long to show (seconds)")
-    custom_text: str | None = Field("SUBSCRIBE", description="Custom button text")
+    variant: Literal["minimal", "standard", "animated", "3d"] | None = Field(
+        "standard", description="Button style"
+    )
+    animation: Literal["bounce", "glow", "pulse", "slide", "wiggle"] | None = Field(
+        "bounce", description="Animation style"
+    )
+    position: Literal["bottom_right", "bottom_center", "center", "top_right"] | None = Field(
+        "bottom_right", description="Screen position"
+    )
+    start_time: float = Field(description="When to show (seconds)", ge=0.0)
+    duration: float | None = Field(3.0, description="How long to show (seconds)", gt=0.0)
+    custom_text: str | None = Field("SUBSCRIBE", description="Custom button text", min_length=1)
 
     class Config:
         extra = "forbid"

@@ -9,22 +9,23 @@ from ...base import ComponentMetadata
 class DataPoint(BaseModel):
     """A single data point with x, y coordinates and optional label."""
 
-    x: float
-    y: float
-    label: str | None = None
+    x: float = Field(description="X coordinate of the data point")
+    y: float = Field(description="Y coordinate of the data point")
+    label: str | None = Field(None, min_length=1, description="Optional label for the data point")
 
 
 class LineChartProps(BaseModel):
     """Properties for LineChart component."""
 
     data: list[list[float] | DataPoint] = Field(
+        min_length=2,
         description="Array of data points as [x, y] or {x, y, label}"
     )
-    title: str | None = Field(None, description="Chart title")
-    xlabel: str | None = Field(None, description="X-axis label")
-    ylabel: str | None = Field(None, description="Y-axis label")
-    start_time: float = Field(0.0, description="When to show (seconds)")
-    duration: float = Field(4.0, description="How long to animate (seconds)")
+    title: str | None = Field(None, min_length=1, description="Chart title")
+    xlabel: str | None = Field(None, min_length=1, description="X-axis label")
+    ylabel: str | None = Field(None, min_length=1, description="Y-axis label")
+    start_time: float = Field(0.0, ge=0.0, description="When to show (seconds)")
+    duration: float = Field(4.0, gt=0.0, description="How long to animate (seconds)")
 
     class Config:
         extra = "forbid"

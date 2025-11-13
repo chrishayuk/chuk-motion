@@ -9,22 +9,22 @@ from ...base import ComponentMetadata
 class BarDataPoint(BaseModel):
     """A single data point with label and value."""
 
-    label: str
-    value: float
-    color: str | None = None
+    label: str = Field(..., min_length=1, description="Label for this data point")
+    value: float = Field(..., description="Numeric value for this data point")
+    color: str | None = Field(None, min_length=1, description="Optional color override")
 
 
 class BarChartProps(BaseModel):
     """Properties for BarChart component."""
 
     data: list[BarDataPoint] = Field(
-        description="List of objects with label, value, and optional color"
+        ..., min_length=1, description="List of objects with label, value, and optional color"
     )
-    title: str | None = Field(None, description="Optional chart title")
-    xlabel: str | None = Field(None, description="Optional x-axis label")
-    ylabel: str | None = Field(None, description="Optional y-axis label")
-    start_time: float = Field(0.0, description="When to show (seconds)")
-    duration: float = Field(4.0, description="How long to animate (seconds)")
+    title: str | None = Field(None, min_length=1, description="Optional chart title")
+    xlabel: str | None = Field(None, min_length=1, description="Optional x-axis label")
+    ylabel: str | None = Field(None, min_length=1, description="Optional y-axis label")
+    start_time: float = Field(0.0, ge=0.0, description="When to show (seconds)")
+    duration: float = Field(4.0, gt=0.0, description="How long to animate (seconds)")
 
     class Config:
         extra = "forbid"

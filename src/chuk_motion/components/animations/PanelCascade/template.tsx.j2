@@ -1,0 +1,388 @@
+{/* chuk-motion/src/chuk_motion/components/animations/PanelCascade/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from 'remotion';
+
+interface PanelCascadeProps {
+  children: React.ReactNode[];
+  cascadeType?: string;
+  staggerDelay?: number;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const PanelCascade: React.FC<PanelCascadeProps> = ({
+  children,
+  cascadeType = 'from_edges',
+  staggerDelay = 0.08,
+  startFrame,
+  durationInFrames,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps, width, height } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Motion tokens - token-first approach
+  const DURATION_FAST = [[ motion.duration.fast.frames_30fps ]];
+  const DURATION_MEDIUM = [[ motion.duration.medium.frames_30fps ]];
+
+  // Easing from tokens
+  const easeOutExpo = [[ motion.easing.ease_out_expo.curve ]];
+  const easeOutBack = [[ motion.easing.ease_out_back.curve ]];
+
+  // Spring config from tokens
+  const bouncySpring = {
+    damping: [[ motion.spring_configs.bouncy.config.damping ]],
+    mass: [[ motion.spring_configs.bouncy.config.mass ]],
+    stiffness: [[ motion.spring_configs.bouncy.config.stiffness ]],
+  };
+
+  // Convert stagger delay to frames
+  const staggerFrames = Math.round(staggerDelay * 30);
+
+  // Helper function to create custom easing
+  const createEasing = (curve: number[]): Easing.EasingFunction => {
+    return Easing.bezier(curve[0], curve[1], curve[2], curve[3]);
+  };
+
+  // Calculate grid dimensions (assuming square-ish grid)
+  const panelCount = React.Children.count(children);
+  const cols = Math.ceil(Math.sqrt(panelCount));
+  const rows = Math.ceil(panelCount / cols);
+
+  // Helper to get panel position in grid
+  const getPanelPosition = (index: number) => {
+    const row = Math.floor(index / cols);
+    const col = index % cols;
+    return { row, col };
+  };
+
+  // Helper to calculate distance from center
+  const getDistanceFromCenter = (index: number) => {
+    const { row, col } = getPanelPosition(index);
+    const centerRow = (rows - 1) / 2;
+    const centerCol = (cols - 1) / 2;
+    return Math.sqrt(Math.pow(row - centerRow, 2) + Math.pow(col - centerCol, 2));
+  };
+
+  // Helper to get edge distance (for from_edges cascade)
+  const getEdgeDistance = (index: number) => {
+    const { row, col } = getPanelPosition(index);
+    const distFromLeft = col;
+    const distFromRight = cols - 1 - col;
+    const distFromTop = row;
+    const distFromBottom = rows - 1 - row;
+    return Math.min(distFromLeft, distFromRight, distFromTop, distFromBottom);
+  };
+
+  // ============================================================================
+  // RENDER PANELS WITH CASCADE ANIMATIONS
+  // ============================================================================
+  return (
+    <AbsoluteFill style={{
+      display: 'grid',
+      gridTemplateColumns: `repeat(${cols}, 1fr)`,
+      gridTemplateRows: `repeat(${rows}, 1fr)`,
+      gap: parseInt('[[ spacing.spacing.md ]]'),
+      padding: parseInt('[[ spacing.spacing.xl ]]'),
+      pointerEvents: 'none'
+    }}>
+      {React.Children.map(children, (child, index) => {
+        let panelDelay = 0;
+        let animationProps: any = {};
+
+        // ============================================================================
+        // FROM_EDGES CASCADE
+        // ============================================================================
+        if (cascadeType === 'from_edges') {
+          const edgeDist = getEdgeDistance(index);
+          panelDelay = edgeDist * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          // Determine direction based on closest edge
+          const { row, col } = getPanelPosition(index);
+          const distFromLeft = col;
+          const distFromRight = cols - 1 - col;
+          const distFromTop = row;
+          const distFromBottom = rows - 1 - row;
+          const minDist = Math.min(distFromLeft, distFromRight, distFromTop, distFromBottom);
+
+          let translateX = 0;
+          let translateY = 0;
+
+          if (minDist === distFromLeft) translateX = -50;
+          else if (minDist === distFromRight) translateX = 50;
+          else if (minDist === distFromTop) translateY = -50;
+          else translateY = 50;
+
+          const currentTranslateX = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [translateX, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const currentTranslateY = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [translateY, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `translate(${currentTranslateX}px, ${currentTranslateY}px)`,
+          };
+        }
+
+        // ============================================================================
+        // FROM_CENTER CASCADE
+        // ============================================================================
+        else if (cascadeType === 'from_center') {
+          const centerDist = getDistanceFromCenter(index);
+          panelDelay = centerDist * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const scale = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0.5, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `scale(${scale})`,
+          };
+        }
+
+        // ============================================================================
+        // BOUNCE_IN CASCADE
+        // ============================================================================
+        else if (cascadeType === 'bounce_in') {
+          panelDelay = index * staggerFrames;
+
+          const progress = spring({
+            frame: Math.max(0, relativeFrame - panelDelay),
+            fps,
+            config: bouncySpring,
+          });
+
+          const opacity = interpolate(progress, [0, 1], [0, 1]);
+          const scale = interpolate(progress, [0, 1], [0.3, 1]);
+
+          animationProps = {
+            opacity,
+            transform: `scale(${scale})`,
+          };
+        }
+
+        // ============================================================================
+        // SEQUENTIAL_LEFT CASCADE
+        // ============================================================================
+        else if (cascadeType === 'sequential_left') {
+          panelDelay = index * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const translateX = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [-30, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `translateX(${translateX}px)`,
+          };
+        }
+
+        // ============================================================================
+        // SEQUENTIAL_RIGHT CASCADE
+        // ============================================================================
+        else if (cascadeType === 'sequential_right') {
+          panelDelay = (panelCount - 1 - index) * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const translateX = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [30, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `translateX(${translateX}px)`,
+          };
+        }
+
+        // ============================================================================
+        // SEQUENTIAL_TOP CASCADE
+        // ============================================================================
+        else if (cascadeType === 'sequential_top') {
+          panelDelay = index * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const translateY = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_FAST],
+            [-30, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `translateY(${translateY}px)`,
+          };
+        }
+
+        // ============================================================================
+        // WAVE CASCADE
+        // ============================================================================
+        else if (cascadeType === 'wave') {
+          const { row, col } = getPanelPosition(index);
+          const wavePosition = row + col;
+          panelDelay = wavePosition * staggerFrames;
+
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const translateY = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [40, 0],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          const scale = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0.9, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+              easing: createEasing(easeOutExpo),
+            }
+          );
+
+          animationProps = {
+            opacity,
+            transform: `translateY(${translateY}px) scale(${scale})`,
+          };
+        }
+
+        // Default fallback
+        else {
+          panelDelay = index * staggerFrames;
+          const opacity = interpolate(
+            relativeFrame,
+            [panelDelay, panelDelay + DURATION_MEDIUM],
+            [0, 1],
+            {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+            }
+          );
+          animationProps = { opacity };
+        }
+
+        return (
+          <div key={index} style={animationProps}>
+            {child}
+          </div>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};

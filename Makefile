@@ -53,31 +53,31 @@ clean: ## Remove build artifacts and cache
 
 test: ## Run all tests
 	@echo "$(BLUE)Running tests...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v
 	@echo "$(GREEN)✓ Tests passed$(NC)"
 
 test-fast: ## Run tests in parallel
 	@echo "$(BLUE)Running tests in parallel...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v -n auto
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v -n auto
 	@echo "$(GREEN)✓ Tests passed$(NC)"
 
 test-unit: ## Run unit tests only
 	@echo "$(BLUE)Running unit tests...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v -m "not integration"
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v -m "not integration"
 	@echo "$(GREEN)✓ Unit tests passed$(NC)"
 
 test-integration: ## Run integration tests only
 	@echo "$(BLUE)Running integration tests...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v -m "integration"
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v -m "integration"
 	@echo "$(GREEN)✓ Integration tests passed$(NC)"
 
 test-watch: ## Run tests in watch mode
 	@echo "$(BLUE)Running tests in watch mode...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v --looponfail
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v --looponfail
 
 coverage: ## Generate test coverage report
 	@echo "$(BLUE)Generating coverage report...$(NC)"
-	$(UV) run $(PYTEST) tests/ --cov=src/chuk_motion --cov-report=html --cov-report=term
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ --cov=src/chuk_motion --cov-report=html --cov-report=term
 	@echo "$(GREEN)✓ Coverage report generated in htmlcov/$(NC)"
 
 ##@ Code Quality
@@ -198,7 +198,7 @@ debug: ## Run server with debug logging
 
 watch: ## Watch for changes and run tests
 	@echo "$(BLUE)Watching for changes...$(NC)"
-	$(UV) run $(PYTEST) tests/ -v --looponfail
+	PYTHONPATH=src $(UV) run $(PYTEST) tests/ -v --looponfail
 
 ##@ Dependencies
 

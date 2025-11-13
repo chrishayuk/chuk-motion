@@ -1,6 +1,8 @@
 # chuk-motion/src/chuk_motion/components/content/StylizedWebPage/schema.py
 """StylizedWebPage component schema and Pydantic models."""
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 from ...base import ComponentMetadata
@@ -24,8 +26,10 @@ class StylizedWebPageProps(BaseModel):
         description="Main content block text lines"
     )
     footer_text: str = Field("© 2024 Company", description="Footer text")
-    theme: str = Field("light", description="Visual theme: light or dark")
-    accent_color: str = Field("primary", description="Accent color: primary, accent, or secondary")
+    theme: Literal["light", "dark"] = Field("light", description="Visual theme")
+    accent_color: Literal["primary", "accent", "secondary"] = Field(
+        "primary", description="Accent color theme"
+    )
     start_time: float | None = Field(None, description="When to show (seconds)")
     duration: float | None = Field(None, description="How long to show (seconds)")
 

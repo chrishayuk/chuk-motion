@@ -1,7 +1,7 @@
 # chuk-motion/src/chuk_motion/components/overlays/TitleScene/schema.py
 """TitleScene component schema and Pydantic models."""
 
-from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,11 +11,15 @@ from ...base import ComponentMetadata
 class TitleSceneProps(BaseModel):
     """Properties for TitleScene component."""
 
-    text: str = Field(description="Main title text")
-    subtitle: str | None = Field(None, description="Optional subtitle text")
-    variant: Any | None = Field("standard", description="Visual style variant")
-    animation: Any | None = Field("fade_zoom", description="Animation style")
-    duration_seconds: float | None = Field(3.0, description="Duration in seconds")
+    text: str = Field(..., min_length=1, description="Main title text")
+    subtitle: str | None = Field(None, min_length=1, description="Optional subtitle text")
+    variant: Literal["minimal", "standard", "bold", "kinetic"] | None = Field(
+        "standard", description="Visual style variant"
+    )
+    animation: Literal["fade_zoom", "slide_up", "typewriter", "blur_in", "split"] | None = Field(
+        "fade_zoom", description="Animation style"
+    )
+    duration_seconds: float | None = Field(3.0, gt=0.0, description="Duration in seconds")
 
     class Config:
         extra = "forbid"

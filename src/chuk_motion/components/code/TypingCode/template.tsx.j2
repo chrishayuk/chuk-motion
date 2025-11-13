@@ -167,84 +167,84 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
 
   const cursorStyle = cursorStyles[cursor_style as keyof typeof cursorStyles] || cursorStyles.line;
 
-  // Custom theme with high contrast for dark backgrounds
+  // Custom theme with high contrast for dark backgrounds using design tokens
   const customTheme = {
     plain: {
-      color: '#F0F0F0',  // Brighter default text - catches unmatched tokens
+      color: '[[ colors.text.on_dark ]]',  // Brighter default text - catches unmatched tokens
       backgroundColor: 'transparent'
     },
     styles: [
       {
         types: ['comment', 'prolog', 'doctype', 'cdata'],
-        style: { color: '#8B92A4', fontStyle: 'italic' }
+        style: { color: '[[ colors.text.muted ]]', fontStyle: 'italic' }
       },
       {
         types: ['namespace', 'module'],
-        style: { color: '#82AAFF' }  // Blue for modules
+        style: { color: '[[ colors.accent[0] ]]' }  // Blue for modules
       },
       {
         types: ['string', 'attr-value', 'char'],
-        style: { color: '#A5F3B4' }  // Green strings
+        style: { color: '[[ colors.semantic.success ]]' }  // Green strings
       },
       {
         types: ['punctuation', 'operator'],
-        style: { color: '#E8E8E8' }
+        style: { color: '[[ colors.text.on_dark ]]' }
       },
       {
         types: ['number', 'boolean', 'null'],
-        style: { color: '#FFA657' }  // Orange
+        style: { color: '[[ colors.semantic.warning ]]' }  // Orange
       },
       {
         types: ['keyword', 'control', 'directive', 'unit'],
-        style: { color: '#FF6B9D' }  // Pink keywords
+        style: { color: '[[ colors.primary[0] ]]' }  // Pink keywords
       },
       {
         types: ['builtin', 'type-class', 'type', 'primitive'],
-        style: { color: '#FFD580' }  // Yellow for built-in types
+        style: { color: '[[ colors.accent[1] ]]' }  // Yellow for built-in types
       },
       {
         types: ['function', 'function-variable', 'method', 'function-definition'],
-        style: { color: '#82AAFF' }  // Blue functions
+        style: { color: '[[ colors.accent[0] ]]' }  // Blue functions
       },
       {
         types: ['class-name', 'maybe-class-name', 'entity'],
-        style: { color: '#FFD580' }  // Yellow classes
+        style: { color: '[[ colors.accent[1] ]]' }  // Yellow classes
       },
       {
         types: ['property', 'property-access', 'field'],
-        style: { color: '#E0E0E0' }  // Light gray properties
+        style: { color: '[[ colors.text.on_dark ]]' }  // Light gray properties
       },
       {
         types: ['variable', 'parameter', 'this', 'self'],
-        style: { color: '#E0E0E0' }  // Light gray variables
+        style: { color: '[[ colors.text.on_dark ]]' }  // Light gray variables
       },
       {
         types: ['constant', 'symbol'],
-        style: { color: '#00D9FF' }  // Cyan constants
+        style: { color: '[[ colors.accent[0] ]]' }  // Cyan constants
       },
       {
         types: ['tag', 'selector', 'attr-name'],
-        style: { color: '#00D9FF' }  // Cyan
+        style: { color: '[[ colors.accent[0] ]]' }  // Cyan
       },
       {
         types: ['decorator', 'annotation'],
-        style: { color: '#C792EA' }  // Purple decorators
+        style: { color: '[[ colors.accent[2] ]]' }  // Purple decorators
       },
       {
         types: ['regex', 'important'],
-        style: { color: '#C792EA' }
+        style: { color: '[[ colors.accent[2] ]]' }
       },
       {
         types: ['atrule', 'url', 'inserted'],
-        style: { color: '#A5F3B4' }
+        style: { color: '[[ colors.semantic.success ]]' }
       },
       {
         types: ['deleted'],
-        style: { color: '#FF6B9D' }
+        style: { color: '[[ colors.semantic.error ]]' }
       },
       {
         types: ['important', 'bold'],
-        style: { fontWeight: 'bold', color: '#FF6B9D' }
+        style: { fontWeight: 'bold', color: '[[ colors.semantic.error ]]' }
       },
       {
         types: ['italic'],
@@ -262,7 +262,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: "'Fira Code', 'Monaco', 'Consolas', 'monospace'",
-        color: '#F0F0F0'  // Ensure all text is bright by default
+        color: '[[ colors.text.on_dark ]]'  // Ensure all text is bright by default
       }}
     >
       <Highlight
@@ -312,7 +312,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                           lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                           textAlign: 'right',
                           userSelect: 'none',
-                          minWidth: 50
+                          minWidth: parseInt('[[ spacing.spacing["3xl"] ]]')
                         }}
                       >
                         {code.split('\n').map((_, idx) => (
@@ -422,7 +422,7 @@ export const TypingCode: React.FC<TypingCodeProps> = ({
                         lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                         textAlign: 'right',
                         userSelect: 'none',
-                        minWidth: 50
+                        minWidth: parseInt('[[ spacing.spacing["3xl"] ]]')
                       }}
                     >
                       {code.split('\n').map((_, idx) => (

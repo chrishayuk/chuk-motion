@@ -1,7 +1,7 @@
 # chuk-motion/src/chuk_motion/components/overlays/TextOverlay/schema.py
 """TextOverlay component schema and Pydantic models."""
 
-from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -11,12 +11,18 @@ from ...base import ComponentMetadata
 class TextOverlayProps(BaseModel):
     """Properties for TextOverlay component."""
 
-    text: str = Field(description="Text content")
-    style: Any | None = Field("emphasis", description="Text style")
-    animation: Any | None = Field("blur_in", description="Animation style")
-    start_time: float = Field(description="When to show (seconds)")
-    duration: float | None = Field(3.0, description="How long to show (seconds)")
-    position: str | None = Field("center", description="Position (center, top, bottom, custom)")
+    text: str = Field(..., min_length=1, description="Text content")
+    style: Literal["emphasis", "caption", "callout", "subtitle", "quote"] | None = Field(
+        "emphasis", description="Text style"
+    )
+    animation: Literal["blur_in", "slide_up", "fade", "typewriter", "scale_in"] | None = Field(
+        "blur_in", description="Animation style"
+    )
+    start_time: float = Field(..., ge=0.0, description="When to show (seconds)")
+    duration: float | None = Field(3.0, gt=0.0, description="How long to show (seconds)")
+    position: Literal["center", "top", "bottom", "custom"] | None = Field(
+        "center", description="Position (center, top, bottom, custom)"
+    )
 
     class Config:
         extra = "forbid"

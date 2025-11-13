@@ -179,6 +179,11 @@ class ProjectManager:
 
         composition_tsx = builder.generate_composition_tsx()
         duration_frames = builder.get_total_duration_frames()
+
+        # Ensure minimum duration of 10 seconds (300 frames at 30fps) for empty timelines
+        if duration_frames == 0:
+            duration_frames = 300
+
         fps = builder.fps
         width = builder.width
         height = builder.height

@@ -31,7 +31,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
   const relativeFrame = frame - startFrame;
 
   // Don't render if outside the time range
-  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+  // If durationInFrames is 0, this is a nested component and should always render
+  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
     return null;
   }
 
@@ -80,19 +81,21 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
     });
   }
 
-  // Exit animation
-  const exitDuration = 20;
-  const exitProgress = interpolate(
-    relativeFrame,
-    [durationInFrames - exitDuration, durationInFrames],
-    [1, 0],
-    {
-      extrapolateLeft: 'clamp',
-      extrapolateRight: 'clamp'
-    }
-  );
-
-  const finalOpacity = opacity * exitProgress;
+  // Exit animation (skip for nested components with durationInFrames=0)
+  let finalOpacity = opacity;
+  if (durationInFrames > 0) {
+    const exitDuration = 20;
+    const exitProgress = interpolate(
+      relativeFrame,
+      [durationInFrames - exitDuration, durationInFrames],
+      [1, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp'
+      }
+    );
+    finalOpacity = opacity * exitProgress;
+  }
 
   // Variant styles
   const variants = {
@@ -191,7 +194,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
                           lineHeight: parseFloat('[[ typography.line_heights.relaxed ]]'),
                           textAlign: 'right',
                           userSelect: 'none',
-                          minWidth: 50
+                          minWidth: parseInt('[[ spacing.spacing["3xl"] ]]')
                         }}
                       >
                         {tokens.map((_, idx) => (

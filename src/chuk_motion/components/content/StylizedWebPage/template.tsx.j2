@@ -82,12 +82,12 @@ export const StylizedWebPage: React.FC<StylizedWebPageProps> = ({
           style={{
             height: '[[ spacing.spacing['4xl'] ]]',
             backgroundColor: isDark ? '[[ colors.background.darker ]]' : accent,
-            borderBottom: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+            borderBottom: `1px solid ${isDark ? '[[ colors.border.subtle ]]' : '[[ colors.border.light ]]'}`,
             display: 'flex',
             alignItems: 'center',
             padding: '0 [[ spacing.spacing.xl ]]',
             justifyContent: 'space-between',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            boxShadow: '0 2px 8px [[ colors.shadow.light ]]',
           }}
         >
           <div
@@ -123,7 +123,7 @@ export const StylizedWebPage: React.FC<StylizedWebPageProps> = ({
             style={{
               width: '220px',
               backgroundColor: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.light ]]',
-              borderRight: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
+              borderRight: `1px solid ${isDark ? '[[ colors.border.subtle ]]' : '[[ colors.border.subtle ]]'}`,
               padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing.md ]]',
               display: 'flex',
               flexDirection: 'column',
@@ -136,11 +136,11 @@ export const StylizedWebPage: React.FC<StylizedWebPageProps> = ({
                 style={{
                   padding: '[[ spacing.spacing.sm ]] [[ spacing.spacing.md ]]',
                   backgroundColor: index === 0
-                    ? (isDark ? 'rgba(255,255,255,0.12)' : accent)
+                    ? (isDark ? '[[ colors.border.light ]]' : accent)
                     : 'transparent',
                   color: index === 0
                     ? '[[ colors.text.on_dark ]]'
-                    : (isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)'),
+                    : (isDark ? '[[ colors.text.muted ]]' : '[[ colors.text.muted ]]'),
                   borderRadius: '[[ spacing.border_radius.md ]]',
                   fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
                   fontFamily: "'[[ "', '".join(typography.body_font.fonts) ]]'",
@@ -199,7 +199,7 @@ export const StylizedWebPage: React.FC<StylizedWebPageProps> = ({
                 style={{
                   padding: '20px [[ spacing.spacing.lg ]]',
                   backgroundColor: isDark ? '[[ colors.background.glass ]]' : '[[ colors.background.light ]]',
-                  border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
+                  border: `1px solid ${isDark ? '[[ colors.border.subtle ]]' : '[[ colors.border.subtle ]]'}`,
                   borderRadius: '[[ spacing.border_radius.lg ]]',
                   fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
                   color: isDark ? '[[ colors.text.on_dark ]]' : '[[ colors.text.on_light ]]',
@@ -222,7 +222,7 @@ export const StylizedWebPage: React.FC<StylizedWebPageProps> = ({
         <div
           style={{
             height: parseInt('[[ spacing.spacing['2xl'] ]]'),
-            backgroundColor: isDark ? '[[ colors.background.darker ]]' : 'rgba(0, 0, 0, 0.03)',
+            backgroundColor: isDark ? '[[ colors.background.darker ]]' : '[[ colors.background.overlay ]]',
             borderTop: `[[ spacing.border_width.medium ]] solid [[ colors.border.medium ]]`,
             display: 'flex',
             alignItems: 'center',

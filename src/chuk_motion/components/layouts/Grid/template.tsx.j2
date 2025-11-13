@@ -35,7 +35,8 @@ export const Grid: React.FC<GridProps> = ({
   const relativeFrame = frame - startFrame;
 
   // Don't render if outside the time range
-  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+  // If durationInFrames is 0, this is a nested component and should always render
+  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
     return null;
   }
 

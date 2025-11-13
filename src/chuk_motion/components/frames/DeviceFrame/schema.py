@@ -39,6 +39,9 @@ class DeviceFrameProps(BaseModel):
         "bottom-right",
     ] = Field(default="center", description="Position of device on screen")
 
+    class Config:
+        extra = "forbid"
+
 
 METADATA = ComponentMetadata(
     name="DeviceFrame",

@@ -20,7 +20,7 @@ class TerminalProps(BaseModel):
 
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
-    commands: list[dict] = Field(
+    commands: list[CommandBlock] = Field(
         default=[], description="List of command blocks (each with command, output, and typeOn)"
     )
     prompt: Literal["bash", "zsh", "powershell", "custom"] = Field(
@@ -52,6 +52,9 @@ class TerminalProps(BaseModel):
     typeSpeed: float = Field(
         default=0.05, description="Typing animation speed (seconds per character)", ge=0.01, le=0.5
     )
+
+    class Config:
+        extra = "forbid"
 
 
 METADATA = ComponentMetadata(

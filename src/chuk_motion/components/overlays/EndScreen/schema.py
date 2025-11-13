@@ -1,7 +1,7 @@
 # chuk-motion/src/chuk_motion/components/overlays/EndScreen/schema.py
 """EndScreen component schema and Pydantic models."""
 
-from typing import Any
+from typing import Literal
 
 from pydantic import BaseModel, Field
 
@@ -13,8 +13,10 @@ class EndScreenProps(BaseModel):
 
     cta_text: str = Field(description="Call-to-action text")
     thumbnail_url: str | None = Field(None, description="Video thumbnail URL")
-    variant: Any | None = Field("standard", description="Layout variant")
-    duration_seconds: float | None = Field(10.0, description="Duration (seconds)")
+    variant: Literal["standard", "split", "carousel", "minimal"] = Field(
+        "standard", description="Layout variant"
+    )
+    duration_seconds: float = Field(10.0, description="Duration (seconds)", gt=0.0)
 
     class Config:
         extra = "forbid"

@@ -1,15 +1,26 @@
 # chuk-motion/src/chuk_motion/components/layouts/Mosaic/schema.py
 """Mosaic component schema and Pydantic models."""
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 from ...base import ComponentMetadata
 
 
+class ClipConfig(BaseModel):
+    """Configuration for a mosaic clip."""
+
+    content: Any = Field(..., description="Clip content (component or element)")
+    size: float | None = Field(None, description="Clip size (relative scale, e.g., 1.0, 1.5)")
+    position: dict[str, float] | None = Field(None, description="Position override {x, y}")
+    z_index: int | None = Field(None, description="Stack order (higher = front)")
+
+
 class MosaicProps(BaseModel):
     """Properties for Mosaic component."""
 
-    clips: list[dict] | None = Field(
+    clips: list[ClipConfig] | None = Field(
         [], description="List of clip objects with {content, size, position, z_index}"
     )
     style: str | None = Field("hero-corners", description="Style: hero-corners, stacked, spotlight")

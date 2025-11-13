@@ -23,7 +23,7 @@ class BrowserFrameProps(BaseModel):
     theme: Literal["light", "dark", "chrome", "firefox", "safari", "arc"] = Field(
         default="chrome", description="Browser theme style"
     )
-    tabs: list[dict] | None = Field(
+    tabs: list[TabConfig] | None = Field(
         default=None, description="List of tabs to display (each with title and active status)"
     )
     showStatus: bool = Field(default=False, description="Show status bar at bottom")
@@ -45,6 +45,9 @@ class BrowserFrameProps(BaseModel):
         "bottom-right",
     ] = Field(default="center", description="Position of browser window on screen")
     shadow: bool = Field(default=True, description="Enable window shadow")
+
+    class Config:
+        extra = "forbid"
 
 
 METADATA = ComponentMetadata(

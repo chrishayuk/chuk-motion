@@ -25,7 +25,7 @@ class CodeDiffProps(BaseModel):
 
     startFrame: int = Field(..., description="Frame when component becomes visible")
     durationInFrames: int = Field(..., description="Duration in frames")
-    lines: list[dict] = Field(
+    lines: list[DiffLine] = Field(
         default=[],
         description="List of diff lines (each with content, type, lineNumber, heatLevel)",
     )
@@ -57,6 +57,9 @@ class CodeDiffProps(BaseModel):
         "bottom-right",
     ] = Field(default="center", description="Position of diff viewer on screen")
     animateLines: bool = Field(default=True, description="Animate lines appearing one by one")
+
+    class Config:
+        extra = "forbid"
 
 
 METADATA = ComponentMetadata(

@@ -125,7 +125,7 @@ class TestCodeDiffToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        lines = json.dumps([{"type": "add", "content": "new line"}])
+        lines = json.dumps([{"type": "added", "content": "new line"}])
         result = asyncio.run(tool_func(
             startFrame=0,
             durationInFrames=150,

@@ -51,6 +51,9 @@ class BeforeAfterSliderProps(BaseModel):
     ] = Field(default="center", description="Position on screen")
     borderRadius: int = Field(default=12, description="Border radius in pixels", ge=0, le=50)
 
+    class Config:
+        extra = "forbid"
+
 
 METADATA = ComponentMetadata(
     name="BeforeAfterSlider",
