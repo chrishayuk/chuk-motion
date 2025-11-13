@@ -57,6 +57,9 @@ class ComponentInstance:
 class CompositionBuilder:
     """Builds complete video compositions from components."""
 
+    # Class-level registry for component-specific renderers
+    _component_renderers: dict = {}
+
     def __init__(
         self, fps: int = 30, width: int = 1920, height: int = 1080, transparent: bool = False
     ):
@@ -212,6 +215,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 "Terminal",
                 # Transition components
                 "PixelTransition",
+                "LayoutTransition",
+                # Animation wrapper components
+                "LayoutEntrance",
+                "PanelCascade",
             ]
 
             if comp.component_type in layout_types:
@@ -290,6 +297,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "DialogueFrame",
             "StackedReaction",
             "PixelTransition",
+            "LayoutTransition",
             "HUDStyle",
             "PerformanceMultiCam",
             "FocusStrip",
@@ -297,6 +305,9 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "Vertical",
             "Timeline",
             "Mosaic",
+            # Animation wrappers
+            "LayoutEntrance",
+            "PanelCascade",
         ]
 
         for comp in components:
@@ -360,6 +371,11 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 
     def _render_component_jsx(self, comp: ComponentInstance, indent: int = 0) -> str:
         """Render a component as JSX, including nested children."""
+        # Try component-specific custom renderer FIRST (highest priority)
+        custom_jsx = self._try_custom_renderer(comp, indent)
+        if custom_jsx is not None:
+            return custom_jsx
+
         # Check if this is a layout component with children
         layout_types = [
             "Grid",
@@ -769,8 +785,20 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 {spaces}  }}
 {spaces}/>"""
 
-        # Fallback
+        # Fallback to default rendering
         return self._render_simple_component(comp, indent)
+
+    def _try_custom_renderer(self, comp: ComponentInstance, indent: int) -> str | None:
+        """Try to use a component-specific custom renderer if available."""
+        # Check if this component has a custom renderer
+        renderer = self._component_renderers.get(comp.component_type)
+        if renderer:
+            try:
+                return renderer(comp, self._render_component_jsx, indent, snake_to_camel, self._format_prop_value)
+            except Exception as e:
+                print(f"Warning: Custom renderer for {comp.component_type} failed: {e}")
+                return None
+        return None
 
     def _serialize_value(self, value: Any) -> Any:
         """Recursively serialize values to JSON-compatible types."""

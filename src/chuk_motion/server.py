@@ -16,7 +16,12 @@ from chuk_mcp_server import ChukMCPServer
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
 # Import component auto-discovery system
-from .components import get_component_registry, register_all_builders, register_all_tools
+from .components import (
+    get_component_registry,
+    register_all_builders,
+    register_all_renderers,
+    register_all_tools,
+)
 from .generator.composition_builder import CompositionBuilder
 from .themes.youtube_themes import YOUTUBE_THEMES
 
@@ -39,6 +44,7 @@ project_manager = ProjectManager()
 
 # Register composition builder methods dynamically from components
 register_all_builders(CompositionBuilder)
+register_all_renderers(CompositionBuilder)
 
 # Register theme and token tools with virtual filesystem
 register_theme_tools(mcp, project_manager, vfs)

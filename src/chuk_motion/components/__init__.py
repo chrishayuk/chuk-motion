@@ -164,6 +164,39 @@ def register_all_builders(composition_builder_class):
             )
 
 
+def register_all_renderers(composition_builder_class):
+    """
+    Register all component-specific JSX renderers dynamically.
+
+    Args:
+        composition_builder_class: CompositionBuilder class to register renderers with
+    """
+    components = discover_components()
+    registered_count = 0
+
+    for name, comp_info in components.items():
+        # Try to import the component's renderer module
+        try:
+            directory = comp_info.directory_name
+            if not directory:
+                continue
+
+            module_path = f"chuk_motion.components.{directory}.{name}.renderer"
+            module = importlib.import_module(module_path)
+
+            # Get the render_jsx function
+            render_jsx = getattr(module, "render_jsx", None)
+            if render_jsx:
+                composition_builder_class._component_renderers[name] = render_jsx
+                registered_count += 1
+        except (ImportError, AttributeError):
+            # No renderer for this component - that's okay, not all need custom rendering
+            pass
+
+    if registered_count > 0:
+        print(f"Registered {registered_count} custom component renderers", flush=True)
+
+
 def _camel_to_snake(name: str) -> str:
     """Convert CamelCase to snake_case."""
     import re
@@ -179,4 +212,5 @@ __all__ = [
     "get_component_registry",
     "register_all_tools",
     "register_all_builders",
+    "register_all_renderers",
 ]
