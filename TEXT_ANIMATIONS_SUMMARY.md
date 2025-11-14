@@ -13,7 +13,7 @@
 All text animation components are now located in a dedicated folder for better organization:
 
 ```
-src/chuk_mcp_remotion/components/text-animations/
+src/chuk_motion/components/text-animations/
 ├── TypewriterText/          (NEW)
 ├── StaggerText/             (NEW)
 ├── WavyText/                (NEW)
@@ -34,7 +34,7 @@ src/chuk_mcp_remotion/components/text-animations/
 
 ### 1. TypewriterText
 
-**Location:** `src/chuk_mcp_remotion/components/text-animations/TypewriterText/`
+**Location:** `src/chuk_motion/components/text-animations/TypewriterText/`
 
 **Description:** Classic typewriter animation with cursor. Characters appear one-by-one as if being typed, with optional blinking cursor.
 
@@ -79,7 +79,7 @@ remotion_add_typewriter_text(
 
 ### 2. StaggerText
 
-**Location:** `src/chuk_mcp_remotion/components/text-animations/StaggerText/`
+**Location:** `src/chuk_motion/components/text-animations/StaggerText/`
 
 **Description:** Staggered reveal animation where characters or words appear one-by-one with smooth spring physics for professional appearance.
 
@@ -124,7 +124,7 @@ remotion_add_stagger_text(
 
 ### 3. WavyText
 
-**Location:** `src/chuk_mcp_remotion/components/text-animations/WavyText/`
+**Location:** `src/chuk_motion/components/text-animations/WavyText/`
 
 **Description:** Continuous wave motion animation on characters. Each character oscillates vertically with a phase offset to create a wave effect.
 
@@ -292,12 +292,12 @@ Each component includes:
 - ✅ Metadata (`METADATA.json`) with props and examples
 
 **Locations:**
-- **TypewriterText:** `src/chuk_mcp_remotion/components/text-animations/TypewriterText/`
-- **StaggerText:** `src/chuk_mcp_remotion/components/text-animations/StaggerText/`
-- **WavyText:** `src/chuk_mcp_remotion/components/text-animations/WavyText/`
-- **TrueFocus:** `src/chuk_mcp_remotion/components/text-animations/TrueFocus/`
-- **DecryptedText:** `src/chuk_mcp_remotion/components/text-animations/DecryptedText/`
-- **FuzzyText:** `src/chuk_mcp_remotion/components/text-animations/FuzzyText/`
+- **TypewriterText:** `src/chuk_motion/components/text-animations/TypewriterText/`
+- **StaggerText:** `src/chuk_motion/components/text-animations/StaggerText/`
+- **WavyText:** `src/chuk_motion/components/text-animations/WavyText/`
+- **TrueFocus:** `src/chuk_motion/components/text-animations/TrueFocus/`
+- **DecryptedText:** `src/chuk_motion/components/text-animations/DecryptedText/`
+- **FuzzyText:** `src/chuk_motion/components/text-animations/FuzzyText/`
 - **Demo:** `examples/all_text_animations_demo.py`
 
 ---

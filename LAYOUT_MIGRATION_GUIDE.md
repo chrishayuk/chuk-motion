@@ -27,7 +27,7 @@
 
 ## Layout Component Structure
 
-Each layout needs 5 files in `src/chuk_mcp_remotion/components/layouts/{LayoutName}/`:
+Each layout needs 5 files in `src/chuk_motion/components/layouts/{LayoutName}/`:
 
 ### 1. `schema.py`
 ```python
@@ -95,8 +95,8 @@ def add_to_composition(
 """MCP tool."""
 import asyncio
 import json
-from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
-from chuk_mcp_remotion.models import ErrorResponse, LayoutComponentResponse
+from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 def register_tool(mcp, project_manager):
     """Register the tool with the MCP server."""
@@ -182,7 +182,7 @@ Always use design tokens in templates:
 - **Border radius**: `parseInt('[[ spacing.border_radius.md ]]')` (8px)
 
 ### Component Registration
-After creating a layout, update `src/chuk_mcp_remotion/components/layouts/__init__.py` to export it.
+After creating a layout, update `src/chuk_motion/components/layouts/__init__.py` to export it.
 
 ### Common Props Pattern
 Most layouts share these props:

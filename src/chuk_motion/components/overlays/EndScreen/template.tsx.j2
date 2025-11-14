@@ -1,0 +1,319 @@
+{/* chuk-motion/src/chuk_motion/components/overlays/EndScreen/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, Img, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface EndScreenProps {
+  ctaText: string;
+  thumbnailUrl?: string;
+  variant: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const EndScreen: React.FC<EndScreenProps> = ({
+  ctaText,
+  thumbnailUrl,
+  variant,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Animation: fade in with scale
+  const progress = spring({
+    frame: relativeFrame,
+    fps,
+    config: {
+      damping: [[ motion.default_spring.config.damping ]],
+      mass: [[ motion.default_spring.config.mass ]],
+      stiffness: [[ motion.default_spring.config.stiffness ]]
+    }
+  });
+
+  const opacity = interpolate(progress, [0, 1], [0, 1]);
+  const scale = interpolate(progress, [0, 1], [0.9, 1]);
+
+  // Pulse animation for CTA
+  const pulse = Math.sin((relativeFrame / 30) * Math.PI * 2) * 0.05 + 1;
+
+  // Render based on variant
+  const renderContent = () => {
+    if (variant === 'minimal') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: parseInt('[[ spacing.spacing['2xl'] ]]')
+          }}
+        >
+          <div
+            style={{
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
+            }}
+          >
+            {ctaText}
+          </div>
+          <div
+            style={{
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.primary[0] ]]60`
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    } else if (variant === 'split') {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            gap: parseInt('[[ spacing.spacing['2xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['3xl'] ]]')
+          }}
+        >
+          {/* Left side - CTA */}
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              background: '[[ colors.background.glass ]]',
+              backdropFilter: 'blur([[ spacing.spacing.md ]])',
+              borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+              padding: parseInt('[[ spacing.spacing['3xl'] ]]'),
+              gap: parseInt('[[ spacing.spacing['2xl'] ]]')
+            }}
+          >
+            <div
+              style={{
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+                fontWeight: parseInt('[[ typography.font_weights.black ]]'),
+                color: '[[ colors.text.on_dark ]]',
+                textAlign: 'center',
+                letterSpacing: '[[ typography.letter_spacing.tight ]]'
+              }}
+            >
+              {ctaText}
+            </div>
+            <div
+              style={{
+                padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
+                background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+                borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].base ]]'),
+                fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
+                color: '[[ colors.text.on_dark ]]',
+                transform: `scale(${pulse})`,
+                boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.primary[0] ]]60`
+              }}
+            >
+              SUBSCRIBE
+            </div>
+          </div>
+
+          {/* Right side - Thumbnail */}
+          {thumbnailUrl && (
+            <div
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: '[[ colors.background.glass ]]',
+                backdropFilter: 'blur([[ spacing.spacing.md ]])',
+                borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+                padding: parseInt('[[ spacing.spacing['2xl'] ]]'),
+                gap: parseInt('[[ spacing.spacing.lg ]]')
+              }}
+            >
+              <Img
+                src={thumbnailUrl}
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                  boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.shadow.dark ]]`
+                }}
+              />
+              <div
+                style={{
+                  fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].sm ]]'),
+                  fontWeight: parseInt('[[ typography.font_weights.semibold ]]'),
+                  color: '[[ colors.text.on_dark ]]',
+                  textAlign: 'center'
+                }}
+              >
+                Watch Next
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    } else if (variant === 'carousel') {
+      // Simplified carousel - would need multiple thumbnails for full effect
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: parseInt('[[ spacing.spacing['3xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['3xl'] ]]')
+          }}
+        >
+          <div
+            style={{
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
+            }}
+          >
+            {ctaText}
+          </div>
+          {thumbnailUrl && (
+            <div
+              style={{
+                display: 'flex',
+                gap: parseInt('[[ spacing.spacing['2xl'] ]]'),
+                alignItems: 'center'
+              }}
+            >
+              <Img
+                src={thumbnailUrl}
+                style={{
+                  width: 480,
+                  height: 270,
+                  borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+                  boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.shadow.dark ]]`,
+                  border: `[[ spacing.spacing.xxs ]] solid [[ colors.accent[0] ]]`
+                }}
+              />
+            </div>
+          )}
+          <div
+            style={{
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['3xl'] ]]',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.primary[0] ]]60`
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    } else {
+      // Standard variant
+      return (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: parseInt('[[ spacing.spacing['3xl'] ]]'),
+            padding: parseInt('[[ spacing.spacing['4xl'] ]]')
+          }}
+        >
+          {thumbnailUrl && (
+            <Img
+              src={thumbnailUrl}
+              style={{
+                width: 640,
+                height: 360,
+                borderRadius: 20,
+                boxShadow: `0 [[ spacing.spacing.lg ]] [[ spacing.spacing['5xl'] ]] [[ colors.shadow.medium ]]`,
+                border: `[[ spacing.border_width.thick ]] solid [[ colors.primary[0] ]]`
+              }}
+            />
+          )}
+          <div
+            style={{
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.black ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              textAlign: 'center',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
+            }}
+          >
+            {ctaText}
+          </div>
+          <div
+            style={{
+              padding: '[[ spacing.spacing.lg ]] [[ spacing.spacing['4xl'] ]]',
+              background: `linear-gradient(135deg, [[ colors.primary[0] ]], [[ colors.accent[0] ]])`,
+              borderRadius: parseInt('[[ spacing.border_radius.lg ]]'),
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: parseInt('[[ typography.font_weights.bold ]]'),
+              color: '[[ colors.text.on_dark ]]',
+              transform: `scale(${pulse})`,
+              boxShadow: `0 [[ spacing.spacing.md ]] [[ spacing.spacing['4xl'] ]] [[ colors.primary[0] ]]60`,
+              cursor: 'pointer'
+            }}
+          >
+            SUBSCRIBE
+          </div>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <AbsoluteFill
+      style={{
+        background: '[[ colors.background.dark ]]',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'"
+      }}
+    >
+      <div
+        style={{
+          opacity,
+          transform: `scale(${scale})`,
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+      >
+        {renderContent()}
+      </div>
+    </AbsoluteFill>
+  );
+};

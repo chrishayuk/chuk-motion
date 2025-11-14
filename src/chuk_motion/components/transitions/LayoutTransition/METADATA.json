@@ -1,0 +1,32 @@
+{
+  "name": "LayoutTransition",
+  "category": "transition",
+  "description": "Animated scene-to-scene layout transitions with motion token integration",
+  "version": "1.0.0",
+  "transition_types": {
+    "crossfade": "Smooth opacity blend between layouts",
+    "slide_horizontal": "Slide left/right with ease-out-expo",
+    "slide_vertical": "Slide up/down with ease-out-expo",
+    "cube_rotate": "3D cube rotation effect with perspective",
+    "parallax_push": "Parallax depth effect with scale and offset"
+  },
+  "motion_tokens": {
+    "duration": ["medium", "slow"],
+    "easing": ["ease_out_expo", "ease_in_out_quart", "ease_out_quint"],
+    "used_for": "Scene transitions, layout switches, content reveals"
+  },
+  "use_cases": [
+    "Scene changes in narratives",
+    "Layout switches (Grid → Container → Timeline)",
+    "Before/after showcases",
+    "Chapter transitions",
+    "Multi-part content flow"
+  ],
+  "best_practices": [
+    "Use crossfade for subtle, professional transitions",
+    "Use slide_horizontal for sequential content (chapters, slides)",
+    "Use cube_rotate for dramatic, 3D transitions",
+    "Use parallax_push for depth and layering effects",
+    "Keep transition_duration between 0.5s-1.5s for optimal viewing"
+  ]
+}

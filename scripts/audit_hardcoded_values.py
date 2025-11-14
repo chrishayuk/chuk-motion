@@ -359,7 +359,7 @@ class TemplateAuditor:
 
 def main():
     """Main entry point."""
-    components_dir = Path(__file__).parent.parent / "src" / "chuk_mcp_remotion" / "components"
+    components_dir = Path(__file__).parent.parent / "src" / "chuk_motion" / "components"
 
     if not components_dir.exists():
         print(f"❌ Components directory not found: {components_dir}")

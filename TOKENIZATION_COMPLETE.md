@@ -2,7 +2,7 @@
 
 ## Summary
 
-All 28 component templates in the chuk-mcp-remotion design system have been successfully migrated from hardcoded values to design tokens. The system is now 100% theme-aware and production-ready.
+All 28 component templates in the chuk-motion design system have been successfully migrated from hardcoded values to design tokens. The system is now 100% theme-aware and production-ready.
 
 ## What Was Changed
 
@@ -157,13 +157,13 @@ PYTHONPATH=src python3 examples/theme_switching_demo.py
 ### Verify Tokenization
 ```bash
 # Check for hardcoded rgba (should be 0)
-grep -r "rgba(" src/chuk_mcp_remotion/components --include="*.tsx.j2" | grep -v "\[\[" | wc -l
+grep -r "rgba(" src/chuk_motion/components --include="*.tsx.j2" | grep -v "\[\[" | wc -l
 
 # Check for hardcoded window buttons (should be 0)
-grep -rE "#FF5F56|#FFBD2E|#27C93F" src/chuk_mcp_remotion/components --include="*.tsx.j2" | grep -v "\[\[" | wc -l
+grep -rE "#FF5F56|#FFBD2E|#27C93F" src/chuk_motion/components --include="*.tsx.j2" | grep -v "\[\[" | wc -l
 
 # Check for hardcoded fonts (should be 0, excluding monospace)
-grep -rE "'Inter'|'SF Pro'" src/chuk_mcp_remotion/components --include="*.tsx.j2" | grep -v "\[\[" | grep -v "monospace" | wc -l
+grep -rE "'Inter'|'SF Pro'" src/chuk_motion/components --include="*.tsx.j2" | grep -v "\[\[" | grep -v "monospace" | wc -l
 ```
 
 All checks return `0` ✅
@@ -195,7 +195,7 @@ theme = YOUTUBE_THEMES.themes['finance']
 
 ## Next Steps
 
-1. **Ensure token definitions exist** in `src/chuk_mcp_remotion/tokens/colors.py`
+1. **Ensure token definitions exist** in `src/chuk_motion/tokens/colors.py`
 2. **Add missing tokens** if any new keys don't exist yet
 3. **Test theme switching** with actual component renders
 4. **Document token usage** for component developers

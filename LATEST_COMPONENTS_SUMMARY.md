@@ -10,7 +10,7 @@
 
 ### 1. DecryptedText (Text Animation)
 
-**Location:** `src/chuk_mcp_remotion/components/overlays/DecryptedText/`
+**Location:** `src/chuk_motion/components/overlays/DecryptedText/`
 
 **Description:** Animated text reveal with character scrambling effect. Characters progressively decrypt from random characters to the final text with configurable reveal direction.
 
@@ -55,7 +55,7 @@ remotion_add_decrypted_text(
 
 ### 2. FuzzyText (Text Animation)
 
-**Location:** `src/chuk_mcp_remotion/components/overlays/FuzzyText/`
+**Location:** `src/chuk_motion/components/overlays/FuzzyText/`
 
 **Description:** Animated text with scanline distortion and glitch effects. Creates a fuzzy, VHS-style aesthetic with horizontal displacement and RGB split for a glitchy look.
 
@@ -212,7 +212,7 @@ All new components are **100% design token compliant** with zero hardcoded value
 
 ### DecryptedText
 ```
-src/chuk_mcp_remotion/components/overlays/DecryptedText/
+src/chuk_motion/components/overlays/DecryptedText/
 ├── template.tsx.j2
 ├── tool.py
 └── METADATA.json
@@ -220,7 +220,7 @@ src/chuk_mcp_remotion/components/overlays/DecryptedText/
 
 ### FuzzyText
 ```
-src/chuk_mcp_remotion/components/overlays/FuzzyText/
+src/chuk_motion/components/overlays/FuzzyText/
 ├── template.tsx.j2
 ├── tool.py
 └── METADATA.json
@@ -234,10 +234,10 @@ examples/
 
 ### System Updates
 ```
-src/chuk_mcp_remotion/generator/
+src/chuk_motion/generator/
 └── composition_builder.py (PixelTransition handling)
 
-src/chuk_mcp_remotion/utils/
+src/chuk_motion/utils/
 └── project_manager.py (nested content support)
 ```
 
@@ -300,8 +300,8 @@ remotion_add_fuzzy_text(
 
 ## 📝 Documentation
 
-- **DecryptedText:** `src/chuk_mcp_remotion/components/overlays/DecryptedText/METADATA.json`
-- **FuzzyText:** `src/chuk_mcp_remotion/components/overlays/FuzzyText/METADATA.json`
+- **DecryptedText:** `src/chuk_motion/components/overlays/DecryptedText/METADATA.json`
+- **FuzzyText:** `src/chuk_motion/components/overlays/FuzzyText/METADATA.json`
 - **Demo:** `examples/text_animations_demo.py`
 
 ---

@@ -4,7 +4,7 @@ The Remotion MCP Server provides comprehensive project management tools for crea
 
 ## Overview
 
-Project management in chuk-mcp-remotion handles:
+Project management in chuk-motion handles:
 - Creating new Remotion projects
 - Managing project structure and configuration
 - Organizing components and compositions

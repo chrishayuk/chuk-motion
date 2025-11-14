@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "chuk-mcp-remotion"
+name = "chuk-motion"
 version = "0.1.0"
 description = "Remotion MCP Server - A design-system-first approach to AI-powered video generation"
 readme = "README.md"
@@ -31,7 +31,7 @@ dev = [
 ]
 
 [project.scripts]
-chuk-mcp-remotion = "chuk_mcp_remotion.server:main"
+chuk-motion = "chuk_motion.server:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -39,11 +39,11 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["chuk_mcp_remotion*"]
+include = ["chuk_motion*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-chuk_mcp_remotion = [
+chuk_motion = [
     "py.typed",
     "*.json",
     "*.yaml",
@@ -99,7 +99,7 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.ruff.lint.isort]
-known-first-party = ["chuk_mcp_remotion"]
+known-first-party = ["chuk_motion"]
 
 # MyPy configuration
 [tool.mypy]
@@ -108,7 +108,7 @@ strict = false
 ignore_missing_imports = true
 warn_return_any = false
 warn_unused_configs = true
-files = ["src/chuk_mcp_remotion"]
+files = ["src/chuk_motion"]
 exclude = ["tests/", "examples/"]
 
 # Coverage configuration

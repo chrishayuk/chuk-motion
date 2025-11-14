@@ -27,8 +27,8 @@ class TestCodeDiffBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.code.CodeDiff.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, start_time=0.0, duration=5.0)
@@ -39,8 +39,8 @@ class TestCodeDiffBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.code.CodeDiff.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -79,8 +79,8 @@ class TestCodeDiffBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.code.CodeDiff.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.code.CodeDiff.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, start_time=2.0, duration=5.0)
@@ -97,7 +97,7 @@ class TestCodeDiffToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -111,7 +111,7 @@ class TestCodeDiffToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -125,27 +125,30 @@ class TestCodeDiffToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        lines = json.dumps([{"type": "add", "content": "new line"}])
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            lines=lines,
-            mode="unified",
-            language="typescript",
-            showLineNumbers=True,
-            showHeatmap=False,
-            title="Code Comparison",
-            leftLabel="Before",
-            rightLabel="After",
-            theme="dark",
-            width=1400,
-            height=800,
-            position="center",
-            animateLines=True
-        ))
+        lines = json.dumps([{"type": "added", "content": "new line"}])
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                lines=lines,
+                mode="unified",
+                language="typescript",
+                showLineNumbers=True,
+                showHeatmap=False,
+                title="Code Comparison",
+                leftLabel="Before",
+                rightLabel="After",
+                theme="dark",
+                width=1400,
+                height=800,
+                position="center",
+                animateLines=True,
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check Pydantic response structure
@@ -163,7 +166,7 @@ class TestCodeDiffToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -176,26 +179,29 @@ class TestCodeDiffToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Test with invalid JSON - should handle gracefully
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            lines="invalid json",  # Invalid JSON
-            mode="unified",
-            language="typescript",
-            showLineNumbers=True,
-            showHeatmap=False,
-            title="Code Comparison",
-            leftLabel="Before",
-            rightLabel="After",
-            theme="dark",
-            width=1400,
-            height=800,
-            position="center",
-            animateLines=True
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                lines="invalid json",  # Invalid JSON
+                mode="unified",
+                language="typescript",
+                showLineNumbers=True,
+                showHeatmap=False,
+                title="Code Comparison",
+                leftLabel="Before",
+                rightLabel="After",
+                theme="dark",
+                width=1400,
+                height=800,
+                position="center",
+                animateLines=True,
+            )
+        )
 
         # Should not crash, should handle gracefully and return success (invalid JSON becomes empty array)
         import json
+
         assert result is not None
         response = json.loads(result)
         assert response["component"] == "CodeDiff"
@@ -206,8 +212,8 @@ class TestCodeDiffToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
-        from chuk_mcp_remotion.utils.project_manager import ProjectManager
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)
@@ -219,13 +225,10 @@ class TestCodeDiffToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                lines="[]"
-            ))
+            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150, lines="[]"))
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 
@@ -234,7 +237,7 @@ class TestCodeDiffToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()
@@ -246,11 +249,7 @@ class TestCodeDiffToolRegistration:
 
         # The error should propagate
         try:
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                lines="[]"
-            ))
+            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150, lines="[]"))
             # If we get here, check for error in result
             if result:
                 assert "error" in result.lower() or "Test error" in result

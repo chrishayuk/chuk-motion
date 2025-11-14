@@ -1,0 +1,378 @@
+{/* chuk-motion/src/chuk_motion/components/transitions/LayoutTransition/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing } from 'remotion';
+
+interface LayoutTransitionProps {
+  firstContent: React.ReactNode;
+  secondContent: React.ReactNode;
+  transitionType?: string;
+  transitionStart?: number;
+  transitionDuration?: number;
+  startFrame?: number;
+  durationInFrames?: number;
+}
+
+export const LayoutTransition: React.FC<LayoutTransitionProps> = ({
+  firstContent,
+  secondContent,
+  transitionType = 'crossfade',
+  transitionStart = 60, // 2 seconds at 30fps
+  transitionDuration = 30, // 1 second at 30fps
+  startFrame = 0,
+  durationInFrames = 150,
+}) => {
+  const frame = useCurrentFrame();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside time range
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  // Motion tokens - token-first approach
+  const DURATION_MEDIUM = [[ motion.duration.medium.frames_30fps ]];
+  const DURATION_SLOW = [[ motion.duration.slow.frames_30fps ]];
+
+  // Easing curves from tokens
+  const easeOutExpo = [[ motion.easing.ease_out_expo.curve ]];
+  const easeInOutQuart = [[ motion.easing.ease_in_out_quart.curve ]];
+  const easeOutQuint = [[ motion.easing.ease_out_quint.curve ]];
+
+  // Calculate transition phase
+  const transitionEnd = transitionStart + transitionDuration;
+  const transitionMid = transitionStart + transitionDuration / 2;
+
+  // Determine which content to show
+  const showSecond = relativeFrame >= transitionMid;
+
+  // Helper function to create custom easing
+  const createEasing = (curve: number[]): Easing.EasingFunction => {
+    return Easing.bezier(curve[0], curve[1], curve[2], curve[3]);
+  };
+
+  // ============================================================================
+  // CROSSFADE TRANSITION
+  // ============================================================================
+  if (transitionType === 'crossfade') {
+    const firstOpacity = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [1, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutQuint),
+      }
+    );
+
+    const secondOpacity = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutQuint),
+      }
+    );
+
+    return (
+      <AbsoluteFill>
+        <AbsoluteFill style={{ opacity: firstOpacity, pointerEvents: 'none' }}>
+          {firstContent}
+        </AbsoluteFill>
+        <AbsoluteFill style={{ opacity: secondOpacity, pointerEvents: 'none' }}>
+          {secondContent}
+        </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SLIDE HORIZONTAL TRANSITION
+  // ============================================================================
+  if (transitionType === 'slide_horizontal') {
+    const firstTranslateX = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, -100],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const secondTranslateX = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [100, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateX(${firstTranslateX}%)`,
+            pointerEvents: 'none',
+          }}
+        >
+          {firstContent}
+        </AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateX(${secondTranslateX}%)`,
+            pointerEvents: 'none',
+          }}
+        >
+          {secondContent}
+        </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SLIDE VERTICAL TRANSITION
+  // ============================================================================
+  if (transitionType === 'slide_vertical') {
+    const firstTranslateY = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, -100],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const secondTranslateY = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [100, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateY(${firstTranslateY}%)`,
+            pointerEvents: 'none',
+          }}
+        >
+          {firstContent}
+        </AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateY(${secondTranslateY}%)`,
+            pointerEvents: 'none',
+          }}
+        >
+          {secondContent}
+        </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // CUBE ROTATE TRANSITION (3D)
+  // ============================================================================
+  if (transitionType === 'cube_rotate') {
+    const rotateY = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, 90],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeInOutQuart),
+      }
+    );
+
+    const firstOpacity = interpolate(
+      relativeFrame,
+      [transitionStart, transitionMid],
+      [1, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }
+    );
+
+    const secondOpacity = interpolate(
+      relativeFrame,
+      [transitionMid, transitionEnd],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }
+    );
+
+    const secondRotateY = interpolate(
+      relativeFrame,
+      [transitionMid, transitionEnd],
+      [-90, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeInOutQuart),
+      }
+    );
+
+    return (
+      <AbsoluteFill style={{ perspective: 1000 }}>
+        {!showSecond && (
+          <AbsoluteFill
+            style={{
+              opacity: firstOpacity,
+              transform: `rotateY(${rotateY}deg)`,
+              transformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden',
+              pointerEvents: 'none',
+            }}
+          >
+            {firstContent}
+          </AbsoluteFill>
+        )}
+        {showSecond && (
+          <AbsoluteFill
+            style={{
+              opacity: secondOpacity,
+              transform: `rotateY(${secondRotateY}deg)`,
+              transformStyle: 'preserve-3d',
+              backfaceVisibility: 'hidden',
+              pointerEvents: 'none',
+            }}
+          >
+            {secondContent}
+          </AbsoluteFill>
+        )}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // PARALLAX PUSH TRANSITION
+  // ============================================================================
+  if (transitionType === 'parallax_push') {
+    // First content moves slower (background)
+    const firstTranslateX = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, -30],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const firstScale = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [1, 0.95],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }
+    );
+
+    const firstOpacity = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [1, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }
+    );
+
+    // Second content moves faster (foreground)
+    const secondTranslateX = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [100, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const secondOpacity = interpolate(
+      relativeFrame,
+      [transitionStart, transitionEnd],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      }
+    );
+
+    return (
+      <AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateX(${firstTranslateX}%) scale(${firstScale})`,
+            opacity: firstOpacity,
+            pointerEvents: 'none',
+          }}
+        >
+          {firstContent}
+        </AbsoluteFill>
+        <AbsoluteFill
+          style={{
+            transform: `translateX(${secondTranslateX}%)`,
+            opacity: secondOpacity,
+            pointerEvents: 'none',
+          }}
+        >
+          {secondContent}
+        </AbsoluteFill>
+      </AbsoluteFill>
+    );
+  }
+
+  // Fallback to crossfade if unknown type
+  const firstOpacity = interpolate(
+    relativeFrame,
+    [transitionStart, transitionEnd],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  );
+
+  const secondOpacity = interpolate(
+    relativeFrame,
+    [transitionStart, transitionEnd],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  );
+
+  return (
+    <AbsoluteFill>
+      <AbsoluteFill style={{ opacity: firstOpacity, pointerEvents: 'none' }}>
+        {firstContent}
+      </AbsoluteFill>
+      <AbsoluteFill style={{ opacity: secondOpacity, pointerEvents: 'none' }}>
+        {secondContent}
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};

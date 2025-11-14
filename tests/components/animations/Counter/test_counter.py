@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/src/chuk_mcp_remotion/components/animations/Counter/test_counter.py
+# chuk-motion/src/chuk_motion/components/animations/Counter/test_counter.py
 """
 Tests for Counter template generation.
 """
@@ -38,8 +38,8 @@ class TestCounterBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.animations.Counter.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.animations.Counter.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, end_value=100.0, start_time=0.0)
@@ -51,8 +51,8 @@ class TestCounterBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.animations.Counter.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.animations.Counter.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -79,8 +79,8 @@ class TestCounterBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.animations.Counter.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.animations.Counter.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, end_value=100.0, start_time=2.0, duration=5.0)
@@ -97,7 +97,7 @@ class TestCounterToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.animations.Counter.tool import register_tool
+        from chuk_motion.components.animations.Counter.tool import register_tool
 
         mcp = Mock()
         project_manager = Mock()
@@ -113,8 +113,8 @@ class TestCounterToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.animations.Counter.tool import register_tool
-        from chuk_mcp_remotion.generator.timeline import Timeline
+        from chuk_motion.components.animations.Counter.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()
@@ -137,7 +137,7 @@ class TestCounterToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.animations.Counter.tool import register_tool
+        from chuk_motion.components.animations.Counter.tool import register_tool
 
         mcp = Mock()
         project_manager = Mock()
@@ -158,8 +158,8 @@ class TestCounterToolRegistration:
         import json
         from unittest.mock import Mock, patch
 
-        from chuk_mcp_remotion.components.animations.Counter.tool import register_tool
-        from chuk_mcp_remotion.generator.timeline import Timeline
+        from chuk_motion.components.animations.Counter.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         mcp = Mock()
         project_manager = Mock()

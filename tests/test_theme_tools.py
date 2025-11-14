@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/test_theme_tools.py
+# chuk-motion/tests/test_theme_tools.py
 """
 Tests for theme MCP tools.
 """
@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from chuk_mcp_remotion.tools.theme_tools import register_theme_tools
+from chuk_motion.tools.theme_tools import register_theme_tools
 
 
 @pytest.mark.asyncio

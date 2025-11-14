@@ -10,7 +10,7 @@
 
 ### 1. TrueFocus (Text Animation)
 
-**Location:** `src/chuk_mcp_remotion/components/overlays/TrueFocus/`
+**Location:** `src/chuk_motion/components/overlays/TrueFocus/`
 
 **Description:** Dramatic text animation with word-by-word focus cycling. Blurs inactive words while highlighting the focused word with animated corner brackets and glow effect.
 
@@ -59,7 +59,7 @@ remotion_add_true_focus(
 
 ### 2. PixelTransition (Transition Effect)
 
-**Location:** `src/chuk_mcp_remotion/components/transitions/PixelTransition/`
+**Location:** `src/chuk_motion/components/transitions/PixelTransition/`
 
 **Description:** Pixelated dissolve transition between two pieces of content. Pixels animate in with random stagger to cover first content, then animate out to reveal second content.
 
@@ -206,7 +206,7 @@ Both new components are **100% design token compliant** with zero hardcoded valu
 
 ### TrueFocus
 ```
-src/chuk_mcp_remotion/components/overlays/TrueFocus/
+src/chuk_motion/components/overlays/TrueFocus/
 ├── template.tsx.j2
 ├── tool.py
 ├── METADATA.json
@@ -218,7 +218,7 @@ examples/
 
 ### PixelTransition
 ```
-src/chuk_mcp_remotion/components/transitions/PixelTransition/
+src/chuk_motion/components/transitions/PixelTransition/
 ├── template.tsx.j2
 ├── tool.py
 └── METADATA.json
@@ -229,7 +229,7 @@ examples/
 
 ### System Updates
 ```
-src/chuk_mcp_remotion/generator/
+src/chuk_motion/generator/
 └── component_builder.py (added "transitions" category)
 ```
 
@@ -292,7 +292,7 @@ remotion_add_pixel_transition(
 
 ## 📝 Documentation
 
-- **TrueFocus:** `src/chuk_mcp_remotion/components/overlays/TrueFocus/README.md`
+- **TrueFocus:** `src/chuk_motion/components/overlays/TrueFocus/README.md`
 - **Design Guidelines:** `DESIGN_TOKEN_GUIDELINES.md`
 - **Audit Summary:** `AUDIT_SUMMARY.md`
 

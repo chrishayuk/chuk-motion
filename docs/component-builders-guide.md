@@ -1,6 +1,6 @@
 # Component Builder's Guide
 
-A comprehensive guide for creating new components in the chuk-mcp-remotion system.
+A comprehensive guide for creating new components in the chuk-motion system.
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ Components are organized into categories:
 ## Component Architecture
 
 ```
-src/chuk_mcp_remotion/components/
+src/chuk_motion/components/
 └── [category]/
     └── [ComponentName]/
         ├── __init__.py          # Component registration
@@ -168,7 +168,7 @@ def register_tool(mcp, project_manager):
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+    from chuk_motion.generator.composition_builder import CompositionBuilder
 
 def add_to_composition(
     builder: "CompositionBuilder",
@@ -195,7 +195,7 @@ def add_to_composition(
     Returns:
         The builder instance for method chaining
     """
-    from chuk_mcp_remotion.generator.composition_builder import ComponentInstance
+    from chuk_motion.generator.composition_builder import ComponentInstance
 
     # Convert time to frames
     start_frame = builder.seconds_to_frames(start_time)
@@ -652,7 +652,7 @@ COMPONENT="CallToAction"
 ### 2. Create Directory Structure
 
 ```bash
-mkdir -p src/chuk_mcp_remotion/components/$CATEGORY/$COMPONENT
+mkdir -p src/chuk_motion/components/$CATEGORY/$COMPONENT
 ```
 
 ### 3. Create `__init__.py`
@@ -686,7 +686,7 @@ Create the React/Remotion component template.
 If adding a new category, update:
 
 ```python
-# src/chuk_mcp_remotion/generator/component_builder.py
+# src/chuk_motion/generator/component_builder.py
 self.template_categories = [
     "charts",
     "overlays",
@@ -705,8 +705,8 @@ Create a test example:
 
 ```python
 # examples/test_my_component.py
-from chuk_mcp_remotion.utils.project_manager import ProjectManager
-from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+from chuk_motion.utils.project_manager import ProjectManager
+from chuk_motion.generator.composition_builder import CompositionBuilder
 
 manager = ProjectManager()
 project = manager.create_project("test_component", theme="tech")
@@ -843,16 +843,16 @@ const parsed = typeof prop === 'string' ? JSON.parse(prop) : prop;
 ## Reference Examples
 
 ### Simple Component
-See: `src/chuk_mcp_remotion/components/overlays/TextOverlay/`
+See: `src/chuk_motion/components/overlays/TextOverlay/`
 
 ### Complex Component with JSON Props
-See: `src/chuk_mcp_remotion/components/demo_realism/BrowserFrame/`
+See: `src/chuk_motion/components/demo_realism/BrowserFrame/`
 
 ### Layout Component with Children
-See: `src/chuk_mcp_remotion/components/layouts/Grid/`
+See: `src/chuk_motion/components/layouts/Grid/`
 
 ### Chart Component
-See: `src/chuk_mcp_remotion/components/charts/LineChart/`
+See: `src/chuk_motion/components/charts/LineChart/`
 
 ---
 
@@ -885,7 +885,7 @@ Builder Return:       return builder
 ## Additional Resources
 
 - [Token System Documentation](./token-system.md)
-- [Theme System](../src/chuk_mcp_remotion/themes/youtube_themes.py)
+- [Theme System](../src/chuk_motion/themes/youtube_themes.py)
 - [Remotion Documentation](https://www.remotion.dev/docs)
 - [Pydantic Documentation](https://docs.pydantic.dev/)
 

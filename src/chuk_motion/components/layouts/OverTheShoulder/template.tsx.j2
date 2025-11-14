@@ -1,0 +1,87 @@
+{/* chuk-motion/src/chuk_motion/components/layouts/OverTheShoulder/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface OverTheShoulderProps {
+  screen_content?: React.ReactNode;
+  shoulder_overlay?: React.ReactNode;
+  startFrame: number;
+  durationInFrames: number;
+  overlay_position?: string;
+  overlay_size?: number;
+  padding?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const OverTheShoulder: React.FC<OverTheShoulderProps> = ({
+  screen_content,
+  shoulder_overlay,
+  startFrame,
+  durationInFrames,
+  overlay_position = 'bottom-left',
+  overlay_size = 30,
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  border_width = parseInt('[[ spacing.border_width.medium ]]'),
+  border_color = '[[ colors.border.medium ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const getOverlayStyle = () => {
+    const baseStyle = {
+      position: 'absolute' as const,
+      width: `${overlay_size}%`,
+      aspectRatio: '9/16',
+      display: 'flex',
+      overflow: 'hidden',
+      border: `${border_width}px solid ${border_color}`,
+      borderRadius: border_radius,
+      zIndex: 10,
+    };
+
+    switch (overlay_position) {
+      case 'bottom-left':
+        return { ...baseStyle, bottom: padding, left: padding };
+      case 'bottom-right':
+        return { ...baseStyle, bottom: padding, right: padding };
+      case 'top-left':
+        return { ...baseStyle, top: padding, left: padding };
+      case 'top-right':
+        return { ...baseStyle, top: padding, right: padding };
+      default:
+        return { ...baseStyle, bottom: padding, left: padding };
+    }
+  };
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {/* Screen content */}
+      {screen_content && (
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          display: 'flex',
+          overflow: 'hidden',
+        }}>
+          {screen_content}
+        </div>
+      )}
+
+      {/* Shoulder overlay */}
+      {shoulder_overlay && (
+        <div style={getOverlayStyle()}>
+          {shoulder_overlay}
+        </div>
+      )}
+    </AbsoluteFill>
+  );
+};

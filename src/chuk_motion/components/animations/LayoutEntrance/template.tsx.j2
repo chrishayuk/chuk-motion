@@ -1,0 +1,359 @@
+{/* chuk-motion/src/chuk_motion/components/animations/LayoutEntrance/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame, interpolate, Easing, spring, useVideoConfig } from 'remotion';
+
+interface LayoutEntranceProps {
+  children: React.ReactNode;
+  entranceType?: string;
+  entranceDelay?: number;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const LayoutEntrance: React.FC<LayoutEntranceProps> = ({
+  children,
+  entranceType = 'fade_in',
+  entranceDelay = 0,
+  startFrame,
+  durationInFrames,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  // If durationInFrames is 0, this is a nested component and should always render
+  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+    return null;
+  }
+
+  // Motion tokens - token-first approach
+  const DURATION_NORMAL = [[ motion.duration.normal.frames_30fps ]];
+  const DURATION_MEDIUM = [[ motion.duration.medium.frames_30fps ]];
+  const DURATION_SLOW = [[ motion.duration.slow.frames_30fps ]];
+
+  // Easing from tokens
+  const easeOut = [[ motion.easing.ease_out.curve ]];
+  const easeOutExpo = [[ motion.easing.ease_out_expo.curve ]];
+  const easeOutBack = [[ motion.easing.ease_out_back.curve ]];
+
+  // Spring configs from tokens
+  const smoothSpring = {
+    damping: [[ motion.default_spring.config.damping ]],
+    mass: [[ motion.default_spring.config.mass ]],
+    stiffness: [[ motion.default_spring.config.stiffness ]],
+  };
+
+  // Convert entrance delay from seconds to frames
+  const delayFrames = Math.round(entranceDelay * 30);
+  const animationStartFrame = delayFrames;
+
+  // Helper function to create custom easing
+  const createEasing = (curve: number[]): Easing.EasingFunction => {
+    return Easing.bezier(curve[0], curve[1], curve[2], curve[3]);
+  };
+
+  // No animation - instant
+  if (entranceType === 'none') {
+    return <AbsoluteFill style={{ pointerEvents: 'none' }}>{children}</AbsoluteFill>;
+  }
+
+  // ============================================================================
+  // FADE IN
+  // ============================================================================
+  if (entranceType === 'fade_in') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_NORMAL],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOut),
+      }
+    );
+
+    return (
+      <AbsoluteFill style={{ opacity, pointerEvents: 'none' }}>
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // FADE SLIDE UP
+  // ============================================================================
+  if (entranceType === 'fade_slide_up') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const translateY = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [30, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `translateY(${translateY}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SCALE IN SOFT (subtle 0.95 → 1.0)
+  // ============================================================================
+  if (entranceType === 'scale_in_soft') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOut),
+      }
+    );
+
+    const scale = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0.95, 1.0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOut),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `scale(${scale})`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SCALE IN POP (0.9 → 1.05 → 1.0 with spring)
+  // ============================================================================
+  if (entranceType === 'scale_in_pop') {
+    const progress = spring({
+      frame: Math.max(0, relativeFrame - animationStartFrame),
+      fps,
+      config: smoothSpring,
+    });
+
+    const opacity = interpolate(progress, [0, 1], [0, 1]);
+    const scale = interpolate(progress, [0, 1], [0.9, 1.0]);
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `scale(${scale})`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SLIDE IN LEFT
+  // ============================================================================
+  if (entranceType === 'slide_in_left') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const translateX = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [-100, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `translateX(${translateX}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // SLIDE IN RIGHT
+  // ============================================================================
+  if (entranceType === 'slide_in_right') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const translateX = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [100, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `translateX(${translateX}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // BLUR IN
+  // ============================================================================
+  if (entranceType === 'blur_in') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_SLOW],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOut),
+      }
+    );
+
+    const blur = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_SLOW],
+      [20, 0],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOut),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          filter: `blur(${blur}px)`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // ============================================================================
+  // ZOOM IN
+  // ============================================================================
+  if (entranceType === 'zoom_in') {
+    const opacity = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    const scale = interpolate(
+      relativeFrame,
+      [animationStartFrame, animationStartFrame + DURATION_MEDIUM],
+      [0, 1],
+      {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+        easing: createEasing(easeOutExpo),
+      }
+    );
+
+    return (
+      <AbsoluteFill
+        style={{
+          opacity,
+          transform: `scale(${scale})`,
+          pointerEvents: 'none',
+        }}
+      >
+        {children}
+      </AbsoluteFill>
+    );
+  }
+
+  // Fallback to fade_in
+  const opacity = interpolate(
+    relativeFrame,
+    [animationStartFrame, animationStartFrame + DURATION_NORMAL],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    }
+  );
+
+  return (
+    <AbsoluteFill style={{ opacity, pointerEvents: 'none' }}>
+      {children}
+    </AbsoluteFill>
+  );
+};

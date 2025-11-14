@@ -6,7 +6,7 @@ Comprehensive tests for caption style system.
 import pytest
 from pydantic import ValidationError
 
-from chuk_mcp_remotion.tokens.captions import (
+from chuk_motion.tokens.captions import (
     CAPTION_STYLES,
     AnimationConfig,
     BackgroundConfig,

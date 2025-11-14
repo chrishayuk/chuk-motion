@@ -1,0 +1,298 @@
+{/* chuk-motion/src/chuk_motion/components/charts/HorizontalBarChart/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+
+interface DataPoint {
+  label: string;
+  value: number;
+  color?: string;
+}
+
+interface HorizontalBarChartProps {
+  data?: Array<{ label: string; value: number; color?: string }>;
+  title?: string;
+  xlabel?: string;
+  ylabel?: string;
+  startFrame: number;
+  durationInFrames: number;
+}
+
+export const HorizontalBarChart: React.FC<HorizontalBarChartProps> = ({
+  data = [],
+  title,
+  xlabel,
+  ylabel,
+  startFrame,
+  durationInFrames
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const relativeFrame = frame - startFrame;
+
+  // Don't render if outside the time range
+  if (durationInFrames > 0 && (frame < startFrame || frame >= startFrame + durationInFrames)) {
+    return null;
+  }
+
+  if (data.length === 0) {
+    return null;
+  }
+
+  // Calculate bounds
+  const values = data.map(d => d.value);
+  const maxValue = Math.max(...values);
+
+  // Chart dimensions
+  const chartWidth = 1000;
+  const chartHeight = Math.max(400, data.length * parseInt('[[ spacing.spacing['4xl'] ]]'));
+  const paddingLeft = 200;
+  const paddingRight = parseInt('[[ spacing.spacing['4xl'] ]]');
+  const paddingTop = parseInt('[[ spacing.spacing['3xl'] ]]');
+  const paddingBottom = parseInt('[[ spacing.spacing['3xl'] ]]');
+  const barHeight = (chartHeight - paddingTop - paddingBottom) / data.length * 0.7;
+  const barSpacing = (chartHeight - paddingTop - paddingBottom) / data.length;
+
+  // Entrance animation
+  const entranceProgress = spring({
+    frame: relativeFrame,
+    fps,
+    config: { damping: 200, mass: 0.5, stiffness: 200 }
+  });
+
+  // Exit animation
+  const exitDuration = 20;
+  const exitProgress = interpolate(
+    relativeFrame,
+    [durationInFrames - exitDuration, durationInFrames],
+    [1, 0],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp'
+    }
+  );
+
+  const opacity = entranceProgress * exitProgress;
+  const scale = interpolate(entranceProgress, [0, 1], [0.9, 1], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  const titleTranslateY = interpolate(entranceProgress, [0, 1], [-30, 0], {
+    extrapolateLeft: 'clamp',
+    extrapolateRight: 'clamp'
+  });
+
+  // Default colors with gradients
+  const defaultColors = [
+    '[[ colors.primary[2] ]]', '[[ colors.primary[3] ]]', '[[ colors.accent[2] ]]', '[[ colors.accent[3] ]]',
+    '[[ colors.primary[4] ]]', '[[ colors.accent[4] ]]', '[[ colors.primary[5] ]]', '[[ colors.accent[5] ]]'
+  ];
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          opacity,
+          fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
+          filter: 'drop-shadow(0 20px 40px [[ colors.background.dark ]])'
+        }}
+      >
+        {title && (
+          <h3
+            style={{
+              fontSize: parseInt('[[ typography.font_sizes[typography.default_resolution].lg ]]'),
+              fontWeight: '[[ typography.font_weights.bold ]]',
+              color: '[[ colors.text.on_dark ]]',
+              marginBottom: parseInt('[[ spacing.spacing.xl ]]'),
+              textAlign: 'center',
+              transform: `translateY(${titleTranslateY}px)`,
+              textShadow: '0 [[ spacing.border_width.medium ]] [[ spacing.spacing.lg ]]px [[ colors.primary[0] ]]80',
+              letterSpacing: '[[ typography.letter_spacing.tight ]]'
+            }}
+          >
+            {title}
+          </h3>
+        )}
+
+        <svg
+          width={chartWidth}
+          height={chartHeight}
+          style={{
+            borderRadius: parseInt('[[ spacing.border_radius.xl ]]'),
+            padding: parseInt('[[ spacing.spacing.lg ]]'),
+            overflow: 'visible'
+          }}
+        >
+          <defs>
+            <linearGradient id="bgGradientH" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="[[ colors.background.dark ]]" />
+              <stop offset="100%" stopColor="[[ colors.background.darker ]]" />
+            </linearGradient>
+            {data.map((item, idx) => {
+              const color = item.color || defaultColors[idx % defaultColors.length];
+              return (
+                <linearGradient key={idx} id={`barGradient${idx}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor={color} stopOpacity="0.9" />
+                  <stop offset="100%" stopColor={color} stopOpacity="1" />
+                </linearGradient>
+              );
+            })}
+            <filter id="glowH">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Background */}
+          <rect
+            x="0"
+            y="0"
+            width={chartWidth}
+            height={chartHeight}
+            fill="url(#bgGradientH)"
+            rx="[[ spacing.border_radius.xl ]]"
+          />
+
+          {/* Grid lines */}
+          <g stroke="[[ colors.border.light ]]" strokeWidth="[[ spacing.border_width.thin ]]">
+            {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+              const x = paddingLeft + ratio * (chartWidth - paddingLeft - paddingRight);
+              return (
+                <line
+                  key={`grid-${ratio}`}
+                  x1={x}
+                  y1={paddingTop}
+                  x2={x}
+                  y2={chartHeight - paddingBottom}
+                />
+              );
+            })}
+          </g>
+
+          {/* Axes */}
+          <g stroke="[[ colors.border.medium ]]" strokeWidth="[[ spacing.border_width.medium ]]">
+            <line
+              x1={paddingLeft}
+              y1={paddingTop}
+              x2={paddingLeft}
+              y2={chartHeight - paddingBottom}
+            />
+            <line
+              x1={paddingLeft}
+              y1={chartHeight - paddingBottom}
+              x2={chartWidth - paddingRight}
+              y2={chartHeight - paddingBottom}
+            />
+          </g>
+
+          {/* Bars */}
+          {data.map((item, idx) => {
+            const barDelay = idx * 5;
+            const barProgress = spring({
+              frame: Math.max(0, relativeFrame - barDelay),
+              fps,
+              config: { damping: 150, mass: 0.5, stiffness: 200 }
+            });
+
+            const y = paddingTop + idx * barSpacing + (barSpacing - barHeight) / 2;
+            const barWidth = (item.value / maxValue) * (chartWidth - paddingLeft - paddingRight);
+            const animatedWidth = barWidth * barProgress;
+            const x = paddingLeft;
+
+            // Ranking number (1, 2, 3, etc.)
+            const rank = idx + 1;
+
+            return (
+              <g key={idx}>
+                {/* Rank badge */}
+                <circle
+                  cx={paddingLeft - 140}
+                  cy={y + barHeight / 2}
+                  r="[[ spacing.spacing.lg ]]"
+                  fill={rank === 1 ? '[[ colors.primary[2] ]]' : rank === 2 ? '[[ colors.border.medium ]]' : rank === 3 ? '[[ colors.accent[3] ]]' : '[[ colors.border.light ]]'}
+                  opacity={barProgress}
+                  filter="url(#glowH)"
+                />
+                <text
+                  x={paddingLeft - 140}
+                  y={y + barHeight / 2}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fill={rank <= 3 ? '[[ colors.background.dark ]]' : '[[ colors.text.on_dark ]]'}
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.black ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                  opacity={barProgress}
+                >
+                  {rank}
+                </text>
+
+                {/* Label */}
+                <text
+                  x={paddingLeft - parseInt('[[ spacing.spacing.xl ]]')}
+                  y={y + barHeight / 2}
+                  textAnchor="end"
+                  dominantBaseline="middle"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+                  fontWeight="[[ typography.font_weights.semibold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                  opacity={barProgress}
+                >
+                  {item.label}
+                </text>
+
+                {/* Bar */}
+                <rect
+                  x={x}
+                  y={y}
+                  width={animatedWidth}
+                  height={barHeight}
+                  fill={`url(#barGradient${idx})`}
+                  rx="[[ spacing.border_radius.md ]]"
+                  filter="url(#glowH)"
+                  opacity={barProgress}
+                />
+
+                {/* Value label */}
+                <text
+                  x={x + animatedWidth + parseInt('[[ spacing.spacing.sm ]]')}
+                  y={y + barHeight / 2}
+                  dominantBaseline="middle"
+                  fill="[[ colors.text.on_dark ]]"
+                  fontSize="[[ typography.font_sizes[typography.default_resolution].sm ]]"
+                  fontWeight="[[ typography.font_weights.bold ]]"
+                  fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+                  opacity={barProgress}
+                >
+                  {item.value}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Axis labels */}
+          {xlabel && (
+            <text
+              x={paddingLeft + (chartWidth - paddingLeft - paddingRight) / 2}
+              y={chartHeight - parseInt('[[ spacing.spacing.lg ]]')}
+              textAnchor="middle"
+              fill="[[ colors.text.muted ]]"
+              fontSize="[[ typography.font_sizes[typography.default_resolution].xs ]]"
+              fontFamily="'[[ "', '".join(typography.primary_font.fonts) ]]'"
+            >
+              {xlabel}
+            </text>
+          )}
+        </svg>
+      </div>
+    </AbsoluteFill>
+  );
+};

@@ -27,10 +27,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(
@@ -38,7 +38,7 @@ class TestBeforeAfterSliderBuilderMethod:
             start_time=0.0,
             duration=5.0,
             before_image="before.jpg",
-            after_image="after.jpg"
+            after_image="after.jpg",
         )
 
         assert result is builder
@@ -47,10 +47,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -95,10 +95,10 @@ class TestBeforeAfterSliderBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.builder import (
+        from chuk_motion.components.layouts.BeforeAfterSlider.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(
@@ -106,7 +106,7 @@ class TestBeforeAfterSliderBuilderMethod:
             start_time=2.0,
             duration=5.0,
             before_image="before.jpg",
-            after_image="after.jpg"
+            after_image="after.jpg",
         )
 
         component = builder.components[0]
@@ -121,7 +121,7 @@ class TestBeforeAfterSliderToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -134,7 +134,7 @@ class TestBeforeAfterSliderToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -148,29 +148,32 @@ class TestBeforeAfterSliderToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            beforeImage="before.jpg",
-            afterImage="after.jpg",
-            beforeLabel="Before",
-            afterLabel="After",
-            orientation="horizontal",
-            sliderPosition=50.0,
-            animateSlider=True,
-            sliderStartPosition=0.0,
-            sliderEndPosition=100.0,
-            showLabels=True,
-            labelPosition="overlay",
-            handleStyle="default",
-            width=1200,
-            height=800,
-            position="center",
-            borderRadius=12
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                beforeImage="before.jpg",
+                afterImage="after.jpg",
+                beforeLabel="Before",
+                afterLabel="After",
+                orientation="horizontal",
+                sliderPosition=50.0,
+                animateSlider=True,
+                sliderStartPosition=0.0,
+                sliderEndPosition=100.0,
+                showLabels=True,
+                labelPosition="overlay",
+                handleStyle="default",
+                width=1200,
+                height=800,
+                position="center",
+                borderRadius=12,
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check LayoutComponentResponse structure
@@ -188,8 +191,8 @@ class TestBeforeAfterSliderToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
-        from chuk_mcp_remotion.utils.project_manager import ProjectManager
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)
@@ -201,14 +204,17 @@ class TestBeforeAfterSliderToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg"
-            ))
+            result = asyncio.run(
+                tool_func(
+                    startFrame=0,
+                    durationInFrames=150,
+                    beforeImage="before.jpg",
+                    afterImage="after.jpg",
+                )
+            )
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 
@@ -217,7 +223,7 @@ class TestBeforeAfterSliderToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()
@@ -229,12 +235,14 @@ class TestBeforeAfterSliderToolRegistration:
 
         # The error should propagate
         try:
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg"
-            ))
+            result = asyncio.run(
+                tool_func(
+                    startFrame=0,
+                    durationInFrames=150,
+                    beforeImage="before.jpg",
+                    afterImage="after.jpg",
+                )
+            )
             # If we get here, check for error in result
             if result:
                 assert "error" in result.lower() or "Test error" in result

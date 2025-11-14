@@ -1,4 +1,4 @@
-# chuk-mcp-remotion/tests/test_token_tools.py
+# chuk-motion/tests/test_token_tools.py
 """
 Tests for token MCP tools.
 """
@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from chuk_mcp_remotion.tools.token_tools import register_token_tools
+from chuk_motion.tools.token_tools import register_token_tools
 
 
 @pytest.mark.asyncio
@@ -646,12 +646,12 @@ class TestTokenImportExportTools:
     # Error Path Tests
 
     @pytest.mark.asyncio
-    async def test_export_typography_tokens_error_path(
-        self, mock_mcp_server, project_manager, mocker
-    ):
+    async def test_export_typography_tokens_error_path(self, mock_mcp_server, project_manager):
         """Test typography export error handling."""
         # Create a mock VFS that raises an exception on write_file
-        mock_vfs = mocker.AsyncMock()
+        from unittest.mock import AsyncMock
+
+        mock_vfs = AsyncMock()
         mock_vfs.write_file.side_effect = Exception("VFS write error")
 
         register_token_tools(mock_mcp_server, project_manager, mock_vfs)
@@ -663,10 +663,12 @@ class TestTokenImportExportTools:
         assert "VFS write error" in data["error"] or "Error" in data["error"]
 
     @pytest.mark.asyncio
-    async def test_export_motion_tokens_error_path(self, mock_mcp_server, project_manager, mocker):
+    async def test_export_motion_tokens_error_path(self, mock_mcp_server, project_manager):
         """Test motion token export error handling."""
         # Create a mock VFS that raises an exception on write_file
-        mock_vfs = mocker.AsyncMock()
+        from unittest.mock import AsyncMock
+
+        mock_vfs = AsyncMock()
         mock_vfs.write_file.side_effect = Exception("VFS write error")
 
         register_token_tools(mock_mcp_server, project_manager, mock_vfs)

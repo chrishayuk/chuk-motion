@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the architectural patterns and design principles for all Remotion components in the chuk-mcp-remotion generator system.
+This document describes the architectural patterns and design principles for all Remotion components in the chuk-motion generator system.
 
 ## Component Architecture
 
@@ -380,7 +380,7 @@ See `tests/templates/README_TEMPLATE_TESTS.md` for testing guidelines.
 ## File Organization
 
 ```
-src/chuk_mcp_remotion/generator/templates/
+src/chuk_motion/generator/templates/
 ├── overlays/          # UI overlay components
 │   ├── TitleScene.tsx.j2
 │   └── LowerThird.tsx.j2

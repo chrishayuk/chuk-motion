@@ -27,8 +27,8 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.DeviceFrame.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, start_time=0.0, duration=5.0)
@@ -39,8 +39,8 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.DeviceFrame.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -67,8 +67,8 @@ class TestDeviceFrameBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.frames.DeviceFrame.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.DeviceFrame.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, start_time=2.0, duration=5.0)
@@ -85,7 +85,7 @@ class TestDeviceFrameToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
+        from chuk_motion.components.frames.DeviceFrame.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -98,7 +98,7 @@ class TestDeviceFrameToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
+        from chuk_motion.components.frames.DeviceFrame.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -112,20 +112,23 @@ class TestDeviceFrameToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            device="phone",
-            content="",
-            orientation="portrait",
-            scale=1.0,
-            glare=True,
-            shadow=True,
-            position="center"
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                device="phone",
+                content="",
+                orientation="portrait",
+                scale=1.0,
+                glare=True,
+                shadow=True,
+                position="center",
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check FrameComponentResponse structure
@@ -143,8 +146,8 @@ class TestDeviceFrameToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
-        from chuk_mcp_remotion.utils.project_manager import ProjectManager
+        from chuk_motion.components.frames.DeviceFrame.tool import register_tool
+        from chuk_motion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)
@@ -156,40 +159,34 @@ class TestDeviceFrameToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150
-            ))
+            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 
     def test_tool_execution_error_handling(self):
-        """Test tool handles errors gracefully."""
+        """Test tool handles errors gracefully when add_component_to_track fails."""
         import asyncio
+        import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.DeviceFrame.tool import register_tool
+        from chuk_motion.components.frames.DeviceFrame.tool import register_tool
 
-        # Mock ProjectManager that raises an error
+        # Mock ProjectManager with project that raises an error on add_component_to_track
         pm_mock = Mock()
-        pm_mock.get_active_project = Mock(side_effect=Exception("Test error"))
+        project_mock = Mock()
+        project_mock.add_component_to_track = Mock(side_effect=Exception("Test error"))
+        pm_mock.get_active_project = Mock(return_value=project_mock)
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        # The error should propagate
-        try:
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                device="phone"
-            ))
-            # If we get here, check for error in result
-            if result:
-                assert "error" in result.lower() or "Test error" in result
-        except Exception as e:
-            # Error propagated as expected
-            assert "Test error" in str(e)
+        # The tool should catch the error and return an ErrorResponse
+        result = asyncio.run(tool_func(startFrame=0, durationInFrames=150, device="phone"))
+
+        result_data = json.loads(result)
+        assert "error" in result_data
+        assert "Test error" in result_data["error"]

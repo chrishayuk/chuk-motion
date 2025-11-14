@@ -27,8 +27,8 @@ class TestTerminalBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.frames.Terminal.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.Terminal.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, start_time=0.0, duration=5.0)
@@ -39,8 +39,8 @@ class TestTerminalBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.frames.Terminal.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.Terminal.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -73,8 +73,8 @@ class TestTerminalBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.frames.Terminal.builder import add_to_composition
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.components.frames.Terminal.builder import add_to_composition
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, start_time=2.0, duration=5.0)
@@ -91,7 +91,7 @@ class TestTerminalToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.Terminal.tool import register_tool
+        from chuk_motion.components.frames.Terminal.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -105,7 +105,7 @@ class TestTerminalToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.Terminal.tool import register_tool
+        from chuk_motion.components.frames.Terminal.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -120,23 +120,26 @@ class TestTerminalToolRegistration:
 
         # Execute with all parameters
         commands = json.dumps([{"command": "ls", "output": "file.txt"}])
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            commands=commands,
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
-            theme="dark",
-            width=900,
-            height=600,
-            position="center",
-            showCursor=True,
-            typeSpeed=0.05
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                commands=commands,
+                prompt="bash",
+                customPrompt="$",
+                title="Terminal",
+                theme="dark",
+                width=900,
+                height=600,
+                position="center",
+                showCursor=True,
+                typeSpeed=0.05,
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check FrameComponentResponse structure
@@ -153,7 +156,7 @@ class TestTerminalToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.Terminal.tool import register_tool
+        from chuk_motion.components.frames.Terminal.tool import register_tool
 
         # Mock ProjectManager and Project
         pm_mock = Mock()
@@ -166,25 +169,28 @@ class TestTerminalToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Test with invalid JSON - should handle gracefully
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            commands="invalid json",  # Invalid JSON
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
-            theme="dark",
-            width=900,
-            height=600,
-            position="center",
-            showCursor=True,
-            typeSpeed=0.05
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                commands="invalid json",  # Invalid JSON
+                prompt="bash",
+                customPrompt="$",
+                title="Terminal",
+                theme="dark",
+                width=900,
+                height=600,
+                position="center",
+                showCursor=True,
+                typeSpeed=0.05,
+            )
+        )
 
         # Should not crash, should handle gracefully with empty list
         assert result is not None
         # Parse JSON response
         import json
+
         response = json.loads(result)
         assert "component" in response
 
@@ -194,8 +200,8 @@ class TestTerminalToolRegistration:
         import tempfile
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.Terminal.tool import register_tool
-        from chuk_mcp_remotion.utils.project_manager import ProjectManager
+        from chuk_motion.components.frames.Terminal.tool import register_tool
+        from chuk_motion.utils.project_manager import ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)
@@ -207,12 +213,10 @@ class TestTerminalToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150
-            ))
+            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 
@@ -221,7 +225,7 @@ class TestTerminalToolRegistration:
         import asyncio
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.frames.Terminal.tool import register_tool
+        from chuk_motion.components.frames.Terminal.tool import register_tool
 
         # Mock ProjectManager that raises an error
         pm_mock = Mock()

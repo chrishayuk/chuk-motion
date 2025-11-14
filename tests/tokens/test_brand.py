@@ -3,7 +3,7 @@
 Comprehensive tests for brand pack system.
 """
 
-from chuk_mcp_remotion.tokens.brand import (
+from chuk_motion.tokens.brand import (
     BRAND_PACKS,
     AssetsConfig,
     BrandPack,

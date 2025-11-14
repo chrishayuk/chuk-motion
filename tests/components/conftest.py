@@ -4,8 +4,8 @@ Shared fixtures for component template tests.
 
 import pytest
 
-from chuk_mcp_remotion.generator.component_builder import ComponentBuilder
-from chuk_mcp_remotion.themes.youtube_themes import YOUTUBE_THEMES
+from chuk_motion.generator.component_builder import ComponentBuilder
+from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 
 
 @pytest.fixture

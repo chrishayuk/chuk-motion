@@ -6,7 +6,7 @@ Comprehensive tests for motion token system.
 import pytest
 from pydantic import ValidationError
 
-from chuk_mcp_remotion.tokens.motion import (
+from chuk_motion.tokens.motion import (
     MOTION_TOKENS,
     CTATiming,
     DurationConfig,

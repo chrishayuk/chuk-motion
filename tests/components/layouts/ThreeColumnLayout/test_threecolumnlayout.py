@@ -27,10 +27,10 @@ class TestThreeColumnLayoutBuilderMethod:
 
     def test_add_to_composition_basic(self):
         """Test add_to_composition creates ComponentInstance."""
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.builder import (
+        from chuk_motion.components.layouts.ThreeColumnLayout.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         result = add_to_composition(builder, start_time=0.0)
@@ -41,10 +41,10 @@ class TestThreeColumnLayoutBuilderMethod:
 
     def test_add_to_composition_all_props(self):
         """Test all props are set correctly."""
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.builder import (
+        from chuk_motion.components.layouts.ThreeColumnLayout.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
         add_to_composition(
@@ -73,10 +73,10 @@ class TestThreeColumnLayoutBuilderMethod:
 
     def test_add_to_composition_timing(self):
         """Test add_to_composition handles timing correctly."""
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.builder import (
+        from chuk_motion.components.layouts.ThreeColumnLayout.builder import (
             add_to_composition,
         )
-        from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder(fps=30)
         add_to_composition(builder, start_time=2.0, duration=5.0)
@@ -93,7 +93,7 @@ class TestThreeColumnLayoutToolRegistration:
         """Test tool registration."""
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.tool import register_tool
+        from chuk_motion.components.layouts.ThreeColumnLayout.tool import register_tool
 
         mcp_mock = Mock()
         pm_mock = Mock()
@@ -107,7 +107,7 @@ class TestThreeColumnLayoutToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.tool import register_tool
+        from chuk_motion.components.layouts.ThreeColumnLayout.tool import register_tool
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
@@ -137,7 +137,7 @@ class TestThreeColumnLayoutToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.tool import register_tool
+        from chuk_motion.components.layouts.ThreeColumnLayout.tool import register_tool
 
         # Mock ProjectManager with no current_timeline
         pm_mock = Mock()
@@ -158,7 +158,7 @@ class TestThreeColumnLayoutToolRegistration:
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.tool import register_tool
+        from chuk_motion.components.layouts.ThreeColumnLayout.tool import register_tool
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
@@ -173,13 +173,14 @@ class TestThreeColumnLayoutToolRegistration:
         result = asyncio.run(tool_func())
         result_data = json.loads(result)
         assert "error" in result_data
+
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
         import json
         from unittest.mock import Mock
 
-        from chuk_mcp_remotion.components.layouts.ThreeColumnLayout.tool import register_tool
+        from chuk_motion.components.layouts.ThreeColumnLayout.tool import register_tool
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
@@ -195,5 +196,3 @@ class TestThreeColumnLayoutToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid component JSON" in result_data["error"]
-
-

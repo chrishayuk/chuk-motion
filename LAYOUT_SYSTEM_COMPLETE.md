@@ -86,7 +86,7 @@ Created `examples/layout_showcase.py`:
 ## File Structure
 
 ```
-src/chuk_mcp_remotion/components/layouts/
+src/chuk_motion/components/layouts/
 ├── AsymmetricLayout/
 │   ├── __init__.py
 │   ├── builder.py
@@ -128,7 +128,7 @@ Documentation/
 ### Using the Composition Builder
 
 ```python
-from chuk_mcp_remotion.generator.composition_builder import CompositionBuilder
+from chuk_motion.generator.composition_builder import CompositionBuilder
 
 builder = CompositionBuilder(fps=30)
 

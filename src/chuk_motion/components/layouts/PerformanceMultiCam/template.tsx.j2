@@ -1,0 +1,178 @@
+{/* chuk-motion/src/chuk_motion/components/layouts/PerformanceMultiCam/template.tsx.j2 */}
+import React from 'react';
+import { AbsoluteFill, useCurrentFrame } from 'remotion';
+
+interface PerformanceMultiCamProps {
+  primary_cam?: React.ReactNode;
+  secondary_cams?: React.ReactNode[];
+  startFrame: number;
+  durationInFrames: number;
+  layout?: string;
+  padding?: number;
+  gap?: number;
+  border_width?: number;
+  border_color?: string;
+  border_radius?: number;
+}
+
+export const PerformanceMultiCam: React.FC<PerformanceMultiCamProps> = ({
+  primary_cam,
+  secondary_cams = [],
+  startFrame,
+  durationInFrames,
+  layout = 'primary-main',
+  padding = parseInt('[[ spacing.spacing.xl ]]'),
+  gap = parseInt('[[ spacing.spacing.md ]]'),
+  border_width,
+  border_color = '[[ colors.border.light ]]',
+  border_radius = parseInt('[[ spacing.border_radius.md ]]')
+}) => {
+  const frame = useCurrentFrame();
+
+  if (frame < startFrame || frame >= startFrame + durationInFrames) {
+    return null;
+  }
+
+  const limitedSecondaryCams = secondary_cams.slice(0, 4);
+
+  const renderPrimaryMain = () => (
+    <>
+      {/* Primary camera - large */}
+      {primary_cam && (
+        <div style={{
+          width: '75%',
+          height: '100%',
+          display: 'flex',
+          overflow: 'hidden',
+          position: 'relative',
+          ...(border_width && {
+            border: `${border_width}px solid ${border_color}`,
+            borderRadius: border_radius
+          }),
+        }}>
+          {primary_cam}
+        </div>
+      )}
+
+      {/* Secondary cameras - filmstrip */}
+      {limitedSecondaryCams.length > 0 && (
+        <div style={{
+          width: '25%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: gap,
+        }}>
+          {limitedSecondaryCams.map((cam, idx) => (
+            <div key={idx} style={{
+              flex: 1,
+              display: 'flex',
+              overflow: 'hidden',
+              position: 'relative',
+              ...(border_width && {
+                border: `${border_width}px solid ${border_color}`,
+                borderRadius: border_radius
+              }),
+            }}>
+              {cam}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  const renderGrid = () => {
+    const allCams = primary_cam ? [primary_cam, ...limitedSecondaryCams] : limitedSecondaryCams;
+    const totalCams = allCams.length;
+    const cols = totalCams <= 2 ? totalCams : 2;
+    const rows = Math.ceil(totalCams / cols);
+
+    return allCams.map((cam, idx) => (
+      <div key={idx} style={{
+        width: `calc(${100 / cols}% - ${gap * (cols - 1) / cols}px)`,
+        height: `calc(${100 / rows}% - ${gap * (rows - 1) / rows}px)`,
+        display: 'flex',
+        overflow: 'hidden',
+        position: 'relative',
+        ...(border_width && {
+          border: `${border_width}px solid ${border_color}`,
+          borderRadius: border_radius
+        }),
+      }}>
+        {cam}
+      </div>
+    ));
+  };
+
+  const renderFilmstrip = () => (
+    <>
+      {/* Primary at bottom */}
+      {primary_cam && (
+        <div style={{
+          width: '100%',
+          height: '75%',
+          display: 'flex',
+          overflow: 'hidden',
+          position: 'relative',
+          ...(border_width && {
+            border: `${border_width}px solid ${border_color}`,
+            borderRadius: border_radius
+          }),
+        }}>
+          {primary_cam}
+        </div>
+      )}
+
+      {/* Secondary as horizontal strip */}
+      {limitedSecondaryCams.length > 0 && (
+        <div style={{
+          width: '100%',
+          height: '25%',
+          display: 'flex',
+          flexDirection: 'row',
+          gap: gap,
+        }}>
+          {limitedSecondaryCams.map((cam, idx) => (
+            <div key={idx} style={{
+              flex: 1,
+              display: 'flex',
+              overflow: 'hidden',
+              position: 'relative',
+              ...(border_width && {
+                border: `${border_width}px solid ${border_color}`,
+                borderRadius: border_radius
+              }),
+            }}>
+              {cam}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: padding,
+          left: padding,
+          right: padding,
+          bottom: padding,
+          display: 'flex',
+          flexDirection: layout === 'filmstrip' ? 'column' : 'row',
+          flexWrap: layout === 'grid' ? 'wrap' : 'nowrap',
+          gap: gap,
+          width: `calc(100% - ${padding * 2}px)`,
+          height: `calc(100% - ${padding * 2}px)`,
+        }}
+      >
+        {layout === 'primary-main' && renderPrimaryMain()}
+        {layout === 'grid' && renderGrid()}
+        {layout === 'filmstrip' && renderFilmstrip()}
+      </div>
+    </AbsoluteFill>
+  );
+};
