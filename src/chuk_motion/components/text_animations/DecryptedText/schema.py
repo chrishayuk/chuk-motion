@@ -1,4 +1,4 @@
-"""StaggerText component schema and Pydantic models."""
+"""DecryptedText component schema and Pydantic models."""
 
 from typing import Literal
 
@@ -7,31 +7,23 @@ from pydantic import BaseModel, Field
 from ...base import ComponentMetadata
 
 
-class StaggerTextProps(BaseModel):
-    """Properties for StaggerText component."""
+class DecryptedTextProps(BaseModel):
+    """Properties for DecryptedText component."""
 
     text: str = Field(description="Text to animate")
-    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(
-        default="3xl", description="Font size"
-    )
+    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(default="3xl", description="Font size")
     fontWeight: Literal["normal", "medium", "semibold", "bold", "extrabold", "black"] = Field(
         default="bold", description="Font weight"
     )
     textColor: str | None = Field(None, description="Text color")
-    staggerBy: Literal["char", "word"] = Field(
-        default="char", description="Stagger by character or word"
+    revealDirection: Literal["start", "end", "center"] = Field(
+        default="start", description="Direction of reveal"
     )
-    staggerDelay: float = Field(
-        default=2.0, description="Delay in frames between units", ge=0.5, le=10.0
-    )
-    animationType: Literal["fade", "slide-up", "slide-down", "scale"] = Field(
-        default="fade", description="Animation style"
+    scrambleSpeed: float = Field(
+        default=3.0, description="Speed of character scrambling", ge=0.5, le=10.0
     )
     position: Literal["center", "top", "bottom"] = Field(
         default="center", description="Vertical position"
-    )
-    align: Literal["left", "center", "right"] = Field(
-        default="center", description="Text alignment"
     )
     start_time: float = Field(description="When to show (seconds)")
     duration: float = Field(default=3.0, description="Total duration (seconds)")
@@ -42,22 +34,22 @@ class StaggerTextProps(BaseModel):
 
 # Component metadata
 METADATA = ComponentMetadata(
-    name="StaggerText",
-    description="Staggered reveal animation where characters or words appear one-by-one with spring physics",
+    name="DecryptedText",
+    description="Animated text reveal with character scrambling effect",
     category="text-animation",
 )
 
 
 # MCP schema (for backward compatibility with MCP tools list)
 MCP_SCHEMA = {
-    "description": "Staggered reveal animation where characters or words appear one-by-one with spring physics for smooth, professional appearance",
+    "description": "Animated text reveal with character scrambling effect. Characters progressively decrypt from random characters to the final text",
     "category": "text-animation",
-    "tags": ["text", "stagger", "reveal", "animation", "spring", "professional"],
+    "tags": ["text", "animation", "reveal", "scramble", "decrypt", "hacker", "glitch"],
     "schema": {
         "text": {
             "type": "string",
             "required": True,
-            "description": "Text to animate",
+            "description": "Text to animate (characters will scramble then reveal)",
         },
         "font_size": {
             "type": "string",
@@ -74,34 +66,22 @@ MCP_SCHEMA = {
             "optional": True,
             "description": "Text color (uses on_dark color if not specified)",
         },
-        "stagger_by": {
+        "reveal_direction": {
             "type": "string",
-            "default": "char",
-            "values": ["char", "word"],
-            "description": "Stagger by character or word",
+            "default": "start",
+            "values": ["start", "end", "center"],
+            "description": "Direction of reveal",
         },
-        "stagger_delay": {
+        "scramble_speed": {
             "type": "number",
-            "default": 2.0,
-            "description": "Delay in frames between units",
-        },
-        "animation_type": {
-            "type": "string",
-            "default": "fade",
-            "values": ["fade", "slide-up", "slide-down", "scale"],
-            "description": "Animation style",
+            "default": 3.0,
+            "description": "Speed of character scrambling (higher = faster)",
         },
         "position": {
             "type": "string",
             "default": "center",
             "values": ["center", "top", "bottom"],
             "description": "Vertical position",
-        },
-        "align": {
-            "type": "string",
-            "default": "center",
-            "values": ["left", "center", "right"],
-            "description": "Text alignment",
         },
         "start_time": {
             "type": "float",
@@ -115,20 +95,19 @@ MCP_SCHEMA = {
         },
     },
     "example": {
-        "text": "Welcome",
+        "text": "Access Granted",
         "font_size": "3xl",
-        "stagger_by": "char",
-        "stagger_delay": 2.0,
-        "animation_type": "slide-up",
+        "reveal_direction": "start",
+        "scramble_speed": 3.0,
         "start_time": 0.0,
         "duration": 3.0,
     },
     "use_cases": [
-        "Title reveals",
-        "Bullet point lists",
-        "Professional presentations",
-        "Step-by-step reveals",
-        "Impact statements",
+        "Dramatic text reveals",
+        "Code/hacker aesthetics",
+        "Mystery unveilings",
+        "System messages",
+        "Access granted screens",
     ],
     "design_tokens_used": {
         "typography": [
@@ -136,14 +115,8 @@ MCP_SCHEMA = {
             "font_weights.bold",
             "primary_font",
             "letter_spacing.wide",
-            "line_heights.relaxed",
         ],
         "colors": ["text.on_dark"],
         "spacing": ["spacing.xl", "spacing['4xl']"],
-        "motion": [
-            "default_spring.damping",
-            "default_spring.stiffness",
-            "default_spring.mass",
-        ],
     },
 }

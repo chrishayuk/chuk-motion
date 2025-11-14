@@ -11,9 +11,7 @@ class LayoutEntranceProps(BaseModel):
     """Properties for LayoutEntrance component."""
 
     content: Any = Field(description="Layout or component to animate in")
-    entrance_type: str | None = Field(
-        "fade_in", description="Entrance animation style"
-    )
+    entrance_type: str | None = Field("fade_in", description="Entrance animation style")
     entrance_delay: float | None = Field(0.0, description="Delay before entrance (seconds)")
     start_time: float = Field(description="When to show (seconds)")
     duration: float | None = Field(5.0, description="How long to show (seconds)")

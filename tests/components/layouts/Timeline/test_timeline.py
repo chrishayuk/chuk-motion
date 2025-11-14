@@ -143,6 +143,44 @@ class TestTimelineToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
 
+    def test_tool_execution_with_milestones(self):
+        """Test tool execution with milestones containing nested components."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with milestones as JSON array with nested components
+        milestones_json = json.dumps(
+            [
+                {"component_type": "TextOverlay", "props": {"text": "Milestone 1"}},
+                {"component_type": "TextOverlay", "props": {"text": "Milestone 2"}},
+            ]
+        )
+
+        result = asyncio.run(tool_func(milestones=milestones_json))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "Timeline"
+
+        # Verify component was added
+        timeline_mock.add_component.assert_called_once()
+
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
         import asyncio
@@ -164,6 +202,7 @@ class TestTimelineToolRegistration:
         result = asyncio.run(tool_func())
         result_data = json.loads(result)
         assert "error" in result_data
+
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
@@ -187,4 +226,70 @@ class TestTimelineToolRegistration:
         assert "error" in result_data
         assert "Invalid" in result_data["error"]
 
+    def test_tool_execution_with_invalid_milestone_format(self):
+        """Test tool execution when milestones is not a list."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
 
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with milestones as a non-list (e.g., dict or string)
+        milestones_json = json.dumps({"not": "a list"})
+
+        result = asyncio.run(tool_func(milestones=milestones_json))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "Timeline"
+        timeline_mock.add_component.assert_called_once()
+
+    def test_tool_execution_with_none_milestone_items(self):
+        """Test tool execution when milestone parsing returns None."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_motion.components.layouts.Timeline.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with milestones that include items without 'type' (will parse to non-ComponentInstance)
+        milestones_json = json.dumps(
+            [
+                {"type": "TextOverlay", "config": {"text": "Valid"}},
+                {
+                    "config": {"text": "Invalid - no type"}
+                },  # This will not become a ComponentInstance
+                None,  # This will also not become a ComponentInstance
+            ]
+        )
+
+        result = asyncio.run(tool_func(milestones=milestones_json))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "Timeline"
+        timeline_mock.add_component.assert_called_once()

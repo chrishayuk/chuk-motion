@@ -18,12 +18,11 @@ class StylizedWebPageProps(BaseModel):
     show_footer: bool = Field(False, description="Show footer")
     header_text: str = Field("Navigation", description="Text in header nav area")
     sidebar_items: list[str] = Field(
-        ["Dashboard", "Analytics", "Settings"],
-        description="List of sidebar navigation items"
+        ["Dashboard", "Analytics", "Settings"], description="List of sidebar navigation items"
     )
     content_lines: list[str] = Field(
         ["Welcome to our site", "Explore our features", "Get started today"],
-        description="Main content block text lines"
+        description="Main content block text lines",
     )
     footer_text: str = Field("© 2024 Company", description="Footer text")
     theme: Literal["light", "dark"] = Field("light", description="Visual theme")
@@ -53,68 +52,54 @@ MCP_SCHEMA = {
         "title": {
             "type": "string",
             "default": "Website Title",
-            "description": "Page title displayed in header"
+            "description": "Page title displayed in header",
         },
         "subtitle": {
             "type": "string",
             "default": "Tagline or description",
-            "description": "Hero section subtitle"
+            "description": "Hero section subtitle",
         },
-        "show_header": {
-            "type": "boolean",
-            "default": True,
-            "description": "Show header/navbar"
-        },
+        "show_header": {"type": "boolean", "default": True, "description": "Show header/navbar"},
         "show_sidebar": {
             "type": "boolean",
             "default": False,
-            "description": "Show sidebar navigation"
+            "description": "Show sidebar navigation",
         },
-        "show_footer": {
-            "type": "boolean",
-            "default": False,
-            "description": "Show footer"
-        },
+        "show_footer": {"type": "boolean", "default": False, "description": "Show footer"},
         "header_text": {
             "type": "string",
             "default": "Navigation",
-            "description": "Text in header nav area"
+            "description": "Text in header nav area",
         },
         "sidebar_items": {
             "type": "array",
             "default": ["Dashboard", "Analytics", "Settings"],
-            "description": "List of sidebar navigation items"
+            "description": "List of sidebar navigation items",
         },
         "content_lines": {
             "type": "array",
             "default": ["Welcome to our site", "Explore our features", "Get started today"],
-            "description": "Main content block text lines"
+            "description": "Main content block text lines",
         },
         "footer_text": {
             "type": "string",
             "default": "© 2024 Company",
-            "description": "Footer text"
+            "description": "Footer text",
         },
         "theme": {
             "type": "enum",
             "default": "light",
             "values": ["light", "dark"],
-            "description": "Visual theme"
+            "description": "Visual theme",
         },
         "accent_color": {
             "type": "enum",
             "default": "primary",
             "values": ["primary", "accent", "secondary"],
-            "description": "Accent color theme"
+            "description": "Accent color theme",
         },
-        "start_time": {
-            "type": "float",
-            "description": "When to show (seconds)"
-        },
-        "duration": {
-            "type": "float",
-            "description": "How long to show (seconds)"
-        },
+        "start_time": {"type": "float", "description": "When to show (seconds)"},
+        "duration": {"type": "float", "description": "How long to show (seconds)"},
     },
     "example": {
         "title": "My Amazing App",
@@ -127,7 +112,7 @@ MCP_SCHEMA = {
         "content_lines": [
             "Welcome to our platform",
             "Discover powerful features",
-            "Get started in minutes"
+            "Get started in minutes",
         ],
         "footer_text": "© 2024 My Company",
         "theme": "light",

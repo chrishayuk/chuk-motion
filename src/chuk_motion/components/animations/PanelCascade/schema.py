@@ -11,12 +11,8 @@ class PanelCascadeProps(BaseModel):
     """Properties for PanelCascade component."""
 
     items: list[Any] = Field(description="Array of panel components to animate")
-    cascade_type: str | None = Field(
-        "from_edges", description="Cascade animation style"
-    )
-    stagger_delay: float | None = Field(
-        0.08, description="Delay between each panel (seconds)"
-    )
+    cascade_type: str | None = Field("from_edges", description="Cascade animation style")
+    stagger_delay: float | None = Field(0.08, description="Delay between each panel (seconds)")
     start_time: float = Field(description="When to show (seconds)")
     duration: float | None = Field(5.0, description="How long to show (seconds)")
 

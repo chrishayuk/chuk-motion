@@ -12,9 +12,7 @@ class PixelTransitionProps(BaseModel):
 
     firstContent: Any = Field(description="First content component")
     secondContent: Any = Field(description="Second content component")
-    gridSize: int = Field(
-        default=10, description="Number of pixels per row/column", ge=3, le=30
-    )
+    gridSize: int = Field(default=10, description="Number of pixels per row/column", ge=3, le=30)
     pixelColor: str | None = Field(None, description="Color of transition pixels")
     transitionStart: int = Field(default=60, description="When transition starts (frames)", ge=0)
     transitionDuration: int = Field(default=30, description="Transition duration (frames)", ge=1)

@@ -120,23 +120,26 @@ class TestTerminalToolRegistration:
 
         # Execute with all parameters
         commands = json.dumps([{"command": "ls", "output": "file.txt"}])
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            commands=commands,
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
-            theme="dark",
-            width=900,
-            height=600,
-            position="center",
-            showCursor=True,
-            typeSpeed=0.05
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                commands=commands,
+                prompt="bash",
+                customPrompt="$",
+                title="Terminal",
+                theme="dark",
+                width=900,
+                height=600,
+                position="center",
+                showCursor=True,
+                typeSpeed=0.05,
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check FrameComponentResponse structure
@@ -166,25 +169,28 @@ class TestTerminalToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Test with invalid JSON - should handle gracefully
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            commands="invalid json",  # Invalid JSON
-            prompt="bash",
-            customPrompt="$",
-            title="Terminal",
-            theme="dark",
-            width=900,
-            height=600,
-            position="center",
-            showCursor=True,
-            typeSpeed=0.05
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                commands="invalid json",  # Invalid JSON
+                prompt="bash",
+                customPrompt="$",
+                title="Terminal",
+                theme="dark",
+                width=900,
+                height=600,
+                position="center",
+                showCursor=True,
+                typeSpeed=0.05,
+            )
+        )
 
         # Should not crash, should handle gracefully with empty list
         assert result is not None
         # Parse JSON response
         import json
+
         response = json.loads(result)
         assert "component" in response
 
@@ -207,12 +213,10 @@ class TestTerminalToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150
-            ))
+            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 

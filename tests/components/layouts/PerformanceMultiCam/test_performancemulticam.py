@@ -122,16 +122,18 @@ class TestPerformanceMultiCamToolRegistration:
         primary_cam = json.dumps({"id": "primary", "angle": "front"})
         secondary_cams = json.dumps([{"id": "cam1"}, {"id": "cam2"}])
 
-        result = asyncio.run(tool_func(
-            primary_cam=primary_cam,
-            secondary_cams=secondary_cams,
-            layout="primary-main",
-            gap=20,
-            padding=40,
-            duration=5.0,
-            track="main",
-            gap_before=None
-        ))
+        result = asyncio.run(
+            tool_func(
+                primary_cam=primary_cam,
+                secondary_cams=secondary_cams,
+                layout="primary-main",
+                gap=20,
+                padding=40,
+                duration=5.0,
+                track="main",
+                gap_before=None,
+            )
+        )
 
         result_data = json.loads(result)
         assert result_data["component"] == "PerformanceMultiCam"
@@ -160,11 +162,11 @@ class TestPerformanceMultiCamToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Test with invalid JSON - should handle gracefully
-        result = asyncio.run(tool_func(
-            primary_cam="invalid json",
-            secondary_cams="also invalid",
-            layout="primary-main"
-        ))
+        result = asyncio.run(
+            tool_func(
+                primary_cam="invalid json", secondary_cams="also invalid", layout="primary-main"
+            )
+        )
 
         # Should return error response
         result_data = json.loads(result)
@@ -238,11 +240,9 @@ class TestPerformanceMultiCamToolRegistration:
         primary_cam = json.dumps({"id": "primary"})
         secondary_cams = json.dumps({"cam1": "data", "cam2": "data"})  # Dict, not list
 
-        result = asyncio.run(tool_func(
-            primary_cam=primary_cam,
-            secondary_cams=secondary_cams,
-            duration=5.0
-        ))
+        result = asyncio.run(
+            tool_func(primary_cam=primary_cam, secondary_cams=secondary_cams, duration=5.0)
+        )
 
         result_data = json.loads(result)
         assert result_data["component"] == "PerformanceMultiCam"

@@ -219,6 +219,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 # Animation wrapper components
                 "LayoutEntrance",
                 "PanelCascade",
+                # Overlay components with content
+                "TextOverlay",
+                "LowerThird",
+                "SubscribeButton",
             ]
 
             if comp.component_type in layout_types:
@@ -264,13 +268,16 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "captionBar",  # VerticalLayout
                     "milestones",
                     "clips",  # TimelineLayout, MosaicLayout
-                    "content",  # Container
+                    "content",  # Container, Frames, Overlays, Animations
+                    "panels",  # PanelCascade
                     "leftPanel",
                     "rightPanel",
                     "topPanel",
                     "bottomPanel",  # SplitScreen
                     "firstContent",
                     "secondContent",  # PixelTransition
+                    "before",
+                    "after",  # LayoutTransition
                 ]
                 for key in specialized_keys:
                     child = comp.props.get(key)
@@ -355,13 +362,16 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "captionBar",  # VerticalLayout
                     "milestones",
                     "clips",  # TimelineLayout, MosaicLayout
-                    "content",  # Container
+                    "content",  # Container, Frames, Overlays, Animations
+                    "panels",  # PanelCascade
                     "leftPanel",
                     "rightPanel",
                     "topPanel",
                     "bottomPanel",  # SplitScreen
                     "firstContent",
                     "secondContent",  # PixelTransition
+                    "before",
+                    "after",  # LayoutTransition
                 ]
                 for key in specialized_keys:
                     child = comp.props.get(key)
@@ -401,6 +411,14 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "Terminal",
             # Transition components
             "PixelTransition",
+            "LayoutTransition",
+            # Animation components with content
+            "LayoutEntrance",
+            "PanelCascade",
+            # Overlay components with content
+            "TextOverlay",
+            "LowerThird",
+            "SubscribeButton",
         ]
         has_children = comp.component_type in layout_types
 
@@ -482,16 +500,21 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             "captionBar",
             # Timeline / Mosaic
             "clips",
-            # Container
+            # Container, Overlays, Animations
             "content",
-            # PixelTransition
+            # PanelCascade
+            "panels",
+            # PixelTransition / LayoutTransition
             "firstContent",
             "secondContent",
+            "before",
+            "after",
         ]
         props_lines = []
         for key, value in comp.props.items():
             if key not in exclude_keys and value is not None:
-                props_lines.append(f"{spaces}  {key}={self._format_prop_value(value)}")
+                camel_key = snake_to_camel(key)
+                props_lines.append(f"{spaces}  {camel_key}={self._format_prop_value(value)}")
         props_str = "\n".join(props_lines) if props_lines else ""
 
         # Render children based on component type
@@ -745,6 +768,101 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 # No content, render as simple component
                 return self._render_simple_component(comp, indent)
 
+        # Handle overlay and animation components with content
+        elif comp.component_type in ["TextOverlay", "LowerThird", "SubscribeButton", "LayoutEntrance"]:
+            content = comp.props.get("content")
+            if isinstance(content, ComponentInstance):
+                content_jsx = self._render_component_jsx(content, indent + 4)
+                if props_str:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{props_str}
+{spaces}>
+{content_jsx}
+{spaces}</{comp.component_type}>"""
+                else:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{spaces}>
+{content_jsx}
+{spaces}</{comp.component_type}>"""
+            else:
+                # No content, render as simple component
+                return self._render_simple_component(comp, indent)
+
+        # Handle PanelCascade with panels array
+        elif comp.component_type == "PanelCascade":
+            panels = comp.props.get("panels", [])
+            if isinstance(panels, list):
+                panels_jsx = []
+                for panel in panels:
+                    if isinstance(panel, ComponentInstance):
+                        panel_jsx = self._render_component_jsx(panel, indent + 4)
+                        panels_jsx.append(panel_jsx)
+                panels_str = ",\n".join(panels_jsx)
+
+                if props_str:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{props_str}
+{spaces}  panels={{[
+{panels_str}
+{spaces}  ]}}
+{spaces}/>"""
+                else:
+                    return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{spaces}  panels={{[
+{panels_str}
+{spaces}  ]}}
+{spaces}/>"""
+            else:
+                return self._render_simple_component(comp, indent)
+
+        # Handle LayoutTransition with before/after
+        elif comp.component_type == "LayoutTransition":
+            before = comp.props.get("before")
+            after = comp.props.get("after")
+
+            before_jsx = (
+                self._render_component_jsx(before, indent + 4)
+                if isinstance(before, ComponentInstance)
+                else ""
+            )
+            after_jsx = (
+                self._render_component_jsx(after, indent + 4)
+                if isinstance(after, ComponentInstance)
+                else ""
+            )
+
+            if props_str:
+                return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{props_str}
+{spaces}  before={{
+{before_jsx}
+{spaces}  }}
+{spaces}  after={{
+{after_jsx}
+{spaces}  }}
+{spaces}/>"""
+            else:
+                return f"""{spaces}<{comp.component_type}
+{spaces}  startFrame={{{comp.start_frame}}}
+{spaces}  durationInFrames={{{comp.duration_frames}}}
+{spaces}  before={{
+{before_jsx}
+{spaces}  }}
+{spaces}  after={{
+{after_jsx}
+{spaces}  }}
+{spaces}/>"""
+
         # Handle transition components (PixelTransition)
         elif comp.component_type == "PixelTransition":
             first_content = comp.props.get("firstContent")
@@ -794,7 +912,13 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
         renderer = self._component_renderers.get(comp.component_type)
         if renderer:
             try:
-                return renderer(comp, self._render_component_jsx, indent, snake_to_camel, self._format_prop_value)
+                return renderer(
+                    comp,
+                    self._render_component_jsx,
+                    indent,
+                    snake_to_camel,
+                    self._format_prop_value,
+                )
             except Exception as e:
                 print(f"Warning: Custom renderer for {comp.component_type} failed: {e}")
                 return None

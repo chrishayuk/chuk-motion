@@ -68,7 +68,7 @@ def register_tool(mcp, project_manager):
                     content_lines_value = [
                         "Welcome to our site",
                         "Explore our features",
-                        "Get started today"
+                        "Get started today",
                     ]
                 else:
                     content_lines_value = content_lines

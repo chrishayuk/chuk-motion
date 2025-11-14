@@ -38,7 +38,9 @@ def parse_nested_component(comp_dict):
             elif isinstance(value, list):
                 # Array of possibly nested components
                 parsed_config[key] = [
-                    parse_nested_component(item) if isinstance(item, dict) and "type" in item else item
+                    parse_nested_component(item)
+                    if isinstance(item, dict) and "type" in item
+                    else item
                     for item in value
                 ]
             else:

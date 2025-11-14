@@ -11,9 +11,7 @@ class VideoContentProps(BaseModel):
     """Properties for VideoContent component."""
 
     src: str = Field(description="Video source URL or path to static file (e.g. 'video.mp4')")
-    volume: float = Field(
-        default=1.0, description="Video volume (0.0 to 1.0)", ge=0.0, le=1.0
-    )
+    volume: float = Field(default=1.0, description="Video volume (0.0 to 1.0)", ge=0.0, le=1.0)
     playbackRate: float = Field(
         default=1.0, description="Video playback speed multiplier", gt=0.0, le=4.0
     )
@@ -21,9 +19,7 @@ class VideoContentProps(BaseModel):
         default="cover", description="How video fits in container"
     )
     muted: bool = Field(default=False, description="Whether video should be muted")
-    startFrom: int = Field(
-        default=0, description="Frame offset to start video playback from", ge=0
-    )
+    startFrom: int = Field(default=0, description="Frame offset to start video playback from", ge=0)
     loop: bool = Field(default=False, description="Whether to loop the video continuously")
     start_time: float = Field(description="When to show (seconds)")
     duration: float = Field(default=5.0, description="Total duration (seconds)")

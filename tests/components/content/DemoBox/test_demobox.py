@@ -106,13 +106,11 @@ class TestDemoBoxToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        result = asyncio.run(tool_func(
-            label="Test Label",
-            color="primary",
-            duration=5.0,
-            track="main",
-            gap_before=None
-        ))
+        result = asyncio.run(
+            tool_func(
+                label="Test Label", color="primary", duration=5.0, track="main", gap_before=None
+            )
+        )
 
         # Parse JSON response
         result_data = json.loads(result)

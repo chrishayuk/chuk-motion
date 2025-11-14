@@ -38,7 +38,7 @@ class TestBeforeAfterSliderBuilderMethod:
             start_time=0.0,
             duration=5.0,
             before_image="before.jpg",
-            after_image="after.jpg"
+            after_image="after.jpg",
         )
 
         assert result is builder
@@ -106,7 +106,7 @@ class TestBeforeAfterSliderBuilderMethod:
             start_time=2.0,
             duration=5.0,
             before_image="before.jpg",
-            after_image="after.jpg"
+            after_image="after.jpg",
         )
 
         component = builder.components[0]
@@ -148,29 +148,32 @@ class TestBeforeAfterSliderToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        result = asyncio.run(tool_func(
-            startFrame=0,
-            durationInFrames=150,
-            beforeImage="before.jpg",
-            afterImage="after.jpg",
-            beforeLabel="Before",
-            afterLabel="After",
-            orientation="horizontal",
-            sliderPosition=50.0,
-            animateSlider=True,
-            sliderStartPosition=0.0,
-            sliderEndPosition=100.0,
-            showLabels=True,
-            labelPosition="overlay",
-            handleStyle="default",
-            width=1200,
-            height=800,
-            position="center",
-            borderRadius=12
-        ))
+        result = asyncio.run(
+            tool_func(
+                startFrame=0,
+                durationInFrames=150,
+                beforeImage="before.jpg",
+                afterImage="after.jpg",
+                beforeLabel="Before",
+                afterLabel="After",
+                orientation="horizontal",
+                sliderPosition=50.0,
+                animateSlider=True,
+                sliderStartPosition=0.0,
+                sliderEndPosition=100.0,
+                showLabels=True,
+                labelPosition="overlay",
+                handleStyle="default",
+                width=1200,
+                height=800,
+                position="center",
+                borderRadius=12,
+            )
+        )
 
         # Parse JSON response
         import json
+
         response = json.loads(result)
 
         # Check LayoutComponentResponse structure
@@ -201,14 +204,17 @@ class TestBeforeAfterSliderToolRegistration:
             tool_func = mcp_mock.tool.call_args[0][0]
 
             # Should return an error response when no project is set
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg"
-            ))
+            result = asyncio.run(
+                tool_func(
+                    startFrame=0,
+                    durationInFrames=150,
+                    beforeImage="before.jpg",
+                    afterImage="after.jpg",
+                )
+            )
 
             import json
+
             response = json.loads(result)
             assert "error" in response
 
@@ -229,12 +235,14 @@ class TestBeforeAfterSliderToolRegistration:
 
         # The error should propagate
         try:
-            result = asyncio.run(tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg"
-            ))
+            result = asyncio.run(
+                tool_func(
+                    startFrame=0,
+                    durationInFrames=150,
+                    beforeImage="before.jpg",
+                    afterImage="after.jpg",
+                )
+            )
             # If we get here, check for error in result
             if result:
                 assert "error" in result.lower() or "Test error" in result

@@ -11,24 +11,18 @@ class TypewriterTextProps(BaseModel):
     """Properties for TypewriterText component."""
 
     text: str = Field(description="Text to type out (supports multiline with \\n)")
-    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(
-        default="3xl", description="Font size"
-    )
+    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(default="3xl", description="Font size")
     fontWeight: Literal["normal", "medium", "semibold", "bold"] = Field(
         default="medium", description="Font weight"
     )
     textColor: str | None = Field(None, description="Text color")
     cursorColor: str | None = Field(None, description="Cursor color")
     showCursor: bool = Field(default=True, description="Whether to show blinking cursor")
-    typeSpeed: float = Field(
-        default=2.0, description="Characters per second", ge=0.1, le=20.0
-    )
+    typeSpeed: float = Field(default=2.0, description="Characters per second", ge=0.1, le=20.0)
     position: Literal["center", "top", "bottom", "left"] = Field(
         default="center", description="Screen position"
     )
-    align: Literal["left", "center", "right"] = Field(
-        default="left", description="Text alignment"
-    )
+    align: Literal["left", "center", "right"] = Field(default="left", description="Text alignment")
     start_time: float = Field(description="When to show (seconds)")
     duration: float = Field(default=3.0, description="Total duration (seconds)")
 
@@ -124,7 +118,12 @@ MCP_SCHEMA = {
         "Step-by-step instructions",
     ],
     "design_tokens_used": {
-        "typography": ["font_sizes['3xl']", "font_weights.medium", "primary_font", "letter_spacing.normal"],
+        "typography": [
+            "font_sizes['3xl']",
+            "font_weights.medium",
+            "primary_font",
+            "letter_spacing.normal",
+        ],
         "colors": ["text.on_dark"],
         "spacing": ["spacing.xs", "spacing['2xl']", "spacing['4xl']"],
     },

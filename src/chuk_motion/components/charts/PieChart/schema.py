@@ -18,8 +18,7 @@ class PieChartProps(BaseModel):
     """Properties for PieChart component."""
 
     data: list[PieDataPoint] = Field(
-        min_length=1,
-        description="List of objects with label, value, and optional color"
+        min_length=1, description="List of objects with label, value, and optional color"
     )
     title: str | None = Field(None, min_length=1, description="Optional chart title")
     start_time: float = Field(0.0, ge=0.0, description="When to show (seconds)")

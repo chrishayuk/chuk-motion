@@ -11,9 +11,7 @@ class TrueFocusProps(BaseModel):
     """Properties for TrueFocus component."""
 
     text: str = Field(description="Text to animate (will be split into words)")
-    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(
-        default="3xl", description="Font size"
-    )
+    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(default="3xl", description="Font size")
     fontWeight: Literal["bold", "extrabold", "black"] = Field(
         default="black", description="Font weight"
     )
@@ -122,9 +120,27 @@ MCP_SCHEMA = {
         "Call-to-action highlights",
     ],
     "design_tokens_used": {
-        "typography": ["font_sizes['3xl']", "font_weights.black", "primary_font", "letter_spacing.tight", "line_heights.tight"],
+        "typography": [
+            "font_sizes['3xl']",
+            "font_weights.black",
+            "primary_font",
+            "letter_spacing.tight",
+            "line_heights.tight",
+        ],
         "colors": ["text.on_dark", "primary[0]"],
-        "spacing": ["spacing.sm", "spacing.lg", "spacing.xl", "spacing.xs", "spacing['3xl']", "border_width.thick", "border_radius.xs"],
-        "motion": ["default_spring.config.damping", "default_spring.config.stiffness", "default_spring.config.mass"],
+        "spacing": [
+            "spacing.sm",
+            "spacing.lg",
+            "spacing.xl",
+            "spacing.xs",
+            "spacing['3xl']",
+            "border_width.thick",
+            "border_radius.xs",
+        ],
+        "motion": [
+            "default_spring.config.damping",
+            "default_spring.config.stiffness",
+            "default_spring.config.mass",
+        ],
     },
 }

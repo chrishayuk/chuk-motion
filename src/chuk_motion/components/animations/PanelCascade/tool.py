@@ -115,7 +115,8 @@ def register_tool(mcp, project_manager):
                 panel_components = []
                 for item in items_parsed:
                     component = parse_nested_component(item)
-                    if component is None:
+                    # Validate that we got a ComponentInstance
+                    if not isinstance(component, ComponentInstance):
                         return ErrorResponse(
                             error="Invalid item format. Each item must be: {'type': 'ComponentName', 'config': {...}}"
                         ).model_dump_json()

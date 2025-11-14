@@ -105,7 +105,7 @@ def register_tool(mcp, project_manager):
                     component, duration=duration, track=track, gap_before=gap_before
                 )
 
-                ratio_pct = f"{int(ratio*100)}-{int((1-ratio)*100)}"
+                ratio_pct = f"{int(ratio * 100)}-{int((1 - ratio) * 100)}"
                 layout_desc = f"{orientation}-{ratio_pct}"
                 return LayoutComponentResponse(
                     component="SplitScreen",

@@ -18,8 +18,7 @@ class AreaChartProps(BaseModel):
     """Properties for AreaChart component."""
 
     data: list[list[float] | DataPoint] = Field(
-        min_length=2,
-        description="Array of data points as [x, y] or {x, y, label}"
+        min_length=2, description="Array of data points as [x, y] or {x, y, label}"
     )
     title: str | None = Field(None, min_length=1, description="Optional chart title")
     xlabel: str | None = Field(None, min_length=1, description="Optional x-axis label")

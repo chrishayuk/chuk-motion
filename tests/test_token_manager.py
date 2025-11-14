@@ -243,6 +243,7 @@ class TestColorTokenExportImport:
     @pytest.mark.asyncio
     async def test_export_color_tokens_exception(self, token_manager):
         """Test export color tokens handles exceptions."""
+
         # Mock vfs to raise exception
         async def raise_exception(path, content):
             raise OSError("Write failed")
@@ -529,7 +530,9 @@ class TestTokenGetters:
             "font_families": {"custom_family": {"name": "CustomFont", "fallback": "sans-serif"}}
         }
 
-        result = token_manager.get_typography_token("font_families", "custom_family", use_custom=True)
+        result = token_manager.get_typography_token(
+            "font_families", "custom_family", use_custom=True
+        )
 
         assert result is not None
         assert isinstance(result, dict)
@@ -786,6 +789,7 @@ class TestSpacingTokenExportImport:
     @pytest.mark.asyncio
     async def test_export_spacing_exception(self, token_manager):
         """Test export spacing tokens handles exceptions."""
+
         # Mock vfs to raise exception
         async def raise_exception(path, content):
             raise OSError("Write failed")

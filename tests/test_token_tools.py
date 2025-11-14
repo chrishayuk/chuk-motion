@@ -646,12 +646,11 @@ class TestTokenImportExportTools:
     # Error Path Tests
 
     @pytest.mark.asyncio
-    async def test_export_typography_tokens_error_path(
-        self, mock_mcp_server, project_manager
-    ):
+    async def test_export_typography_tokens_error_path(self, mock_mcp_server, project_manager):
         """Test typography export error handling."""
         # Create a mock VFS that raises an exception on write_file
         from unittest.mock import AsyncMock
+
         mock_vfs = AsyncMock()
         mock_vfs.write_file.side_effect = Exception("VFS write error")
 
@@ -668,6 +667,7 @@ class TestTokenImportExportTools:
         """Test motion token export error handling."""
         # Create a mock VFS that raises an exception on write_file
         from unittest.mock import AsyncMock
+
         mock_vfs = AsyncMock()
         mock_vfs.write_file.side_effect = Exception("VFS write error")
 

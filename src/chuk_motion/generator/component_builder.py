@@ -11,10 +11,9 @@ from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
 
 from ..themes.youtube_themes import YOUTUBE_THEMES
+from ..tokens.motion import MOTION_TOKENS
 from ..tokens.spacing import SPACING_TOKENS
 from ..tokens.typography import TYPOGRAPHY_TOKENS
-from ..tokens.motion import MOTION_TOKENS, MotionTokens
-from ..themes.models import ThemeMotion
 
 
 class ComponentBuilder:
@@ -146,6 +145,7 @@ class ComponentBuilder:
         # Combines full motion tokens with theme-specific defaults
         class CombinedMotionContext(BaseModel):
             """Combined motion tokens and theme defaults for template rendering."""
+
             # Full motion tokens
             duration: Any  # DurationTokens
             easing: Any  # EasingTokens

@@ -11,7 +11,7 @@ class WebPageProps(BaseModel):
 
     html: str = Field(
         '<div style="padding: 40px; text-align: center;"><h1>Hello World</h1><p>This is a web page.</p></div>',
-        description="HTML content to render"
+        description="HTML content to render",
     )
     css: str = Field("", description="Custom CSS styles")
     base_styles: bool = Field(True, description="Include default styling for common HTML elements")
@@ -43,52 +43,38 @@ MCP_SCHEMA = {
         "html": {
             "type": "string",
             "default": '<div style="padding: 40px; text-align: center;"><h1>Hello World</h1><p>This is a web page.</p></div>',
-            "description": "HTML content to render"
+            "description": "HTML content to render",
         },
-        "css": {
-            "type": "string",
-            "default": "",
-            "description": "Custom CSS styles"
-        },
+        "css": {"type": "string", "default": "", "description": "Custom CSS styles"},
         "base_styles": {
             "type": "boolean",
             "default": True,
-            "description": "Include default styling for common HTML elements"
+            "description": "Include default styling for common HTML elements",
         },
-        "scale": {
-            "type": "float",
-            "default": 1.0,
-            "description": "Zoom level (1.0 = 100%)"
-        },
+        "scale": {"type": "float", "default": 1.0, "description": "Zoom level (1.0 = 100%)"},
         "scroll_y": {
             "type": "float",
             "default": 0,
-            "description": "Vertical scroll position in pixels"
+            "description": "Vertical scroll position in pixels",
         },
         "animate_scroll": {
             "type": "boolean",
             "default": False,
-            "description": "Animate scroll from 0 to scroll_y"
+            "description": "Animate scroll from 0 to scroll_y",
         },
         "scroll_duration": {
             "type": "float",
             "default": 60,
-            "description": "Duration of scroll animation in frames"
+            "description": "Duration of scroll animation in frames",
         },
         "theme": {
             "type": "enum",
             "default": "light",
             "values": ["light", "dark"],
-            "description": "Visual theme"
+            "description": "Visual theme",
         },
-        "start_time": {
-            "type": "float",
-            "description": "When to show (seconds)"
-        },
-        "duration": {
-            "type": "float",
-            "description": "How long to show (seconds)"
-        },
+        "start_time": {"type": "float", "description": "When to show (seconds)"},
+        "duration": {"type": "float", "description": "How long to show (seconds)"},
     },
     "example": {
         "html": """

@@ -159,6 +159,7 @@ class TestThreeByThreeGridToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Test error" in result_data["error"]
+
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
@@ -181,5 +182,3 @@ class TestThreeByThreeGridToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid" in result_data["error"]
-
-

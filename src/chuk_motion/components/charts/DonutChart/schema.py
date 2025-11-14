@@ -10,7 +10,9 @@ class DonutDataPoint(BaseModel):
     """A single data point with label and value."""
 
     label: str = Field(..., min_length=1, description="Label for this data point")
-    value: float = Field(..., ge=0.0, description="Numeric value for this data point (must be non-negative)")
+    value: float = Field(
+        ..., ge=0.0, description="Numeric value for this data point (must be non-negative)"
+    )
     color: str | None = Field(None, min_length=1, description="Optional color override")
 
 

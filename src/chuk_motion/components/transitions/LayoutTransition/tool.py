@@ -116,7 +116,10 @@ def register_tool(mcp, project_manager):
                 first_component = parse_nested_component(first_parsed)
                 second_component = parse_nested_component(second_parsed)
 
-                if first_component is None or second_component is None:
+                # Validate that we got ComponentInstance objects
+                if not isinstance(first_component, ComponentInstance) or not isinstance(
+                    second_component, ComponentInstance
+                ):
                     return ErrorResponse(
                         error="Invalid content format. Use format: {'type': 'ComponentName', 'config': {...}}"
                     ).model_dump_json()

@@ -163,6 +163,7 @@ class TestStackedReactionToolRegistration:
         result = asyncio.run(tool_func())
         result_data = json.loads(result)
         assert "error" in result_data
+
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
@@ -185,5 +186,3 @@ class TestStackedReactionToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid component JSON" in result_data["error"]
-
-

@@ -283,9 +283,7 @@ async def remotion_generate_video() -> str:
             for comp_type in component_types:
                 # Get a sample config from the timeline
                 # For nested components, use empty config as templates handle it
-                file_path = project_manager.add_component_to_project(
-                    comp_type, {}, theme
-                )
+                file_path = project_manager.add_component_to_project(comp_type, {}, theme)
                 generated_files.append(file_path)
 
             # Generate main composition

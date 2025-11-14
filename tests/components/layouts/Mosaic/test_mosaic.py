@@ -160,6 +160,7 @@ class TestMosaicToolRegistration:
         result = asyncio.run(tool_func())
         result_data = json.loads(result)
         assert "error" in result_data
+
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
@@ -183,4 +184,68 @@ class TestMosaicToolRegistration:
         assert "error" in result_data
         assert "Invalid" in result_data["error"]
 
+    def test_tool_execution_clips_not_list(self):
+        """Test tool execution when clips is not a list."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
 
+        from chuk_motion.components.layouts.Mosaic.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with clips as a dict, not a list
+        clips_json = json.dumps({"not": "a list"})
+
+        result = asyncio.run(tool_func(clips=clips_json))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "Mosaic"
+        timeline_mock.add_component.assert_called_once()
+
+    def test_tool_execution_clips_with_none_items(self):
+        """Test tool execution when some clip items parse to None."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_motion.components.layouts.Mosaic.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with clips that include items without 'type' (will parse to non-ComponentInstance)
+        clips_json = json.dumps(
+            [
+                {"type": "CodeBlock", "config": {"code": "Valid"}},
+                {"config": {"code": "Invalid - no type"}},  # This won't become a ComponentInstance
+                None,  # This will also not become a ComponentInstance
+            ]
+        )
+
+        result = asyncio.run(tool_func(clips=clips_json))
+
+        result_data = json.loads(result)
+        assert result_data["component"] == "Mosaic"
+        timeline_mock.add_component.assert_called_once()

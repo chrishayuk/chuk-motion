@@ -113,7 +113,8 @@ def register_tool(mcp, project_manager):
                 content_parsed = json.loads(content)
                 content_component = parse_nested_component(content_parsed)
 
-                if content_component is None:
+                # Validate that we got a ComponentInstance
+                if not isinstance(content_component, ComponentInstance):
                     return ErrorResponse(
                         error="Invalid content format. Use format: {'type': 'ComponentName', 'config': {...}}"
                     ).model_dump_json()

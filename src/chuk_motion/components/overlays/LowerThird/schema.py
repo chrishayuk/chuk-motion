@@ -16,9 +16,9 @@ class LowerThirdProps(BaseModel):
     variant: Literal["minimal", "standard", "glass", "bold", "animated"] | None = Field(
         "glass", description="Visual style"
     )
-    position: Literal["bottom_left", "bottom_center", "bottom_right", "top_left", "top_center"] | None = Field(
-        "bottom_left", description="Screen position"
-    )
+    position: (
+        Literal["bottom_left", "bottom_center", "bottom_right", "top_left", "top_center"] | None
+    ) = Field("bottom_left", description="Screen position")
     start_time: float = Field(description="When to show (seconds)", ge=0.0)
     duration: float | None = Field(5.0, description="How long to show (seconds)", gt=0.0)
 
