@@ -292,3 +292,52 @@ class TestGridToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid items JSON" in result_data["error"]
+
+    def test_tool_execution_non_list_items(self):
+        """Test tool execution when items is not a list."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_motion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        # Test with dict instead of list - should still work but skip the list processing
+        result = asyncio.run(tool_func(items='{"title": "A"}', duration=5.0))
+
+        # Should succeed but with empty children
+        result_data = json.loads(result)
+        assert result_data["component"] == "Grid"
+
+    def test_tool_execution_with_null_child(self):
+        """Test tool execution when parse_nested_component returns None."""
+        import asyncio
+        import json
+        from unittest.mock import Mock, patch
+
+        from chuk_motion.components.layouts.Grid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        # Mock parse_nested_component to return None
+        with patch('chuk_motion.components.layouts.Grid.tool.parse_nested_component', return_value=None):
+            result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
+
+        # Should still succeed, just with no children added
+        result_data = json.loads(result)
+        assert result_data["component"] == "Grid"

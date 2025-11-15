@@ -127,6 +127,50 @@ class TestTypewriterTextToolRegistration:
         result_data = json.loads(result)
         assert result_data["component"] == "TypewriterText"
 
+    def test_tool_execution_with_duration_string(self):
+        """Test tool execution with duration as string."""
+        from chuk_motion.components.text_animations.TypewriterText.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        # Test with "5s" string format
+        result = asyncio.run(tool_func(text="Test", duration="5s"))
+
+        # Check component was added
+        assert len(timeline.get_all_components()) >= 1
+        result_data = json.loads(result)
+        assert result_data["component"] == "TypewriterText"
+        assert result_data["duration"] == 5.0
+
+    def test_tool_execution_with_duration_numeric_string(self):
+        """Test tool execution with duration as numeric string without suffix."""
+        from chuk_motion.components.text_animations.TypewriterText.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        # Test with "3.5" string format (no 's' suffix)
+        result = asyncio.run(tool_func(text="Test", duration="3.5"))
+
+        # Check component was added
+        assert len(timeline.get_all_components()) >= 1
+        result_data = json.loads(result)
+        assert result_data["component"] == "TypewriterText"
+        assert result_data["duration"] == 3.5
+
     def test_tool_execution_no_project(self):
         """Test tool execution when no project exists."""
         from chuk_motion.components.text_animations.TypewriterText.tool import register_tool

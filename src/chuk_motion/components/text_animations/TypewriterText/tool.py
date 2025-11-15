@@ -80,13 +80,6 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
-                # Calculate minimum duration needed to type all text
-                text_length = len(text)
-                min_duration_needed = text_length / type_speed
-
-                # Add 1.5 second buffer for cursor to blink at the end
-                recommended_duration = min_duration_needed + 1.5
-
                 # Parse duration if it's a string
                 actual_duration = duration
                 if isinstance(duration, str):
@@ -96,16 +89,27 @@ def register_tool(mcp, project_manager):
                     else:
                         actual_duration = float(duration)
 
-                # Use the larger of provided duration or calculated duration
-                final_duration = max(actual_duration, recommended_duration)
+                # Calculate if we need to speed up typing to fit in the given duration
+                text_length = len(text)
+                # Reserve 1.0 second for cursor to blink at the end
+                time_available_for_typing = max(actual_duration - 1.0, 0.5)
 
-                # Build props
+                # Calculate minimum speed needed to finish in time
+                min_speed_needed = text_length / time_available_for_typing
+
+                # Use the faster of: requested speed or minimum needed speed
+                final_type_speed = max(type_speed, min_speed_needed)
+
+                # Use the requested duration (don't extend it)
+                final_duration = actual_duration
+
+                # Build props - use calculated type_speed to ensure completion
                 props = {
                     "text": text,
                     "fontSize": font_size,
                     "fontWeight": font_weight,
                     "showCursor": show_cursor,
-                    "typeSpeed": type_speed,
+                    "typeSpeed": final_type_speed,
                     "position": position,
                     "align": align,
                 }

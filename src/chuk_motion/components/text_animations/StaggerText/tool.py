@@ -80,13 +80,34 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
-                # Build props
+                # Parse duration if it's a string
+                actual_duration = duration
+                if isinstance(duration, str):
+                    if duration.endswith('s'):
+                        actual_duration = float(duration[:-1])
+                    else:
+                        actual_duration = float(duration)
+
+                # Calculate if we need to speed up stagger to fit in the given duration
+                unit_count = len(text.split()) if stagger_by == "word" else len(text)
+
+                # Calculate frames available (reserve 10 frames for final display)
+                fps = 30
+                frames_available = max(int(actual_duration * fps) - 10, fps)
+
+                # Calculate max delay allowed per unit
+                max_delay_frames = frames_available / max(unit_count, 1)
+
+                # Use the smaller of requested delay or max allowed
+                final_stagger_delay = min(stagger_delay, max_delay_frames)
+
+                # Build props with adjusted stagger_delay
                 props = {
                     "text": text,
                     "fontSize": font_size,
                     "fontWeight": font_weight,
                     "staggerBy": stagger_by,
-                    "staggerDelay": stagger_delay,
+                    "staggerDelay": final_stagger_delay,
                     "animationType": animation_type,
                     "position": position,
                     "align": align,
@@ -104,7 +125,7 @@ def register_tool(mcp, project_manager):
                 )
 
                 component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                    component, duration=actual_duration, track=track, gap_before=gap_before
                 )
 
                 return ComponentResponse(
@@ -112,7 +133,7 @@ def register_tool(mcp, project_manager):
                     start_time=project_manager.current_timeline.frames_to_seconds(
                         component.start_frame
                     ),
-                    duration=duration,
+                    duration=actual_duration,
                 ).model_dump_json()
             except Exception as e:
                 return ErrorResponse(error=str(e)).model_dump_json()

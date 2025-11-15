@@ -18,7 +18,7 @@ The component progressively reveals characters at a configurable speed, creating
 ## Parameters
 
 - **text**: Text to type out, supports multiline with \n (required)
-- **font_size**: Font size - xl, 2xl, 3xl, 4xl (default: "3xl")
+- **font_size**: Font size - xl, 2xl, 3xl, 4xl (default: "4xl")
 - **font_weight**: Font weight - normal, medium, semibold, bold (default: "medium")
 - **text_color**: Text color (uses on_dark color if not specified)
 - **cursor_color**: Cursor color (uses text color if not specified)
@@ -26,13 +26,23 @@ The component progressively reveals characters at a configurable speed, creating
 - **type_speed**: Characters per second, 0.1-20.0 (default: 2.0)
 - **position**: Screen position - center, top, bottom, left (default: "center")
 - **align**: Text alignment - left, center, right (default: "left")
-- **duration**: Total duration in seconds (default: 3.0)
+- **duration**: Total duration in seconds (default: 3.0, typing auto-speeds to fit)
 
 ## Design Token Integration
 
-- **Typography:** Uses `font_sizes['3xl']`, `font_weights.medium`, `primary_font`, `letter_spacing.normal`
+- **Typography:** Uses `font_sizes[default_resolution]['4xl']` (120px @ 1080p), `font_weights.medium`, `primary_font`, `letter_spacing.normal`
 - **Colors:** Uses `text.on_dark` by default
 - **Spacing:** Uses `spacing.xs`, `spacing['2xl']`, `spacing['4xl']`
+
+## Auto-Speed Adjustment
+
+**New in v2.0:** TypewriterText automatically speeds up typing to fit within your specified duration:
+
+- **Formula**: If `(text_length / type_speed) > (duration - 1.0)`, typing speeds up automatically
+- **Auto-acceleration**: Uses the faster of your type_speed or the minimum needed to complete
+- **Example**: 130-character text in 8 seconds → speeds up to ~18.6 chars/sec (ignoring the 2.0 default)
+
+This ensures your typewriter animation **always completes within the given duration** without extending the video!
 
 ## Typing Speed Guide
 
@@ -111,13 +121,14 @@ The component progressively reveals characters at a configurable speed, creating
 
 ## Best Practices
 
-1. **Use type_speed 2.0-4.0** for most readable, natural typing feel
+1. **Use type_speed 2.0-4.0** for most readable, natural typing feel (will auto-speed if needed)
 2. **Show cursor for live typing feel**, hide it for finished text or captions
 3. **Align left for code/terminal**, center for titles/dialogue
-4. **Keep text concise** (under 100 characters) for best impact
+4. **Set appropriate duration** - typing will automatically speed up to fit
 5. **Green text (#00FF00)** with left alignment creates classic terminal aesthetic
-6. **Duration should match text length**: Ensure duration is long enough for all text to type out
+6. **Keep text concise for slow speeds** - longer text will type very fast in short durations
 7. **Use multiline sparingly** - works best with 1-3 lines of text
+8. **Font size tokens resolve automatically** - "4xl" becomes 120px at 1080p, 240px at 4K
 
 ## Common Use Cases
 

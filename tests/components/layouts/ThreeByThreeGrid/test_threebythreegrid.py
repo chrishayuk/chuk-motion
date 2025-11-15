@@ -182,3 +182,61 @@ class TestThreeByThreeGridToolRegistration:
         result_data = json.loads(result)
         assert "error" in result_data
         assert "Invalid" in result_data["error"]
+
+    def test_tool_execution_non_list_items(self):
+        """Test tool execution when items is not a list."""
+        import asyncio
+        import json
+        from unittest.mock import Mock
+
+        from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Test with JSON string instead of list - should still work but skip the list processing
+        # JSON string value will be parsed as a Python string, which is sliceable but not a list
+        result = asyncio.run(tool_func(items='"test string"'))
+
+        # Should succeed but with empty children
+        result_data = json.loads(result)
+        assert result_data["component"] == "ThreeByThreeGrid"
+
+    def test_tool_execution_with_null_child(self):
+        """Test tool execution when parse_nested_component returns None."""
+        import asyncio
+        import json
+        from unittest.mock import Mock, patch
+
+        from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Mock parse_nested_component to return None
+        with patch('chuk_motion.components.layouts.ThreeByThreeGrid.tool.parse_nested_component', return_value=None):
+            result = asyncio.run(tool_func(items='[{"title": "A"}]'))
+
+        # Should still succeed, just with no children added
+        result_data = json.loads(result)
+        assert result_data["component"] == "ThreeByThreeGrid"

@@ -249,3 +249,37 @@ class TestPerformanceMultiCamToolRegistration:
 
         # Verify component was added
         timeline_mock.add_component.assert_called_once()
+
+    def test_tool_execution_with_null_secondary_cam(self):
+        """Test tool execution when parse_nested_component returns None for a secondary cam."""
+        import asyncio
+        import json
+        from unittest.mock import Mock, patch
+
+        from chuk_motion.components.layouts.PerformanceMultiCam.tool import register_tool
+
+        # Mock ProjectManager with current_timeline
+        pm_mock = Mock()
+        timeline_mock = Mock()
+        component_mock = Mock()
+        component_mock.start_frame = 0
+        timeline_mock.add_component = Mock(return_value=component_mock)
+        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
+        pm_mock.current_timeline = timeline_mock
+
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
+        tool_func = mcp_mock.tool.call_args[0][0]
+
+        # Mock parse_nested_component to return None for secondary cams
+        with patch('chuk_motion.components.layouts.PerformanceMultiCam.tool.parse_nested_component', return_value=None):
+            primary_cam = json.dumps({"id": "primary"})
+            secondary_cams = json.dumps([{"id": "cam1"}, {"id": "cam2"}])
+
+            result = asyncio.run(
+                tool_func(primary_cam=primary_cam, secondary_cams=secondary_cams, duration=5.0)
+            )
+
+        # Should still succeed, just with no secondary cameras added
+        result_data = json.loads(result)
+        assert result_data["component"] == "PerformanceMultiCam"
