@@ -28,7 +28,7 @@ export const DecryptedText: React.FC<DecryptedTextProps> = ({
   text,
   startFrame = 0,
   durationInFrames = 90,
-  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontSize = '3xl',
   fontWeight = '[[ typography.font_weights.bold ]]',
   textColor = '[[ colors.text.on_dark ]]',
   revealDirection = 'start',
@@ -37,6 +37,15 @@ export const DecryptedText: React.FC<DecryptedTextProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Font size mapping - resolve token names to pixel values
+  const fontSizeMap: Record<string, number> = {
+    'xl': parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+    '2xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+    '3xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['3xl'] ]]'),
+    '4xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['4xl'] ]]'),
+  };
+  const resolvedFontSize = fontSizeMap[fontSize] || parseInt(fontSize) || fontSizeMap['3xl'];
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const chars = useMemo(() => text.split(''), [text]);
@@ -116,7 +125,7 @@ export const DecryptedText: React.FC<DecryptedTextProps> = ({
       <div
         style={{
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          fontSize,
+          fontSize: resolvedFontSize,
           fontWeight,
           color: textColor,
           letterSpacing: '[[ typography.letter_spacing.wide ]]',

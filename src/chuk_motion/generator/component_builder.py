@@ -58,7 +58,7 @@ class ComponentBuilder:
             "content",
             "frames",
             "transitions",
-            "text-animations",
+            "text_animations",
         ]
 
     def _to_camel_case(self, snake_str: str) -> str:

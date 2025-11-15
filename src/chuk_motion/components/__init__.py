@@ -6,9 +6,12 @@ Each component is self-contained with its own Pydantic models.
 """
 
 import importlib
+import logging
 from pathlib import Path
 
 from .base import ComponentInfo
+
+logger = logging.getLogger(__name__)
 
 
 def discover_components() -> dict[str, ComponentInfo]:
@@ -53,28 +56,55 @@ def discover_components() -> dict[str, ComponentInfo]:
                 module_path = f"chuk_motion.components.{category_name}.{component_name}"
                 module = importlib.import_module(module_path)
 
-                # Get component metadata (Pydantic model)
+                # Get component metadata - try schema.py first (new refactored components)
                 metadata = getattr(module, "METADATA", None)
                 if not metadata:
-                    print(f"Warning: Component {component_name} missing METADATA")
+                    # Try importing from schema.py (new component structure)
+                    try:
+                        schema_module_path = f"{module_path}.schema"
+                        schema_module = importlib.import_module(schema_module_path)
+                        metadata = getattr(schema_module, "METADATA", None)
+                    except ImportError:
+                        pass
+
+                # Skip components without metadata
+                if not metadata:
+                    logger.debug(f"Component {component_name} has no METADATA, skipping")
                     continue
+
+                # Get register_tool function - try tool.py if not in __init__.py
+                register_tool = getattr(module, "register_tool", None)
+                if not register_tool:
+                    try:
+                        tool_module_path = f"{module_path}.tool"
+                        tool_module = importlib.import_module(tool_module_path)
+                        register_tool = getattr(tool_module, "register_tool", None)
+                    except ImportError:
+                        pass
+
+                # Get add_to_composition function - try builder.py if not in __init__.py
+                add_to_composition = getattr(module, "add_to_composition", None)
+                if not add_to_composition:
+                    try:
+                        builder_module_path = f"{module_path}.builder"
+                        builder_module = importlib.import_module(builder_module_path)
+                        add_to_composition = getattr(builder_module, "add_to_composition", None)
+                    except ImportError:
+                        pass
 
                 # Create ComponentInfo
                 component_info = ComponentInfo(
                     metadata=metadata,
                     template_path=template_file if template_file.exists() else None,
-                    register_tool=getattr(module, "register_tool", None),
-                    add_to_composition=getattr(module, "add_to_composition", None),
+                    register_tool=register_tool,
+                    add_to_composition=add_to_composition,
                     directory_name=category_name,  # Store actual directory name
                 )
 
                 components[component_name] = component_info
 
             except Exception as e:
-                print(f"Warning: Failed to load component {component_name}: {e}")
-                import traceback
-
-                traceback.print_exc()
+                logger.warning(f"Failed to load component {component_name}: {e}", exc_info=True)
                 continue
 
     return components
@@ -102,10 +132,19 @@ def get_component_registry() -> dict[str, dict]:
             module = importlib.import_module(module_path)
             mcp_schema = getattr(module, "MCP_SCHEMA", None)
 
+            # Try schema.py if not found in __init__.py (new component structure)
+            if not mcp_schema:
+                try:
+                    schema_module_path = f"{module_path}.schema"
+                    schema_module = importlib.import_module(schema_module_path)
+                    mcp_schema = getattr(schema_module, "MCP_SCHEMA", None)
+                except ImportError:
+                    pass
+
             if mcp_schema:
                 registry[name] = mcp_schema
         except Exception as e:
-            print(f"Warning: Could not get MCP schema for {name}: {e}")
+            logger.warning(f"Could not get MCP schema for {name}: {e}")
 
     return registry
 
@@ -127,12 +166,9 @@ def register_all_tools(mcp, project_manager):
                 comp_info.register_tool(mcp, project_manager)
                 registered_count += 1
             except Exception as e:
-                print(f"Warning: Failed to register tool for {name}: {e}")
-                import traceback
+                logger.warning(f"Failed to register tool for {name}: {e}", exc_info=True)
 
-                traceback.print_exc()
-
-    print(f"Registered {registered_count} component tools", flush=True)
+    logger.debug(f"Registered {registered_count} component tools")
 
 
 def register_all_builders(composition_builder_class):
@@ -194,7 +230,7 @@ def register_all_renderers(composition_builder_class):
             pass
 
     if registered_count > 0:
-        print(f"Registered {registered_count} custom component renderers", flush=True)
+        logger.debug(f"Registered {registered_count} custom component renderers")
 
 
 def _camel_to_snake(name: str) -> str:

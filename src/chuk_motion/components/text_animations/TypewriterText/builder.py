@@ -10,7 +10,7 @@ def add_to_composition(
     builder: "CompositionBuilder",
     start_time: float,
     text: str,
-    font_size: str = "3xl",
+    font_size: str = "4xl",
     font_weight: str = "medium",
     text_color: str | None = None,
     cursor_color: str | None = None,

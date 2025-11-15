@@ -33,8 +33,11 @@ Usage:
     builder.add_line_chart(data=[[0,10],[1,20]], start_time=3.0)
 """
 
+import logging
 from dataclasses import dataclass, field
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 def snake_to_camel(snake_str: str) -> str:
@@ -269,7 +272,8 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "milestones",
                     "clips",  # TimelineLayout, MosaicLayout
                     "content",  # Container, Frames, Overlays, Animations
-                    "panels",  # PanelCascade
+                    "items",  # PanelCascade - array of ComponentInstance
+                    "panels",  # Legacy
                     "leftPanel",
                     "rightPanel",
                     "topPanel",
@@ -283,6 +287,11 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     child = comp.props.get(key)
                     if isinstance(child, ComponentInstance):
                         collect_types(child)
+                    # Also handle arrays of ComponentInstances
+                    elif isinstance(child, list):
+                        for item in child:
+                            if isinstance(item, ComponentInstance):
+                                collect_types(item)
 
         for comp in components:
             collect_types(comp)
@@ -920,7 +929,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     self._format_prop_value,
                 )
             except Exception as e:
-                print(f"Warning: Custom renderer for {comp.component_type} failed: {e}")
+                logger.warning(f"Custom renderer for {comp.component_type} failed: {e}")
                 return None
         return None
 
@@ -937,7 +946,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 # Recursively process the dumped dict in case it contains more BaseModels
                 return self._serialize_value(dumped)
             except Exception as e:
-                print(f"Warning: Could not serialize {type(value).__name__}: {e}")
+                logger.warning(f"Could not serialize {type(value).__name__}: {e}")
                 # Fallback: try to convert to dict manually
                 return str(value)
         elif is_dataclass(value) and not isinstance(value, type):
@@ -977,10 +986,10 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
             try:
                 return "{" + json.dumps(serialized) + "}"
             except TypeError:
-                # Debug: print what failed
-                print(f"DEBUG: Failed to serialize value of type {type(value)}")
-                print(f"DEBUG: Serialized type: {type(serialized)}")
-                print(f"DEBUG: Serialized value: {serialized}")
+                # Debug: log what failed
+                logger.debug(f"Failed to serialize value of type {type(value)}")
+                logger.debug(f"Serialized type: {type(serialized)}")
+                logger.debug(f"Serialized value: {serialized}")
                 raise
         else:
             return f"{{{value}}}"

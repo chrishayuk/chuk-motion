@@ -13,7 +13,7 @@ def register_tool(mcp, project_manager):
     @mcp.tool
     async def remotion_add_typewriter_text(
         text: str,
-        font_size: str = "3xl",
+        font_size: str = "4xl",
         font_weight: str = "medium",
         text_color: str | None = None,
         cursor_color: str | None = None,
@@ -35,7 +35,7 @@ def register_tool(mcp, project_manager):
 
         Args:
             text: Text to type out (supports multiline)
-            font_size: Font size (xl, 2xl, 3xl, 4xl) - default: 3xl
+            font_size: Font size (xl, 2xl, 3xl, 4xl) - default: 4xl
             font_weight: Font weight (normal, medium, semibold, bold) - default: medium
             text_color: Text color (uses on_dark color if not specified)
             cursor_color: Cursor color (uses text color if not specified)
@@ -80,6 +80,25 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
+                # Calculate minimum duration needed to type all text
+                text_length = len(text)
+                min_duration_needed = text_length / type_speed
+
+                # Add 1.5 second buffer for cursor to blink at the end
+                recommended_duration = min_duration_needed + 1.5
+
+                # Parse duration if it's a string
+                actual_duration = duration
+                if isinstance(duration, str):
+                    # Simple parsing for "Xs" format
+                    if duration.endswith('s'):
+                        actual_duration = float(duration[:-1])
+                    else:
+                        actual_duration = float(duration)
+
+                # Use the larger of provided duration or calculated duration
+                final_duration = max(actual_duration, recommended_duration)
+
                 # Build props
                 props = {
                     "text": text,
@@ -105,7 +124,7 @@ def register_tool(mcp, project_manager):
                 )
 
                 component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                    component, duration=final_duration, track=track, gap_before=gap_before
                 )
 
                 return ComponentResponse(
@@ -113,7 +132,7 @@ def register_tool(mcp, project_manager):
                     start_time=project_manager.current_timeline.frames_to_seconds(
                         component.start_frame
                     ),
-                    duration=duration,
+                    duration=final_duration,
                 ).model_dump_json()
             except Exception as e:
                 return ErrorResponse(error=str(e)).model_dump_json()

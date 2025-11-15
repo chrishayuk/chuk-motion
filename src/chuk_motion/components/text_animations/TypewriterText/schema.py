@@ -11,7 +11,7 @@ class TypewriterTextProps(BaseModel):
     """Properties for TypewriterText component."""
 
     text: str = Field(description="Text to type out (supports multiline with \\n)")
-    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(default="3xl", description="Font size")
+    fontSize: Literal["xl", "2xl", "3xl", "4xl"] = Field(default="4xl", description="Font size")
     fontWeight: Literal["normal", "medium", "semibold", "bold"] = Field(
         default="medium", description="Font weight"
     )
@@ -51,7 +51,7 @@ MCP_SCHEMA = {
         },
         "font_size": {
             "type": "string",
-            "default": "3xl",
+            "default": "4xl",
             "description": "Font size (xl, 2xl, 3xl, 4xl)",
         },
         "font_weight": {
@@ -104,7 +104,7 @@ MCP_SCHEMA = {
     },
     "example": {
         "text": "Hello, World!",
-        "font_size": "3xl",
+        "font_size": "4xl",
         "type_speed": 2.0,
         "show_cursor": True,
         "start_time": 0.0,
@@ -119,7 +119,7 @@ MCP_SCHEMA = {
     ],
     "design_tokens_used": {
         "typography": [
-            "font_sizes['3xl']",
+            "font_sizes['4xl']",
             "font_weights.medium",
             "primary_font",
             "letter_spacing.normal",

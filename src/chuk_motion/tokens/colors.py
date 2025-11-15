@@ -75,6 +75,16 @@ class GradientColors(BaseModel):
     primary_to_secondary: str = ""  # Will be set per theme
 
 
+# Effect Color Model
+class EffectColors(BaseModel):
+    """Special effect colors for animations and glitches."""
+
+    glitch_red: str = "#FF0000"  # RGB split red channel
+    glitch_cyan: str = "#00FFFF"  # RGB split cyan channel
+    scanline: str = "rgba(0, 0, 0, 0.1)"  # CRT scanline overlay
+    noise: str = "rgba(255, 255, 255, 0.05)"  # Static noise overlay
+
+
 # Color Theme Model
 class ColorTheme(BaseModel):
     """A complete color theme."""
@@ -90,6 +100,7 @@ class ColorTheme(BaseModel):
     border: BorderColors = Field(default_factory=BorderColors)
     shadow: ShadowColors = Field(default_factory=ShadowColors)
     highlight: HighlightColors = Field(default_factory=HighlightColors)
+    effects: EffectColors = Field(default_factory=EffectColors)
 
 
 # Color Tokens Model
