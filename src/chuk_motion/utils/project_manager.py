@@ -258,7 +258,7 @@ class ProjectManager:
             types.add(comp.component_type)
 
             # Check for nested children in props
-            for _key, value in comp.props.items():
+            for key, value in comp.props.items():
                 if isinstance(value, ComponentInstance):
                     collect_types(value)
                 elif isinstance(value, list):
@@ -427,6 +427,90 @@ class ProjectManager:
                                 child, child_instance, component_types_needed
                             )
 
+        # Handle specialized layout children with specific prop keys
+        elif "children" in scene and scene.get("type") in [
+            "ThreeColumnLayout",
+            "ThreeRowLayout",
+            "AsymmetricLayout",
+            "PiP",
+            "Mosaic",
+            "OverTheShoulder",
+            "DialogueFrame",
+            "StackedReaction",
+            "HUDStyle",
+            "PerformanceMultiCam",
+            "FocusStrip",
+            "ThreeByThreeGrid",
+            "Vertical",
+            "Timeline",
+            "BrowserFrame",
+            "DeviceFrame",
+            "Terminal",
+        ]:
+            # Map layout types to their prop keys
+            layout_prop_keys = {
+                "ThreeColumnLayout": ["left", "center", "right"],
+                "ThreeRowLayout": ["top", "middle", "bottom"],
+                "AsymmetricLayout": ["main", "top_side", "bottom_side"],
+                "PiP": ["mainContent", "pipContent"],
+                "Mosaic": ["clips"],
+                "OverTheShoulder": ["screen_content", "shoulder_overlay"],
+                "DialogueFrame": ["left_speaker", "center_content", "right_speaker"],
+                "StackedReaction": ["original_content", "reaction_content"],
+                "HUDStyle": ["main_content", "top_left", "top_right", "bottom_left", "bottom_right"],
+                "PerformanceMultiCam": ["primary_cam", "secondary_cams"],
+                "FocusStrip": ["main_content", "focus_content"],
+                "ThreeByThreeGrid": ["children"],
+                "Vertical": ["top", "bottom"],
+                "Timeline": ["main_content"],
+                "BrowserFrame": ["content"],
+                "DeviceFrame": ["content"],
+                "Terminal": ["content"],
+            }
+
+            children = scene["children"]
+            layout_type = scene.get("type", "")
+            prop_keys = layout_prop_keys.get(layout_type, [])
+
+            if isinstance(children, list):
+                # For array props like clips, secondary_cams, children - collect all into a list
+                if len(prop_keys) == 1 and prop_keys[0] in ["clips", "secondary_cams", "children"]:
+                    child_instances = []
+                    for child in children:
+                        if isinstance(child, dict) and "type" in child:
+                            component_types_needed.add(child["type"])
+                            child_instance = ComponentInstance(
+                                component_type=child["type"],
+                                start_frame=scene.get("startFrame", 0),
+                                duration_frames=scene.get("durationInFrames", 90),
+                                props=child.get("config", {}),
+                                layer=5,
+                            )
+                            child_instances.append(child_instance)
+                            self._process_nested_children(
+                                child, child_instance, component_types_needed
+                            )
+                    if child_instances:  # Only set if we have children
+                        component_instance.props[prop_keys[0]] = child_instances
+                else:
+                    # For named props like left/center/right - map by index
+                    for i, key in enumerate(prop_keys):
+                        if i < len(children):
+                            child = children[i]
+                            if isinstance(child, dict) and "type" in child:
+                                component_types_needed.add(child["type"])
+                                child_instance = ComponentInstance(
+                                    component_type=child["type"],
+                                    start_frame=scene.get("startFrame", 0),
+                                    duration_frames=scene.get("durationInFrames", 90),
+                                    props=child.get("config", {}),
+                                    layer=5,
+                                )
+                                component_instance.props[key] = child_instance
+                                self._process_nested_children(
+                                    child, child_instance, component_types_needed
+                                )
+
         # Grid and Container children (array or single)
         elif "children" in scene:
             children = scene["children"]
@@ -544,6 +628,9 @@ class ProjectManager:
                     self._process_nested_children(child, child_instance, component_types_needed)
                 # Handle array of child components (e.g., secondary_cams, clips)
                 elif isinstance(child, list):
+                    # Skip if already processed as ComponentInstances by the specialized layouts branch above
+                    if child and isinstance(child[0], ComponentInstance):
+                        continue
                     child_instances = []
                     for child_item in child:
                         # Handle direct component: {type: "DemoBox", config: {...}}

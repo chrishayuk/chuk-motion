@@ -2,8 +2,11 @@
 """
 Content Components Showcase
 
-Demonstrates all 4 content components with various use cases.
-Shows: VideoContent, StylizedWebPage, WebPage, DemoBox
+Demonstrates all 5 content components with various use cases.
+Shows: ImageContent, VideoContent, StylizedWebPage, WebPage, DemoBox
+
+NOTE: ImageContent examples use picsum.photos (free placeholder images).
+      To use your own images, add them to public/ and update the src paths.
 
 Usage:
     python examples/content_showcase.py
@@ -32,7 +35,7 @@ def generate_content_showcase():
 
     print(f"\n{'='*70}")
     print(f"CONTENT COMPONENTS SHOWCASE")
-    print(f"All 4 Content Display Components")
+    print(f"All 5 Content Display Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -76,7 +79,7 @@ def generate_content_showcase():
         "type": "TitleScene",
         "config": {
             "text": "Content Showcase",
-            "subtitle": "4 Professional Content Components",
+            "subtitle": "5 Professional Content Components",
             "variant": "bold",
             "animation": "fade_zoom"
         }
@@ -238,11 +241,47 @@ def generate_content_showcase():
     )
 
     # ========================================
-    # 6. VIDEO CONTENT - Placeholder
+    # 6. IMAGE CONTENT - Cover Fit
     # ========================================
-    print("\n🎥 6. VideoContent")
+    print("\n🖼️  6. ImageContent - Cover")
     add_content_with_title(
         6,
+        "ImageContent",
+        "Image display with cover fit",
+        {
+            "type": "ImageContent",
+            "config": {
+                "src": "https://picsum.photos/1920/1080",
+                "fit": "cover"
+            }
+        }
+    )
+
+    # ========================================
+    # 7. IMAGE CONTENT - Rounded with Opacity
+    # ========================================
+    print("\n🖼️  7. ImageContent - Styled")
+    add_content_with_title(
+        7,
+        "ImageContent",
+        "Rounded corners with semi-transparency",
+        {
+            "type": "ImageContent",
+            "config": {
+                "src": "https://picsum.photos/1200/1200",
+                "fit": "contain",
+                "opacity": 0.8,
+                "border_radius": 30
+            }
+        }
+    )
+
+    # ========================================
+    # 8. VIDEO CONTENT - Placeholder
+    # ========================================
+    print("\n🎥 8. VideoContent")
+    add_content_with_title(
+        8,
         "VideoContent",
         "Video playback component",
         {
@@ -268,10 +307,11 @@ def generate_content_showcase():
         },
         "children": [
             {
-                "type": "DemoBox",
+                "type": "ImageContent",
                 "config": {
-                    "label": "Demo\nBox",
-                    "color": "primary"
+                    "src": "https://picsum.photos/800/800",
+                    "fit": "cover",
+                    "border_radius": 10
                 }
             },
             {
@@ -292,10 +332,11 @@ def generate_content_showcase():
                 }
             },
             {
-                "type": "DemoBox",
+                "type": "ImageContent",
                 "config": {
-                    "label": "🎥\nVideo",
-                    "color": "accent"
+                    "src": "https://picsum.photos/900/900",
+                    "fit": "cover",
+                    "opacity": 0.7
                 }
             }
         ]
@@ -309,7 +350,7 @@ def generate_content_showcase():
         "type": "TitleScene",
         "config": {
             "text": "Flexible Content",
-            "subtitle": "4 Components • Endless Possibilities",
+            "subtitle": "5 Components • Endless Possibilities",
             "variant": "glass",
             "animation": "zoom"
         }
@@ -334,7 +375,7 @@ def generate_content_showcase():
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
     print(f"\n📊 Showcase structure:")
     print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Components: 6 × 2 scenes = 12 scenes")
+    print(f"   • Individual Components: 8 × 2 scenes = 16 scenes")
     print(f"   • Combined Grid: 1 scene")
     print(f"   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
@@ -343,6 +384,7 @@ def generate_content_showcase():
     print("   ✓ DemoBox - Quick placeholders (primary & accent)")
     print("   ✓ WebPage - Raw HTML content display")
     print("   ✓ StylizedWebPage - Pre-styled layouts (light & dark)")
+    print("   ✓ ImageContent - Image display (cover, contain, opacity, border radius)")
     print("   ✓ VideoContent - Placeholder (requires actual video file)")
 
     print(f"\n🎨 Features Demonstrated:")
@@ -364,11 +406,13 @@ def generate_content_showcase():
     print("   npm start")
 
     print("\n💡 This showcase demonstrates:")
-    print("   ✓ All 4 professional content components")
+    print("   ✓ All 5 professional content components")
     print("   ✓ Different styling approaches")
     print("   ✓ Theme variations")
     print("   ✓ Layout flexibility")
     print("   ✓ HTML content rendering")
+    print("   ✓ Image display with fit modes")
+    print("   ✓ Image opacity and border radius")
 
     print("\n" + "="*70)
 

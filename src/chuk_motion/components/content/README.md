@@ -2,10 +2,12 @@
 
 Content container components for organizing and presenting information.
 
-## Components (3)
+## Components (5)
 
 - **[DemoBox](./DemoBox/component.md)** - View documentation
+- **[ImageContent](./ImageContent/component.md)** - Image display with flexible sizing and styling
 - **[StylizedWebPage](./StylizedWebPage/component.md)** - View documentation
+- **[VideoContent](./VideoContent/component.md)** - Video content placeholder with controls
 - **[WebPage](./WebPage/component.md)** - View documentation
 
 ## Usage
