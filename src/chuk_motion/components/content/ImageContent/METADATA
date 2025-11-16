@@ -1,0 +1,4 @@
+name: ImageContent
+category: content
+description: Image display component for showing images in layouts
+layer: 0

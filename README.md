@@ -15,7 +15,7 @@
 
 - **🎨 Complete Design System**: Design tokens for colors, typography, spacing, and motion
 - **📱 Multi-Platform Support**: Safe margins for LinkedIn, TikTok, Instagram, YouTube
-- **🎬 50 Video Components**: Charts, code blocks, scenes, overlays, layouts, animations, text animations, transitions, and demo realism
+- **🎬 51 Video Components**: Charts, code blocks, scenes, overlays, layouts, animations, text animations, transitions, and demo realism
 - **🎨 7 Built-in Themes**: Tech, Finance, Education, Lifestyle, Gaming, Minimal, Business
 - **⚡ Track-Based Timeline**: Professional multi-track composition system
 - **🤖 LLM-Friendly**: Discoverable components with detailed schemas
@@ -133,8 +133,9 @@ Realistic UI mockups and demonstrations:
 - **DeviceFrame** - Device mockups (phone, tablet, desktop) with content
 - **Terminal** - Terminal window with command history and typing
 
-### 📦 Content (4 components)
+### 📦 Content (5 components)
 - **DemoBox** - Reusable content container for demos
+- **ImageContent** - Image display with flexible sizing (contain, cover, fill) and styling options
 - **StylizedWebPage** - Stylized webpage mockup for demonstrations
 - **VideoContent** - Video content placeholder with controls
 - **WebPage** - Clean webpage mockup with customizable content
@@ -143,7 +144,7 @@ Realistic UI mockups and demonstrations:
 - **LayoutTransition** - Smooth transitions between different layouts
 - **PixelTransition** - Pixelated transition effects
 
-**Total: 50 production-ready components** - All using design tokens with comprehensive test coverage!
+**Total: 51 production-ready components** - All using design tokens with comprehensive test coverage!
 
 ## Installation
 
@@ -229,6 +230,13 @@ remotion_add_typing_code(
     typing_speed="medium",
     duration="5s"
 )
+
+# Add images
+remotion_add_image_content(
+    src="https://picsum.photos/1920/1080",
+    fit="cover",
+    duration="3s"
+)
 ```
 
 ### 4. Render the Video
@@ -262,6 +270,12 @@ python examples/explore_design_system.py
 ```bash
 # Complete text animations showcase (52.5 seconds)
 python examples/all_text_animations_demo.py
+
+# Image layouts showcase - 17 examples (127 seconds)
+python examples/image_layouts_showcase.py
+
+# Content showcase - All 5 content components
+python examples/content_showcase.py
 
 # Fibonacci code typing demo
 python examples/fibonacci_demo.py
@@ -494,6 +508,17 @@ make test       # Run all tests
 
 ## Recent Updates ⭐
 
+### ImageContent Component (January 2025)
+- ✅ **New ImageContent component** for displaying images in videos
+- ✅ Flexible sizing modes: `cover`, `contain`, `fill`
+- ✅ Styling options: opacity, border radius
+- ✅ Design token integration for consistent styling
+- ✅ Created comprehensive `image_layouts_showcase.py` with 17 real-world examples
+- ✅ Fixed Mosaic layout to properly wrap clips in `{content: ...}` structure
+- ✅ Fixed specialized layout prop keys (AsymmetricLayout, OverTheShoulder, DialogueFrame, etc.)
+- ✅ Updated content_showcase.py to include ImageContent
+- ✅ Total components: **51 production-ready components**
+
 ### Text Animation Components (January 2025)
 - ✅ **6 new text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
 - ✅ Created dedicated `text_animations/` folder for better organization
@@ -501,7 +526,7 @@ make test       # Run all tests
 - ✅ Inspired by [ReactBits](https://www.reactbits.dev/text-animations)
 - ✅ All components use design tokens and spring physics
 - ✅ Complete demo with 20 scenes (52.5 seconds)
-- ✅ Total components: **50 production-ready components**
+- ✅ Total components: **51 production-ready components**
 
 ### Test Coverage Achievement (January 2025)
 - ✅ **100% test coverage** on all 17 layout component tools
@@ -512,11 +537,11 @@ make test       # Run all tests
 - ✅ All builder.py files at 100% coverage
 
 ### Component Library Expansion (January 2025)
-- ✅ **50 production-ready components** organized into 9 categories
+- ✅ **51 production-ready components** organized into 9 categories
 - ✅ **17 layout components**: AsymmetricLayout, Container, DialogueFrame, FocusStrip, Grid, HUDStyle, Mosaic, OverTheShoulder, PerformanceMultiCam, PiP, SplitScreen, StackedReaction, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, Timeline, Vertical
 - ✅ **6 text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
 - ✅ **6 chart components**: PieChart, BarChart, HorizontalBarChart, LineChart, AreaChart, DonutChart
-- ✅ **4 content components**: DemoBox, StylizedWebPage, VideoContent, WebPage
+- ✅ **5 content components**: DemoBox, ImageContent, StylizedWebPage, VideoContent, WebPage
 - ✅ **4 demo realism components**: BeforeAfterSlider, BrowserFrame, DeviceFrame, Terminal
 - ✅ **3 frame components**: BrowserFrame, DeviceFrame, Terminal
 - ✅ **3 animation components**: Counter, LayoutEntrance, PanelCascade
@@ -527,7 +552,7 @@ make test       # Run all tests
 
 ### Design System Integration (January 2025)
 - ✅ Created comprehensive spacing tokens with 7 platform safe margins
-- ✅ Applied design tokens to ALL 50 components (100% coverage)
+- ✅ Applied design tokens to ALL 51 components (100% coverage)
 - ✅ Fixed Jinja2 template rendering for token context
 - ✅ Updated all themes with spacing tokens
 - ✅ Fixed Pydantic v2 compatibility issues
@@ -535,7 +560,7 @@ make test       # Run all tests
 ### Time String Support (January 2025)
 - ✅ Support for time strings: "1s", "500ms", "1m"
 - ✅ Fixed `gap_before` string concatenation bug
-- ✅ Updated all 50 MCP tools to accept time strings
+- ✅ Updated all 51 MCP tools to accept time strings
 - ✅ Enhanced `seconds_to_frames()` with format parsing
 
 ### Example Files (January 2025)

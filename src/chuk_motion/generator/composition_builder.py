@@ -248,22 +248,40 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "mainFeed",
                     "demo1",
                     "demo2",
-                    "overlay",  # AsymmetricLayout
+                    "overlay",  # AsymmetricLayout (old)
+                    "main",
+                    "top_side",
+                    "bottom_side",  # AsymmetricLayout (new)
                     "hostView",
                     "screenContent",  # OverTheShoulder
+                    "screen_content",
+                    "shoulder_overlay",  # OverTheShoulder (new)
                     "characterA",
                     "characterB",  # DialogueFrame
+                    "left_speaker",
+                    "center_content",
+                    "right_speaker",  # DialogueFrame (new)
                     "originalClip",
                     "reactorFace",  # StackedReaction
+                    "original_content",
+                    "reaction_content",  # StackedReaction (new)
                     "gameplay",
                     "webcam",
                     "chatOverlay",  # HUDStyle
+                    "main_content",
+                    "top_left",
+                    "top_right",
+                    "bottom_left",
+                    "bottom_right",  # HUDStyle (new)
                     "frontCam",
                     "overheadCam",
                     "handCam",
                     "detailCam",  # PerformanceMultiCam
+                    "primary_cam",
+                    "secondary_cams",  # PerformanceMultiCam (new)
                     "hostStrip",
                     "backgroundContent",  # FocusStrip
+                    "focus_content",  # FocusStrip (new)
                     "mainContent",
                     "pipContent",  # PiPLayout
                     "topContent",
@@ -348,22 +366,40 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "mainFeed",
                     "demo1",
                     "demo2",
-                    "overlay",  # AsymmetricLayout
+                    "overlay",  # AsymmetricLayout (old)
+                    "main",
+                    "top_side",
+                    "bottom_side",  # AsymmetricLayout (new)
                     "hostView",
                     "screenContent",  # OverTheShoulder
+                    "screen_content",
+                    "shoulder_overlay",  # OverTheShoulder (new)
                     "characterA",
                     "characterB",  # DialogueFrame
+                    "left_speaker",
+                    "center_content",
+                    "right_speaker",  # DialogueFrame (new)
                     "originalClip",
                     "reactorFace",  # StackedReaction
+                    "original_content",
+                    "reaction_content",  # StackedReaction (new)
                     "gameplay",
                     "webcam",
                     "chatOverlay",  # HUDStyle
+                    "main_content",
+                    "top_left",
+                    "top_right",
+                    "bottom_left",
+                    "bottom_right",  # HUDStyle (new)
                     "frontCam",
                     "overheadCam",
                     "handCam",
                     "detailCam",  # PerformanceMultiCam
+                    "primary_cam",
+                    "secondary_cams",  # PerformanceMultiCam (new)
                     "hostStrip",
                     "backgroundContent",  # FocusStrip
+                    "focus_content",  # FocusStrip (new)
                     "mainContent",
                     "pipContent",  # PiPLayout
                     "topContent",
@@ -373,6 +409,7 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     "clips",  # TimelineLayout, MosaicLayout
                     "content",  # Container, Frames, Overlays, Animations
                     "panels",  # PanelCascade
+                    "items",  # PanelCascade (new)
                     "leftPanel",
                     "rightPanel",
                     "topPanel",
@@ -386,6 +423,11 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     child = comp.props.get(key)
                     if isinstance(child, ComponentInstance):
                         nested.add(id(child))
+                    # Also handle arrays
+                    elif isinstance(child, list):
+                        for item in child:
+                            if isinstance(item, ComponentInstance):
+                                nested.add(id(item))
         return nested
 
     def _render_component_jsx(self, comp: ComponentInstance, indent: int = 0) -> str:
@@ -596,9 +638,9 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
 {spaces}</{comp.component_type}>"""
 
         elif comp.component_type == "SplitScreen":
-            # Render left/right or top/bottom based on direction
-            direction = comp.props.get("direction", "horizontal")
-            if direction == "horizontal":
+            # Render left/right or top/bottom based on orientation
+            orientation = comp.props.get("orientation", "horizontal")
+            if orientation == "horizontal":
                 left = comp.props.get("left")
                 right = comp.props.get("right")
                 left_jsx = (
@@ -727,8 +769,14 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                     children_jsx = []
                     for child_item in child:
                         if isinstance(child_item, ComponentInstance):
-                            child_jsx = self._render_component_jsx(child_item, indent + 4)
-                            children_jsx.append(child_jsx)
+                            # Special handling for Mosaic clips - wrap in {content: ...} object
+                            if comp.component_type == "Mosaic" and key == "clips":
+                                # Render child inline within the content object
+                                child_jsx = self._render_component_jsx(child_item, indent + 6).strip()
+                                children_jsx.append(f"{spaces}    {{\n{spaces}      content: {child_jsx}\n{spaces}    }}")
+                            else:
+                                child_jsx = self._render_component_jsx(child_item, indent + 4)
+                                children_jsx.append(child_jsx)
                     children_str = ",\n".join(children_jsx)
                     child_props.append(f"{spaces}  {key}={{[\n{children_str}\n{spaces}  ]}}")
                 elif child is None:
