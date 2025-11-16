@@ -15,7 +15,7 @@
 
 - **🎨 Complete Design System**: Design tokens for colors, typography, spacing, and motion
 - **📱 Multi-Platform Support**: Safe margins for LinkedIn, TikTok, Instagram, YouTube
-- **🎬 43+ Video Components**: Charts, code blocks, overlays, layouts, animations, text animations, and demo realism
+- **🎬 50 Video Components**: Charts, code blocks, scenes, overlays, layouts, animations, text animations, transitions, and demo realism
 - **🎨 7 Built-in Themes**: Tech, Finance, Education, Lifestyle, Gaming, Minimal, Business
 - **⚡ Track-Based Timeline**: Professional multi-track composition system
 - **🤖 LLM-Friendly**: Discoverable components with detailed schemas
@@ -75,16 +75,19 @@ All charts support design tokens and smooth animations:
 - **AreaChart** - Filled area trends
 - **DonutChart** - Ring chart with center stat
 
-### 🎨 Overlays (5 components)
+### 🎬 Scenes (2 components)
 - **TitleScene** - Full-screen animated titles (4 variants, 5 animations)
 - **EndScreen** - YouTube end screens with CTAs (4 variants)
+
+### 🎨 Overlays (3 components)
 - **LowerThird** - Name plates (5 variants, 5 positions)
 - **TextOverlay** - Animated text emphasis (5 styles, 5 animations)
 - **SubscribeButton** - Animated subscribe button (5 animations)
 
-### 💻 Code (2 components)
+### 💻 Code (3 components)
 - **CodeBlock** - Syntax-highlighted code display (4 variants: minimal, terminal, editor, glass)
 - **TypingCode** - Character-by-character typing animation (4 variants, 4 cursor styles)
+- **CodeDiff** - Side-by-side code comparison with syntax highlighting
 
 ### 📐 Layouts (17 components)
 Professional video layouts for multi-platform content:
@@ -107,8 +110,10 @@ Professional video layouts for multi-platform content:
 - **Timeline** - Timeline-based event display
 - **Vertical** - Two-panel vertical split
 
-### 🎬 Animations (1 component)
+### 🎬 Animations (3 components)
 - **Counter** - Animated number counter (4 animations: count_up, flip, slot_machine, digital)
+- **LayoutEntrance** - Layout entrance animations for smooth component reveals
+- **PanelCascade** - Cascading panel animations for sequential reveals
 
 ### ✨ Text Animations (6 components)
 Dynamic text effects inspired by ReactBits:
@@ -120,19 +125,25 @@ Dynamic text effects inspired by ReactBits:
 - **DecryptedText** - Character scrambling reveal with multiple directions
 - **FuzzyText** - VHS glitch effects with scanlines and RGB split
 
-### 🎭 Demo Realism (5 components)
+### 🎭 Demo Realism (4 components)
 Realistic UI mockups and demonstrations:
 
 - **BeforeAfterSlider** - Interactive before/after comparison slider
 - **BrowserFrame** - Browser window with realistic chrome and tabs
-- **CodeDiff** - Side-by-side code comparison with syntax highlighting
 - **DeviceFrame** - Device mockups (phone, tablet, desktop) with content
 - **Terminal** - Terminal window with command history and typing
 
-### 📦 Content (1 component)
+### 📦 Content (4 components)
 - **DemoBox** - Reusable content container for demos
+- **StylizedWebPage** - Stylized webpage mockup for demonstrations
+- **VideoContent** - Video content placeholder with controls
+- **WebPage** - Clean webpage mockup with customizable content
 
-**Total: 43 production-ready components** - All using design tokens with 100% test coverage!
+### 🔄 Transitions (2 components)
+- **LayoutTransition** - Smooth transitions between different layouts
+- **PixelTransition** - Pixelated transition effects
+
+**Total: 50 production-ready components** - All using design tokens with comprehensive test coverage!
 
 ## Installation
 
@@ -265,7 +276,7 @@ All examples use the **ProjectManager API** with the track-based timeline system
 - `remotion_get_project_info()` - Get current project info
 - `remotion_list_projects()` - List all projects
 
-### Component Tools (43 total)
+### Component Tools (50 total)
 
 #### Charts
 - `remotion_add_pie_chart(data, title, duration, track, gap_before)`
@@ -431,14 +442,14 @@ chuk-motion/
 │   │   └── youtube_themes.py # 7 YouTube-optimized themes
 │   ├── components/           # Component library ⭐
 │   │   ├── charts/          # 6 chart components
-│   │   ├── overlays/        # 5 overlay components
-│   │   ├── code/            # 2 code components
-│   │   ├── layouts/         # 17 layout components ⭐
-│   │   ├── animations/      # 1 animation component
-│   │   ├── text-animations/ # 6 text animation components ⭐
-│   │   ├── frames/          # Frame components
-│   │   ├── demo_realism/    # 5 demo realism components ⭐
-│   │   └── content/         # 1 content component
+│   │   ├── overlays/        # 3 overlay components
+│   │   ├── code/            # 3 code components
+│   │   ├── layouts/         # 17 layout components
+│   │   ├── animations/      # 3 animation components
+│   │   ├── text_animations/ # 6 text animation components
+│   │   ├── frames/          # 3 frame components (BrowserFrame, DeviceFrame, Terminal)
+│   │   ├── transitions/     # 2 transition components
+│   │   └── content/         # 4 content components
 │   ├── generator/            # TSX generation
 │   │   ├── component_builder.py    # Jinja2 templating
 │   │   ├── composition_builder.py  # Component instances
@@ -485,12 +496,12 @@ make test       # Run all tests
 
 ### Text Animation Components (January 2025)
 - ✅ **6 new text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
-- ✅ Created dedicated `text-animations/` folder for better organization
-- ✅ Moved text animations from `overlays/` to `text-animations/`
+- ✅ Created dedicated `text_animations/` folder for better organization
+- ✅ Moved text animations from `overlays/` to `text_animations/`
 - ✅ Inspired by [ReactBits](https://www.reactbits.dev/text-animations)
 - ✅ All components use design tokens and spring physics
 - ✅ Complete demo with 20 scenes (52.5 seconds)
-- ✅ Total components: **43 production-ready components**
+- ✅ Total components: **50 production-ready components**
 
 ### Test Coverage Achievement (January 2025)
 - ✅ **100% test coverage** on all 17 layout component tools
@@ -501,15 +512,22 @@ make test       # Run all tests
 - ✅ All builder.py files at 100% coverage
 
 ### Component Library Expansion (January 2025)
-- ✅ **17 layout components** (up from 3): AsymmetricLayout, Container, DialogueFrame, FocusStrip, Grid, HUDStyle, Mosaic, OverTheShoulder, PerformanceMultiCam, PiP, SplitScreen, StackedReaction, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, Timeline, Vertical
+- ✅ **50 production-ready components** organized into 9 categories
+- ✅ **17 layout components**: AsymmetricLayout, Container, DialogueFrame, FocusStrip, Grid, HUDStyle, Mosaic, OverTheShoulder, PerformanceMultiCam, PiP, SplitScreen, StackedReaction, ThreeByThreeGrid, ThreeColumnLayout, ThreeRowLayout, Timeline, Vertical
 - ✅ **6 text animation components**: TypewriterText, StaggerText, WavyText, TrueFocus, DecryptedText, FuzzyText
-- ✅ **5 demo realism components**: BeforeAfterSlider, BrowserFrame, CodeDiff, DeviceFrame, Terminal
-- ✅ **1 content component**: DemoBox
-- ✅ Total: **43 production-ready components**
+- ✅ **6 chart components**: PieChart, BarChart, HorizontalBarChart, LineChart, AreaChart, DonutChart
+- ✅ **4 content components**: DemoBox, StylizedWebPage, VideoContent, WebPage
+- ✅ **4 demo realism components**: BeforeAfterSlider, BrowserFrame, DeviceFrame, Terminal
+- ✅ **3 frame components**: BrowserFrame, DeviceFrame, Terminal
+- ✅ **3 animation components**: Counter, LayoutEntrance, PanelCascade
+- ✅ **3 code components**: CodeBlock, TypingCode, CodeDiff
+- ✅ **3 overlay components**: LowerThird, TextOverlay, SubscribeButton
+- ✅ **2 scene components**: TitleScene, EndScreen
+- ✅ **2 transition components**: LayoutTransition, PixelTransition
 
 ### Design System Integration (January 2025)
 - ✅ Created comprehensive spacing tokens with 7 platform safe margins
-- ✅ Applied design tokens to ALL 43 components (100% coverage)
+- ✅ Applied design tokens to ALL 50 components (100% coverage)
 - ✅ Fixed Jinja2 template rendering for token context
 - ✅ Updated all themes with spacing tokens
 - ✅ Fixed Pydantic v2 compatibility issues
@@ -517,7 +535,7 @@ make test       # Run all tests
 ### Time String Support (January 2025)
 - ✅ Support for time strings: "1s", "500ms", "1m"
 - ✅ Fixed `gap_before` string concatenation bug
-- ✅ Updated all 43 MCP tools to accept time strings
+- ✅ Updated all 50 MCP tools to accept time strings
 - ✅ Enhanced `seconds_to_frames()` with format parsing
 
 ### Example Files (January 2025)
