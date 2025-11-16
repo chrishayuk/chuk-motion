@@ -223,24 +223,25 @@ class TestTerminalToolRegistration:
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
         import asyncio
+        import json
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.Terminal.tool import register_tool
 
-        # Mock ProjectManager that raises an error
+        # Mock ProjectManager with valid project but mock add_component_to_track to raise error
         pm_mock = Mock()
-        pm_mock.get_active_project = Mock(side_effect=Exception("Test error"))
+        project_mock = Mock()
+        project_mock.add_component_to_track.side_effect = Exception("Component creation failed")
+        pm_mock.get_active_project = Mock(return_value=project_mock)
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        # The error should propagate
-        try:
-            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
-            # If we get here, check for error in result
-            if result:
-                assert "error" in result.lower() or "Test error" in result
-        except Exception as e:
-            # Error propagated as expected
-            assert "Test error" in str(e)
+        # Call tool which should catch the exception
+        result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
+
+        # Should return error response
+        response = json.loads(result)
+        assert "error" in response
+        assert "Component creation failed" in response["error"]

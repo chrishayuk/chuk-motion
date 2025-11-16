@@ -559,24 +559,19 @@ def main():
     # Determine transport mode
     if args.mode == "stdio":
         # Explicitly requested stdio mode
-        print("Remotion MCP Server starting in STDIO mode", file=sys.stderr)
+        logger.debug("Remotion MCP Server starting in STDIO mode")
         mcp.run(stdio=True)
     elif args.mode == "http":
         # Explicitly requested HTTP mode
-        print(
-            f"Remotion MCP Server starting in HTTP mode on {args.host}:{args.port}", file=sys.stderr
-        )
+        logger.info(f"Remotion MCP Server starting in HTTP mode on {args.host}:{args.port}")
         mcp.run(host=args.host, port=args.port, stdio=False)
     else:
         # Auto-detect mode based on environment
         if os.environ.get("MCP_STDIO") or (not sys.stdin.isatty()):
-            print("Remotion MCP Server starting in STDIO mode (auto-detected)", file=sys.stderr)
+            logger.debug("Remotion MCP Server starting in STDIO mode (auto-detected)")
             mcp.run(stdio=True)
         else:
-            print(
-                f"Remotion MCP Server starting in HTTP mode on {args.host}:{args.port}",
-                file=sys.stderr,
-            )
+            logger.info(f"Remotion MCP Server starting in HTTP mode on {args.host}:{args.port}")
             mcp.run(host=args.host, port=args.port, stdio=False)
 
 

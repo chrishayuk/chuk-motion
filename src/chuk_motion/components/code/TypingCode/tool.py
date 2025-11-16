@@ -2,9 +2,12 @@
 """TypingCode MCP tool."""
 
 import asyncio
+import logging
 
 from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import CodeComponentResponse, ErrorResponse
+
+logger = logging.getLogger(__name__)
 
 
 def register_tool(mcp, project_manager):
@@ -79,7 +82,7 @@ def register_tool(mcp, project_manager):
                         project_manager.generate_composition()
                     except Exception as gen_error:
                         # Log but don't fail - component was added successfully
-                        print(f"Warning: Auto-generation failed: {gen_error}")
+                        logger.warning(f"Auto-generation failed: {gen_error}")
 
                 lines = len(code.split("\n"))
                 return CodeComponentResponse(

@@ -4,6 +4,7 @@ Project Manager - Creates and manages Remotion projects.
 Handles project scaffolding, file generation, and project state.
 """
 
+import logging
 import shutil
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,8 @@ from jinja2 import Template
 from ..generator.component_builder import ComponentBuilder
 from ..generator.composition_builder import ComponentInstance
 from ..generator.timeline import Timeline
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectManager:
@@ -217,10 +220,10 @@ class ProjectManager:
                 # Write component file
                 component_file = components_dir / f"{component_type}.tsx"
                 component_file.write_text(tsx_code)
-                print(f"  ✓ Generated {component_type}.tsx")
+                logger.debug(f"Generated {component_type}.tsx")
 
             except Exception as e:
-                print(f"  ⚠️  Warning: Could not generate {component_type}: {e}")
+                logger.warning(f"Could not generate {component_type}: {e}")
 
         # Write composition file
         composition_file = project_dir / "src" / "VideoComposition.tsx"
@@ -369,7 +372,7 @@ class ProjectManager:
                 generated_files.append(str(component_file))
 
             except Exception as e:
-                print(f"⚠️  Warning: Could not generate {component_type}: {e}")
+                logger.warning(f"Could not generate {component_type}: {e}")
 
         # Generate the main VideoComposition.tsx
         composition_file = self.generate_composition()

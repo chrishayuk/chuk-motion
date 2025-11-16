@@ -94,16 +94,19 @@ Font sizes optimized for three video resolutions:
 sizes_1080p = TYPOGRAPHY_TOKENS.font_sizes.video_1080p
 # xs: 24px, sm: 32px, base: 40px, lg: 48px
 # xl: 64px, 2xl: 80px, 3xl: 96px, 4xl: 120px
+# 5xl: 180px, 6xl: 240px
 
 # 4K (Ultra HD)
 sizes_4k = TYPOGRAPHY_TOKENS.font_sizes.video_4k
 # xs: 48px, sm: 64px, base: 80px, lg: 96px
 # xl: 128px, 2xl: 160px, 3xl: 192px, 4xl: 240px
+# 5xl: 360px, 6xl: 480px
 
 # 720p (HD)
 sizes_720p = TYPOGRAPHY_TOKENS.font_sizes.video_720p
 # xs: 18px, sm: 24px, base: 30px, lg: 36px
 # xl: 48px, 2xl: 60px, 3xl: 72px, 4xl: 90px
+# 5xl: 135px, 6xl: 180px
 ```
 
 ### Font Size Scale
@@ -118,6 +121,8 @@ sizes_720p = TYPOGRAPHY_TOKENS.font_sizes.video_720p
 | 2xl | 80px | 160px | 60px | Large headings |
 | 3xl | 96px | 192px | 72px | Title cards |
 | 4xl | 120px | 240px | 90px | Hero titles |
+| 5xl | 180px | 360px | 135px | Dramatic displays |
+| 6xl | 240px | 480px | 180px | Maximum impact |
 
 ### Font Weights
 
@@ -718,7 +723,7 @@ all_motion = MOTION_TOKENS.model_dump()
 ```
 Typography:
   TYPOGRAPHY_TOKENS.font_families.[display|body|monospace|decorative]
-  TYPOGRAPHY_TOKENS.font_sizes.[video_1080p|video_4k|video_720p].[xs|sm|base|lg|xl|2xl|3xl|4xl]
+  TYPOGRAPHY_TOKENS.font_sizes.[video_1080p|video_4k|video_720p].[xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl]
   TYPOGRAPHY_TOKENS.font_weights.[thin|regular|medium|semibold|bold|extrabold|black]
   TYPOGRAPHY_TOKENS.text_styles.[hero_title|title|heading|body|caption]
 

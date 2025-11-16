@@ -27,7 +27,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
   text,
   startFrame = 0,
   durationInFrames = 90,
-  fontSize = '[[ typography.font_sizes['3xl'] ]]',
+  fontSize = '3xl',
   fontWeight = '[[ typography.font_weights.bold ]]',
   textColor = '[[ colors.text.on_dark ]]',
   glitchIntensity = 5,
@@ -37,6 +37,15 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
+
+  // Font size mapping - resolve token names to pixel values
+  const fontSizeMap: Record<string, number> = {
+    'xl': parseInt('[[ typography.font_sizes[typography.default_resolution].xl ]]'),
+    '2xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['2xl'] ]]'),
+    '3xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['3xl'] ]]'),
+    '4xl': parseInt('[[ typography.font_sizes[typography.default_resolution]['4xl'] ]]'),
+  };
+  const resolvedFontSize = fontSizeMap[fontSize] || parseInt(fontSize) || fontSizeMap['3xl'];
 
   // ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
   const scanlines = useMemo(() => {
@@ -108,7 +117,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
         style={{
           position: 'relative',
           fontFamily: "'[[ "', '".join(typography.primary_font.fonts) ]]'",
-          fontSize,
+          fontSize: resolvedFontSize,
           fontWeight,
           color: textColor,
           letterSpacing: '[[ typography.letter_spacing.wide ]]',
@@ -138,7 +147,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
                 top: 0,
                 left: 0,
                 width: '100%',
-                color: '#FF0000',
+                color: '[[ colors.effects.glitch_red ]]',
                 mixBlendMode: 'screen',
                 opacity: 0.7,
                 transform: `translateX(${-rgbSplitAmount}px)`,
@@ -153,7 +162,7 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
                 top: 0,
                 left: 0,
                 width: '100%',
-                color: '#00FFFF',
+                color: '[[ colors.effects.glitch_cyan ]]',
                 mixBlendMode: 'screen',
                 opacity: 0.7,
                 transform: `translateX(${rgbSplitAmount}px)`,
@@ -177,8 +186,8 @@ export const FuzzyText: React.FC<FuzzyTextProps> = ({
               0deg,
               transparent,
               transparent ${scanlineHeight}px,
-              rgba(0, 0, 0, 0.1) ${scanlineHeight}px,
-              rgba(0, 0, 0, 0.1) ${scanlineHeight * 2}px
+              [[ colors.effects.scanline ]] ${scanlineHeight}px,
+              [[ colors.effects.scanline ]] ${scanlineHeight * 2}px
             )`,
             opacity: 0.5,
           }}

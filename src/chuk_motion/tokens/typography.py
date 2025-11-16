@@ -70,6 +70,8 @@ class FontSizeScale(BaseModel):
     xxl: str = Field(alias="2xl")  # Large headings
     xxxl: str = Field(alias="3xl")  # Title cards
     xxxxl: str = Field(alias="4xl")  # Hero titles
+    xxxxxl: str = Field(alias="5xl")  # Dramatic displays
+    xxxxxxl: str = Field(alias="6xl")  # Maximum impact
 
 
 class FontSizes(BaseModel):
@@ -82,7 +84,7 @@ class FontSizes(BaseModel):
             base="40px",
             lg="48px",
             xl="64px",
-            **{"2xl": "80px", "3xl": "96px", "4xl": "120px"},
+            **{"2xl": "80px", "3xl": "96px", "4xl": "120px", "5xl": "180px", "6xl": "240px"},
         )
     )
     video_4k: FontSizeScale = Field(
@@ -92,7 +94,7 @@ class FontSizes(BaseModel):
             base="80px",
             lg="96px",
             xl="128px",
-            **{"2xl": "160px", "3xl": "192px", "4xl": "240px"},
+            **{"2xl": "160px", "3xl": "192px", "4xl": "240px", "5xl": "360px", "6xl": "480px"},
         )
     )
     video_720p: FontSizeScale = Field(
@@ -102,7 +104,7 @@ class FontSizes(BaseModel):
             base="30px",
             lg="36px",
             xl="48px",
-            **{"2xl": "60px", "3xl": "72px", "4xl": "90px"},
+            **{"2xl": "60px", "3xl": "72px", "4xl": "90px", "5xl": "135px", "6xl": "180px"},
         )
     )
 
