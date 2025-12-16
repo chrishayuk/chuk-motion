@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -21,8 +20,6 @@ def register_tool(mcp, project_manager):
         position: str = "bottom",
         height: float = 100,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add Timeline layout to the composition.
@@ -37,8 +34,6 @@ def register_tool(mcp, project_manager):
             position: Timeline position (top, bottom)
             height: Timeline bar height in pixels
             duration: Duration in seconds or time string (e.g., "5s", "1000ms")
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
@@ -66,31 +61,26 @@ def register_tool(mcp, project_manager):
                         if comp is not None:
                             milestones_components.append(comp)
 
-                component = ComponentInstance(
-                    component_type="Timeline",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "main_content": main_component,
-                        "milestones": milestones_components,
-                        "current_time": current_time,
-                        "total_duration": total_duration,
-                        "position": position,
-                        "height": height,
-                    },
-                    layer=0,
-                )
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Add component using builder
+                builder.add_timeline(
+                    start_time=start_time,
+                    main_content=main_component,
+                    milestones=milestones_components,
+                    current_time=current_time,
+                    total_duration=total_duration,
+                    position=position,
+                    height=height,
+                    duration=duration,
                 )
 
                 return LayoutComponentResponse(
                     component="Timeline",
                     layout=position,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

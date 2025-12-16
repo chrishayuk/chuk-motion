@@ -135,12 +135,12 @@ class TestBeforeAfterSliderToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager and Project
+        # Mock ProjectManager with Timeline
         pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock()
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -150,24 +150,23 @@ class TestBeforeAfterSliderToolRegistration:
         # Execute with all parameters
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg",
-                beforeLabel="Before",
-                afterLabel="After",
+                duration=5.0,
+                before_image="before.jpg",
+                after_image="after.jpg",
+                before_label="Before",
+                after_label="After",
                 orientation="horizontal",
-                sliderPosition=50.0,
-                animateSlider=True,
-                sliderStartPosition=0.0,
-                sliderEndPosition=100.0,
-                showLabels=True,
-                labelPosition="overlay",
-                handleStyle="default",
+                slider_position=50.0,
+                animate_slider=True,
+                slider_start_position=0.0,
+                slider_end_position=100.0,
+                show_labels=True,
+                label_position="overlay",
+                handle_style="default",
                 width=1200,
                 height=800,
                 position="center",
-                borderRadius=12,
+                border_radius=12,
             )
         )
 
@@ -183,40 +182,37 @@ class TestBeforeAfterSliderToolRegistration:
         assert "duration" in response
 
         # Verify component was added
-        project_mock.add_component_to_track.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
         import asyncio
-        import tempfile
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
-        from chuk_motion.utils.async_project_manager import AsyncProjectManager as ProjectManager
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            pm = ProjectManager(tmpdir)
-            # Don't create or set active project
+        # Mock ProjectManager with no timeline
+        pm_mock = Mock()
+        pm_mock.current_timeline = None
 
-            mcp_mock = Mock()
-            register_tool(mcp_mock, pm)
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
 
-            tool_func = mcp_mock.tool.call_args[0][0]
+        tool_func = mcp_mock.tool.call_args[0][0]
 
-            # Should return an error response when no project is set
-            result = asyncio.run(
-                tool_func(
-                    startFrame=0,
-                    durationInFrames=150,
-                    beforeImage="before.jpg",
-                    afterImage="after.jpg",
-                )
+        # Should return an error response when no project is set
+        result = asyncio.run(
+            tool_func(
+                duration=5.0,
+                before_image="before.jpg",
+                after_image="after.jpg",
             )
+        )
 
-            import json
+        import json
 
-            response = json.loads(result)
-            assert "error" in response
+        response = json.loads(result)
+        assert "error" in response
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
@@ -225,12 +221,14 @@ class TestBeforeAfterSliderToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.BeforeAfterSlider.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager with valid project but mock add_component_to_track to raise error
+        # Mock ProjectManager with Timeline
         pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track.side_effect = Exception("Component creation failed")
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        timeline = Timeline(fps=30)
+        # Mock the add_before_after_slider method to raise exception
+        timeline.add_before_after_slider = Mock(side_effect=Exception("Component creation failed"))
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -239,10 +237,9 @@ class TestBeforeAfterSliderToolRegistration:
         # Call tool which should catch the exception
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
-                beforeImage="before.jpg",
-                afterImage="after.jpg",
+                duration=5.0,
+                before_image="before.jpg",
+                after_image="after.jpg",
             )
         )
 

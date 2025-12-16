@@ -138,13 +138,13 @@ class RemotionRenderer:
                 logger.error(f"Render timed out after {timeout} seconds")
                 await self._kill_process()
                 return RenderResult(
-                    success=False,
-                    error=f"Render timed out after {timeout} seconds"
+                    success=False, error=f"Render timed out after {timeout} seconds"
                 )
 
             # Cancel progress monitoring
             render_task.cancel()
             from contextlib import suppress
+
             with suppress(asyncio.CancelledError):
                 await render_task
 
@@ -167,8 +167,7 @@ class RemotionRenderer:
                     )
                 else:
                     return RenderResult(
-                        success=False,
-                        error="Render completed but output file not found"
+                        success=False, error="Render completed but output file not found"
                     )
             else:
                 # Get error from stderr
@@ -178,18 +177,12 @@ class RemotionRenderer:
                     error_msg = stderr.decode() if stderr else "Unknown render error"
                 logger.error(f"Render failed: {error_msg}")
 
-                return RenderResult(
-                    success=False,
-                    error=error_msg
-                )
+                return RenderResult(success=False, error=error_msg)
 
         except Exception as e:
             logger.exception("Error during render")
             await self._kill_process()
-            return RenderResult(
-                success=False,
-                error=str(e)
-            )
+            return RenderResult(success=False, error=str(e))
 
     async def _monitor_progress(self):
         """Monitor render progress from stdout."""
@@ -233,7 +226,7 @@ class RemotionRenderer:
         "Stitching frames..."
         """
         # Match "frame X/Y" pattern
-        frame_match = re.search(r'frame[s]?\s+(\d+)/(\d+)', line, re.IGNORECASE)
+        frame_match = re.search(r"frame[s]?\s+(\d+)/(\d+)", line, re.IGNORECASE)
         if frame_match:
             current = int(frame_match.group(1))
             total = int(frame_match.group(2))
@@ -244,34 +237,22 @@ class RemotionRenderer:
                 total_frames=total,
                 percent_complete=percent,
                 status="rendering",
-                message=line
+                message=line,
             )
 
         # Match percentage pattern
-        percent_match = re.search(r'(\d+)%', line)
+        percent_match = re.search(r"(\d+)%", line)
         if percent_match:
             percent = float(percent_match.group(1))
-            return RenderProgress(
-                percent_complete=percent,
-                status="rendering",
-                message=line
-            )
+            return RenderProgress(percent_complete=percent, status="rendering", message=line)
 
         # Detect stitching phase
         if "stitch" in line.lower():
-            return RenderProgress(
-                percent_complete=90.0,
-                status="stitching",
-                message=line
-            )
+            return RenderProgress(percent_complete=90.0, status="stitching", message=line)
 
         # Detect encoding phase
         if "encod" in line.lower():
-            return RenderProgress(
-                percent_complete=95.0,
-                status="encoding",
-                message=line
-            )
+            return RenderProgress(percent_complete=95.0, status="encoding", message=line)
 
         return None
 
@@ -290,7 +271,8 @@ class RemotionRenderer:
             "render",
             composition_id,
             output_path,
-            "--concurrency", str(concurrency),
+            "--concurrency",
+            str(concurrency),
         ]
 
         # Add quality settings
@@ -301,10 +283,14 @@ class RemotionRenderer:
         }
 
         settings = quality_settings.get(quality, quality_settings["medium"])
-        cmd.extend([
-            "--crf", settings["crf"],
-            "--preset", settings["preset"],
-        ])
+        cmd.extend(
+            [
+                "--crf",
+                settings["crf"],
+                "--preset",
+                settings["preset"],
+            ]
+        )
 
         return cmd
 
@@ -322,8 +308,10 @@ class RemotionRenderer:
             # Use ffprobe to get metadata
             proc = await asyncio.create_subprocess_exec(
                 "ffprobe",
-                "-v", "quiet",
-                "-print_format", "json",
+                "-v",
+                "quiet",
+                "-print_format",
+                "json",
                 "-show_format",
                 "-show_streams",
                 str(video_path),
@@ -336,8 +324,7 @@ class RemotionRenderer:
 
             # Extract video stream info
             video_stream: dict = next(
-                (s for s in data.get("streams", []) if s.get("codec_type") == "video"),
-                {}
+                (s for s in data.get("streams", []) if s.get("codec_type") == "video"), {}
             )
 
             width = video_stream.get("width", 0)

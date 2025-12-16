@@ -3,7 +3,6 @@
 
 import asyncio
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, OverlayComponentResponse
 
 
@@ -16,9 +15,7 @@ def register_tool(mcp, project_manager):
         style: str | None = None,
         animation: str | None = None,
         position: str | None = None,
-        duration: float | str = 3.0,
-        track: str = "overlay",
-        gap_before: float | str | None = None,
+        duration: float = 3.0,
     ) -> str:
         """
         Add TextOverlay to the composition.
@@ -30,43 +27,33 @@ def register_tool(mcp, project_manager):
             style: Text style variant
             animation: Animation type
             position: Position on screen
-            duration: Duration in seconds
-            track: Track name (default: "overlay")
-            gap_before: Gap before component in seconds (overrides track default)
+            duration: Duration in seconds (default: 3.0)
 
         Returns:
             JSON with component info
         """
 
         def _add():
-            if not project_manager.current_timeline:
+            builder = project_manager.current_timeline
+            if not builder:
                 return ErrorResponse(
                     error="No active project. Create a project first."
                 ).model_dump_json()
 
             try:
-                component = ComponentInstance(
-                    component_type="TextOverlay",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "text": text,
-                        "style": style,
-                        "animation": animation,
-                        "position": position,
-                    },
-                    layer=0,
-                )
-
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                start_time = builder.get_total_duration_seconds()
+                builder.add_text_overlay(
+                    text=text,
+                    start_time=start_time,
+                    style=style,
+                    animation=animation,
+                    duration=duration,
+                    position=position,
                 )
 
                 return OverlayComponentResponse(
                     component="TextOverlay",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

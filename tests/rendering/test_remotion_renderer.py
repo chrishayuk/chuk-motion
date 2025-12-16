@@ -385,6 +385,272 @@ class TestRemotionRendererIntegration:
                 assert isinstance(progress, RenderProgress)
 
 
+class TestRemotionRendererRender:
+    """Test render method scenarios."""
+
+    @pytest.mark.asyncio
+    async def test_render_success(self):
+        """Test successful render."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            output_path = Path(temp_dir) / "output.mp4"
+
+            # Create fake output file
+            output_path.write_bytes(b"fake video content")
+
+            # Mock successful process
+            mock_proc = AsyncMock()
+            mock_proc.returncode = 0
+            mock_proc.wait = AsyncMock()
+            mock_proc.stdout = AsyncMock()
+            mock_proc.stdout.readline = AsyncMock(return_value=b"")
+
+            # Mock video metadata
+            mock_metadata = VideoMetadata(resolution="1920x1080", fps=30, duration=10.0)
+
+            with (
+                patch("asyncio.create_subprocess_exec", return_value=mock_proc),
+                patch.object(renderer, "_get_video_metadata", return_value=mock_metadata),
+            ):
+                result = await renderer.render(
+                    composition_id="test",
+                    output_path=output_path,
+                )
+
+                assert isinstance(result, RenderResult)
+                assert result.success is True
+                assert result.output_path == str(output_path)
+                assert result.resolution == "1920x1080"
+                assert result.fps == 30
+
+    @pytest.mark.asyncio
+    async def test_render_process_failure(self):
+        """Test render when process returns non-zero exit code."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            output_path = Path(temp_dir) / "output.mp4"
+
+            # Mock process that fails
+            mock_proc = AsyncMock()
+            mock_proc.returncode = 1
+            mock_proc.wait = AsyncMock()
+            mock_proc.stdout = AsyncMock()
+            mock_proc.stdout.readline = AsyncMock(return_value=b"")
+            mock_proc.stderr = AsyncMock()
+            mock_proc.stderr.read = AsyncMock(return_value=b"Error: render failed")
+
+            with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
+                result = await renderer.render(
+                    composition_id="test",
+                    output_path=output_path,
+                )
+
+                assert isinstance(result, RenderResult)
+                assert result.success is False
+                assert "render failed" in result.error
+
+    @pytest.mark.asyncio
+    async def test_render_output_not_found(self):
+        """Test render when output file is not created."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            output_path = Path(temp_dir) / "output.mp4"
+
+            # Mock successful process but no output file
+            mock_proc = AsyncMock()
+            mock_proc.returncode = 0
+            mock_proc.wait = AsyncMock()
+            mock_proc.stdout = AsyncMock()
+            mock_proc.stdout.readline = AsyncMock(return_value=b"")
+
+            with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
+                result = await renderer.render(
+                    composition_id="test",
+                    output_path=output_path,
+                )
+
+                assert isinstance(result, RenderResult)
+                assert result.success is False
+                assert "not found" in result.error.lower()
+
+    @pytest.mark.asyncio
+    async def test_render_exception_handling(self):
+        """Test render exception handling."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            output_path = Path(temp_dir) / "output.mp4"
+
+            with patch(
+                "asyncio.create_subprocess_exec", side_effect=Exception("Process creation failed")
+            ):
+                result = await renderer.render(
+                    composition_id="test",
+                    output_path=output_path,
+                )
+
+                assert isinstance(result, RenderResult)
+                assert result.success is False
+                assert "Process creation failed" in result.error
+
+
+class TestRemotionRendererMetadata:
+    """Test video metadata extraction scenarios."""
+
+    @pytest.mark.asyncio
+    async def test_get_video_metadata_fps_without_fraction(self):
+        """Test parsing fps without fraction format."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            # Mock ffprobe output with simple fps
+            mock_stdout = b"""{
+                "streams": [
+                    {
+                        "codec_type": "video",
+                        "width": 1280,
+                        "height": 720,
+                        "r_frame_rate": "24"
+                    }
+                ],
+                "format": {
+                    "duration": "30.0"
+                }
+            }"""
+
+            mock_proc = AsyncMock()
+            mock_proc.communicate = AsyncMock(return_value=(mock_stdout, b""))
+
+            with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
+                metadata = await renderer._get_video_metadata(Path("/fake/video.mp4"))
+
+                assert metadata.fps == 24
+
+    @pytest.mark.asyncio
+    async def test_get_video_metadata_no_video_stream(self):
+        """Test handling missing video stream."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            # Mock ffprobe output with no video stream
+            mock_stdout = b"""{
+                "streams": [
+                    {"codec_type": "audio"}
+                ],
+                "format": {}
+            }"""
+
+            mock_proc = AsyncMock()
+            mock_proc.communicate = AsyncMock(return_value=(mock_stdout, b""))
+
+            with patch("asyncio.create_subprocess_exec", return_value=mock_proc):
+                metadata = await renderer._get_video_metadata(Path("/fake/video.mp4"))
+
+                assert metadata.resolution == "0x0"
+                assert metadata.fps == 0
+
+
+class TestRemotionRendererProgressMonitoring:
+    """Test progress monitoring edge cases."""
+
+    @pytest.mark.asyncio
+    async def test_monitor_progress_no_process(self):
+        """Test monitor progress with no process."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            renderer.process = None
+
+            # Should not raise
+            await renderer._monitor_progress()
+
+    @pytest.mark.asyncio
+    async def test_monitor_progress_callback_error(self):
+        """Test progress monitoring with callback error."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            def failing_callback(progress):
+                raise ValueError("Callback error")
+
+            renderer.on_progress(failing_callback)
+
+            # Mock process with stdout
+            mock_proc = AsyncMock()
+            mock_stdout_lines = [
+                b"Rendering frames 10/100\n",
+                b"",
+            ]
+
+            async def mock_readline():
+                if mock_stdout_lines:
+                    return mock_stdout_lines.pop(0)
+                return b""
+
+            mock_proc.stdout = AsyncMock()
+            mock_proc.stdout.readline = mock_readline
+            renderer.process = mock_proc
+
+            # Should not raise, error is logged
+            await renderer._monitor_progress()
+
+    def test_parse_progress_no_match(self):
+        """Test parsing progress with no matching pattern."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            line = "Random log message"
+            progress = renderer._parse_progress(line)
+
+            assert progress is None
+
+
+class TestRemotionRendererKillProcess:
+    """Test process killing scenarios."""
+
+    @pytest.mark.asyncio
+    async def test_kill_process_no_process(self):
+        """Test killing when no process exists."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+            renderer.process = None
+
+            # Should not raise
+            await renderer._kill_process()
+
+    @pytest.mark.asyncio
+    async def test_kill_process_already_finished(self):
+        """Test killing an already finished process."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            mock_proc = AsyncMock()
+            mock_proc.returncode = 0  # Already finished
+            mock_proc.kill = MagicMock()
+            mock_proc.wait = AsyncMock()
+
+            renderer.process = mock_proc
+
+            await renderer._kill_process()
+
+            # kill should not be called on finished process
+            mock_proc.kill.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_kill_process_exception(self):
+        """Test kill process exception handling."""
+        with TemporaryDirectory() as temp_dir:
+            renderer = RemotionRenderer(temp_dir)
+
+            mock_proc = AsyncMock()
+            mock_proc.returncode = None
+            mock_proc.kill = MagicMock(side_effect=OSError("Kill failed"))
+            mock_proc.wait = AsyncMock()
+
+            renderer.process = mock_proc
+
+            # Should not raise
+            await renderer._kill_process()
+
+
 # Summary: All tests verify Pydantic-native implementation
 # - No dictionary goop (all models are BaseModel)
 # - Type-safe with proper validation

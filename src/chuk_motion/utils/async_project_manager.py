@@ -148,9 +148,7 @@ class AsyncProjectManager:
 
         return project_info
 
-    async def _copy_file_async(
-        self, vfs, src: Path, dest: str
-    ) -> None:
+    async def _copy_file_async(self, vfs, src: Path, dest: str) -> None:
         """Copy a file to VFS."""
         if not src.exists():
             await vfs.write_file(dest, b"")

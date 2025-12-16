@@ -43,9 +43,7 @@ class TestTrueFocusBasic:
     @pytest.mark.skip(reason="Component uses new structure with templates in component dir")
     def test_minimal_props(self, component_builder, theme_name):
         """Test TrueFocus with only required props."""
-        tsx = component_builder.build_component(
-            "TrueFocus", {"text": "Test Text"}, theme_name
-        )
+        tsx = component_builder.build_component("TrueFocus", {"text": "Test Text"}, theme_name)
 
         assert tsx is not None
         assert "Test Text" in tsx or "{text}" in tsx
@@ -92,7 +90,6 @@ class TestTrueFocusBuilderMethod:
         assert comp.props["textColor"] == "#FF0000"
         assert comp.props["frameColor"] == "#00FF00"
         assert comp.props["glowColor"] == "#0000FF"
-
 
 
 class TestTrueFocusToolRegistration:

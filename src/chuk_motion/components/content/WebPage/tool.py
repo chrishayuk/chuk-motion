@@ -3,7 +3,6 @@
 
 import asyncio
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ComponentResponse, ErrorResponse
 
 
@@ -21,8 +20,6 @@ def register_tool(mcp, project_manager):
         scroll_duration: float = 60,
         theme: str = "light",
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add WebPage to the composition.
@@ -40,8 +37,6 @@ def register_tool(mcp, project_manager):
             scroll_duration: Duration of scroll animation in frames (default 60 = 2 seconds at 30fps)
             theme: Visual theme (light, dark)
             duration: Duration in seconds or time string (e.g., "2s", "500ms")
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
@@ -64,32 +59,27 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
-                component = ComponentInstance(
-                    component_type="WebPage",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "html": html,
-                        "css": css,
-                        "baseStyles": base_styles,
-                        "scale": scale,
-                        "scrollY": scroll_y,
-                        "animateScroll": animate_scroll,
-                        "scrollDuration": scroll_duration,
-                        "theme": theme,
-                    },
-                    layer=0,
-                )
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Add component using builder
+                builder.add_web_page(
+                    html=html,
+                    start_time=start_time,
+                    css=css,
+                    base_styles=base_styles,
+                    scale=scale,
+                    scroll_y=scroll_y,
+                    animate_scroll=animate_scroll,
+                    scroll_duration=scroll_duration,
+                    theme=theme,
+                    duration=duration,
                 )
 
                 return ComponentResponse(
                     component="WebPage",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

@@ -93,15 +93,12 @@ class TestThreeByThreeGridToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -114,7 +111,7 @@ class TestThreeByThreeGridToolRegistration:
         assert result_data["component"] == "ThreeByThreeGrid"
 
         # Verify component was added
-        timeline_mock.add_component.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
@@ -141,24 +138,25 @@ class TestThreeByThreeGridToolRegistration:
         """Test tool handles errors gracefully."""
         import asyncio
         import json
-        from unittest.mock import Mock
+        from unittest.mock import Mock, patch
 
         from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
-        timeline_mock = Mock()
-        timeline_mock.add_component = Mock(side_effect=Exception("Test error"))
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(items='[{"content": "test"}]'))
-        result_data = json.loads(result)
-        assert "error" in result_data
-        assert "Test error" in result_data["error"]
+        with patch.object(timeline, "add_three_by_three_grid", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(items='[{"content": "test"}]'))
+            result_data = json.loads(result)
+            assert "error" in result_data
+            assert "Test error" in result_data["error"]
 
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
@@ -167,11 +165,12 @@ class TestThreeByThreeGridToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -190,15 +189,12 @@ class TestThreeByThreeGridToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -219,22 +215,22 @@ class TestThreeByThreeGridToolRegistration:
         from unittest.mock import Mock, patch
 
         from chuk_motion.components.layouts.ThreeByThreeGrid.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Mock parse_nested_component to return None
-        with patch('chuk_motion.components.layouts.ThreeByThreeGrid.tool.parse_nested_component', return_value=None):
+        with patch(
+            "chuk_motion.components.layouts.ThreeByThreeGrid.tool.parse_nested_component",
+            return_value=None,
+        ):
             result = asyncio.run(tool_func(items='[{"title": "A"}]'))
 
         # Should still succeed, just with no children added

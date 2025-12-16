@@ -367,8 +367,8 @@ class TestLineChartToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock add_line_chart to raise exception
+        with patch.object(timeline, "add_line_chart", side_effect=Exception("Test error")):
             result = asyncio.run(tool_func(data='[{"label": "A", "value": 10}]', duration=4.0))
 
         result_data = json.loads(result)

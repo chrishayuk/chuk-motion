@@ -237,9 +237,7 @@ class ArtifactStorageManager:
         Returns:
             List of ProjectInfo objects
         """
-        namespaces = self.store.list_namespaces(
-            type=ChukNamespaceType.WORKSPACE, user_id=user_id
-        )
+        namespaces = self.store.list_namespaces(type=ChukNamespaceType.WORKSPACE, user_id=user_id)
 
         projects = []
         for chuk_namespace in namespaces:
@@ -252,9 +250,7 @@ class ArtifactStorageManager:
                 project = await self.get_project(chuk_namespace.namespace_id)
                 projects.append(project)
             except Exception as e:
-                logger.warning(
-                    f"Failed to load project {chuk_namespace.namespace_id}: {e}"
-                )
+                logger.warning(f"Failed to load project {chuk_namespace.namespace_id}: {e}")
 
         return projects
 
@@ -333,7 +329,7 @@ class ArtifactStorageManager:
         await self.store.write_namespace(
             chuk_namespace.namespace_id,
             path="/.chuk-motion/metadata.json",
-            data=metadata.model_dump_json().encode()
+            data=metadata.model_dump_json().encode(),
         )
 
         # Write video data as default blob (no path = default content)
@@ -343,8 +339,7 @@ class ArtifactStorageManager:
         namespace_info = self._convert_namespace_info(chuk_namespace)
 
         logger.info(
-            f"Stored render: {namespace_info.namespace_id} "
-            f"({len(video_data)} bytes, {format})"
+            f"Stored render: {namespace_info.namespace_id} ({len(video_data)} bytes, {format})"
         )
 
         return RenderInfo(namespace_info=namespace_info, metadata=metadata)
@@ -361,8 +356,7 @@ class ArtifactStorageManager:
         """
         # Load metadata
         metadata_json = await self.store.read_namespace(
-            namespace_id,
-            path="/.chuk-motion/metadata.json"
+            namespace_id, path="/.chuk-motion/metadata.json"
         )
         metadata = RenderMetadata.model_validate_json(metadata_json)
 
@@ -454,7 +448,7 @@ class ArtifactStorageManager:
         await self.store.write_namespace(
             chuk_namespace.namespace_id,
             path="/.chuk-motion/metadata.json",
-            data=metadata.model_dump_json().encode()
+            data=metadata.model_dump_json().encode(),
         )
 
         # Write asset data as default blob (no path = default content)
@@ -464,8 +458,7 @@ class ArtifactStorageManager:
         namespace_info = self._convert_namespace_info(chuk_namespace)
 
         logger.info(
-            f"Stored asset: {namespace_info.namespace_id} "
-            f"({len(asset_data)} bytes, {asset_type})"
+            f"Stored asset: {namespace_info.namespace_id} ({len(asset_data)} bytes, {asset_type})"
         )
 
         return AssetInfo(namespace_info=namespace_info, metadata=metadata)
@@ -482,8 +475,7 @@ class ArtifactStorageManager:
         """
         # Load metadata
         metadata_json = await self.store.read_namespace(
-            namespace_id,
-            path="/.chuk-motion/metadata.json"
+            namespace_id, path="/.chuk-motion/metadata.json"
         )
         metadata = AssetMetadata.model_validate_json(metadata_json)
 
@@ -619,7 +611,9 @@ class ArtifactStorageManager:
     def _convert_checkpoint_info(self, chuk_checkpoint: ChukCheckpointInfo) -> CheckpointInfo:
         """Convert chuk-artifacts CheckpointInfo to our model."""
         # chuk-artifacts uses workspace_id, we use namespace_id
-        workspace_id = getattr(chuk_checkpoint, "workspace_id", None) or getattr(chuk_checkpoint, "namespace_id", None)
+        workspace_id = getattr(chuk_checkpoint, "workspace_id", None) or getattr(
+            chuk_checkpoint, "namespace_id", None
+        )
         if not workspace_id:
             raise ValueError("Checkpoint must have workspace_id or namespace_id")
 

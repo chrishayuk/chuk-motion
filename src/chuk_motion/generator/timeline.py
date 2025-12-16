@@ -92,6 +92,16 @@ class Timeline:
         # Default active track for component additions
         self.active_track = "main"
 
+    @property
+    def components(self) -> list[ComponentInstance]:
+        """
+        Get the main track's components list for CompositionBuilder compatibility.
+
+        This allows builder methods (add_line_chart, etc.) to work with Timeline
+        by appending to the main track's components.
+        """
+        return self.tracks["main"].components
+
     def add_track(
         self, name: str, layer: int, default_gap: float = 0, description: str = ""
     ) -> None:

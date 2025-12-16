@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -19,8 +18,6 @@ def register_tool(mcp, project_manager):
         gap: float = 20,
         padding: float = 40,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add Grid to the composition.
@@ -51,8 +48,6 @@ def register_tool(mcp, project_manager):
             gap: Gap between grid items
             padding: Padding from edges
             duration: Duration in seconds
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds
 
         Returns:
             JSON with component info
@@ -71,36 +66,31 @@ def register_tool(mcp, project_manager):
 
             try:
                 # Convert array of item dicts to ComponentInstance objects
-                children_components = []
+                items_components = []
                 if isinstance(items_parsed, list):
                     for item in items_parsed:
                         child = parse_nested_component(item)
                         if child is not None:
-                            children_components.append(child)
+                            items_components.append(child)
 
-                component = ComponentInstance(
-                    component_type="Grid",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "layout": layout,
-                        "gap": gap,
-                        "padding": padding,
-                        "children": children_components,
-                    },
-                    layer=0,
-                )
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Add component using builder
+                builder.add_grid(
+                    start_time=start_time,
+                    items=items_components,
+                    layout=layout,
+                    gap=gap,
+                    padding=padding,
+                    duration=duration,
                 )
 
                 return LayoutComponentResponse(
                     component="Grid",
                     layout=layout or "2x2",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

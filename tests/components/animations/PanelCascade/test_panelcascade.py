@@ -111,15 +111,12 @@ class TestPanelCascadeToolRegistration:
     def test_tool_execution_basic(self):
         """Test basic tool execution with valid items."""
         from chuk_motion.components.animations.PanelCascade.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -140,19 +137,16 @@ class TestPanelCascadeToolRegistration:
         assert result_data["component"] == "PanelCascade"
 
         # Verify component was added
-        timeline_mock.add_component.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_all_params(self):
         """Test tool execution with all parameters."""
         from chuk_motion.components.animations.PanelCascade.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 60
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=2.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -172,20 +166,18 @@ class TestPanelCascadeToolRegistration:
                 cascade_type="wave",
                 stagger_delay=0.1,
                 duration=5.0,
-                track="overlay",
-                gap_before=1.0,
             )
         )
 
         result_data = json.loads(result)
         assert result_data["component"] == "PanelCascade"
-        assert result_data["start_time"] == 2.0
+        assert result_data["duration"] == 5.0
 
-        # Verify component was added with correct params
-        call_args = timeline_mock.add_component.call_args
-        assert call_args[1]["duration"] == 5.0
-        assert call_args[1]["track"] == "overlay"
-        assert call_args[1]["gap_before"] == 1.0
+        # Verify component was added
+        components = timeline.get_all_components()
+        assert len(components) >= 1
+        comp = components[0]
+        assert comp.component_type == "PanelCascade"
 
     @pytest.mark.parametrize(
         "cascade_type",
@@ -202,14 +194,11 @@ class TestPanelCascadeToolRegistration:
     def test_tool_execution_cascade_types(self, cascade_type):
         """Test tool execution with different cascade types."""
         from chuk_motion.components.animations.PanelCascade.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -306,14 +295,11 @@ class TestPanelCascadeToolRegistration:
     def test_tool_execution_invalid_item_format(self):
         """Test tool execution with invalid item format."""
         from chuk_motion.components.animations.PanelCascade.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -356,13 +342,15 @@ class TestPanelCascadeToolRegistration:
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
+        from unittest.mock import patch
+
         from chuk_motion.components.animations.PanelCascade.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
-        timeline_mock = Mock()
-        timeline_mock.add_component = Mock(side_effect=Exception("Test error"))
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -370,7 +358,9 @@ class TestPanelCascadeToolRegistration:
 
         items = json.dumps([{"type": "CodeBlock", "config": {}}])
 
-        result = asyncio.run(tool_func(items=items))
+        # Patch add_panel_cascade to raise an error
+        with patch.object(timeline, "add_panel_cascade", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(items=items))
 
         result_data = json.loads(result)
         assert "error" in result_data

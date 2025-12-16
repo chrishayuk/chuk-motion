@@ -35,7 +35,9 @@ async def _export_vfs_to_directory(vfs, vfs_path: str, local_dir: Path):
 
         # Check if directory
         node_info = await vfs.get_node_info(item_path)
-        if node_info and node_info.get("is_dir", False):
+        # EnhancedNodeInfo has is_dir as an attribute, not a dict key
+        is_directory = getattr(node_info, "is_dir", False) if node_info else False
+        if is_directory:
             # Create directory and recurse
             local_path.mkdir(exist_ok=True)
             await _export_vfs_to_directory(vfs, item_path, local_path)
@@ -108,9 +110,7 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
                 storage_scope = StorageScope(scope.lower())
             except ValueError:
                 return json.dumps(
-                    {
-                        "error": f"Invalid scope '{scope}'. Must be 'session', 'user', or 'sandbox'"
-                    }
+                    {"error": f"Invalid scope '{scope}'. Must be 'session', 'user', or 'sandbox'"}
                 )
 
             # Create project
@@ -194,9 +194,7 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
             return json.dumps({"error": str(e)})
 
     @mcp.tool  # type: ignore[arg-type]
-    async def artifact_create_checkpoint(
-        name: str, description: str | None = None
-    ) -> str:
+    async def artifact_create_checkpoint(name: str, description: str | None = None) -> str:
         """
         Create a checkpoint (version snapshot) of the current project.
 
@@ -449,8 +447,10 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
                 # Install dependencies
                 logger.info("Installing npm dependencies...")
                 import asyncio
+
                 proc = await asyncio.create_subprocess_exec(
-                    "npm", "install",
+                    "npm",
+                    "install",
                     cwd=str(project_dir),
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
@@ -459,9 +459,7 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
 
                 if proc.returncode != 0:
                     stderr = await proc.stderr.read() if proc.stderr else b""
-                    return json.dumps({
-                        "error": f"npm install failed: {stderr.decode()}"
-                    })
+                    return json.dumps({"error": f"npm install failed: {stderr.decode()}"})
 
                 # Render video
                 output_path = temp_path / f"output.{output_format}"
@@ -490,9 +488,7 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
                 )
 
                 if not result.success:
-                    return json.dumps({
-                        "error": f"Render failed: {result.error}"
-                    })
+                    return json.dumps({"error": f"Render failed: {result.error}"})
 
                 # Store as artifact if requested
                 render_id = None
@@ -501,6 +497,7 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
 
                     # Read rendered video
                     import aiofiles  # type: ignore[import-untyped]
+
                     async with aiofiles.open(result.output_path, "rb") as f:
                         video_data = await f.read()
 
@@ -543,6 +540,207 @@ def register_artifact_tools(mcp, async_project_manager: AsyncProjectManager):
 
         except Exception as e:
             logger.exception("Error rendering video")
+            return json.dumps({"error": str(e)})
+
+    @mcp.tool  # type: ignore[arg-type]
+    async def artifact_get_download_url(render_id: str, expires_in: int = 3600) -> str:
+        """
+        Get a presigned download URL for a rendered video.
+
+        Generates a temporary URL that can be used to download the video
+        directly from cloud storage (S3/Tigris). The URL expires after the specified
+        duration.
+
+        Args:
+            render_id: The render/namespace ID returned from artifact_render_video
+            expires_in: URL expiration time in seconds (default: 3600 = 1 hour)
+
+        Returns:
+            JSON string with download URL or error
+
+        Example:
+            result = await artifact_get_download_url(render_id="ns_abc123")
+            # Returns: {"url": "https://...", "expires_in": 3600}
+        """
+        try:
+            from chuk_mcp_server import get_artifact_store, has_artifact_store
+
+            # Get artifact store
+            if not has_artifact_store():
+                return json.dumps(
+                    {
+                        "error": "No artifact store configured. Set up S3/Tigris storage for download URLs."
+                    }
+                )
+
+            store = get_artifact_store()
+
+            # Read the video data from the render namespace
+            video_data = await async_project_manager.storage.read_render_data(render_id)
+            if not video_data:
+                return json.dumps({"error": f"Render not found: {render_id}"})
+
+            # Get render metadata
+            render_info = await async_project_manager.storage.get_render(render_id)
+
+            # Store as artifact to get presigned URL
+            filename = f"video_{render_id}.{render_info.metadata.format}"
+            artifact_id = await store.store(
+                data=video_data,
+                mime=f"video/{render_info.metadata.format}",
+                summary=filename,
+                meta={
+                    "filename": filename,
+                    "render_id": render_id,
+                    "format": render_info.metadata.format,
+                    "resolution": render_info.metadata.resolution,
+                },
+            )
+            logger.info(f"Stored video as artifact: {artifact_id}")
+
+            # Generate presigned URL
+            url = await store.presign(artifact_id, expires=expires_in)
+            logger.info(f"Generated presigned URL for {render_id}")
+
+            return json.dumps(
+                {
+                    "success": True,
+                    "url": url,
+                    "render_id": render_id,
+                    "artifact_id": artifact_id,
+                    "expires_in": expires_in,
+                    "filename": filename,
+                    "format": render_info.metadata.format,
+                    "resolution": render_info.metadata.resolution,
+                    "size_bytes": render_info.metadata.file_size_bytes,
+                }
+            )
+
+        except Exception as e:
+            logger.exception("Error generating download URL")
+            return json.dumps({"error": f"Failed to generate download URL: {str(e)}"})
+
+    @mcp.tool  # type: ignore[arg-type]
+    async def artifact_list_renders(project_namespace_id: str | None = None) -> str:
+        """
+        List all renders for a project.
+
+        Args:
+            project_namespace_id: Project namespace ID (uses current if not specified)
+
+        Returns:
+            JSON array of renders with their metadata
+
+        Example:
+            renders = await artifact_list_renders()
+        """
+        try:
+            namespace_id = project_namespace_id or async_project_manager.current_project_id
+            if not namespace_id:
+                return json.dumps({"error": "No active project. Create a project first."})
+
+            # Note: This would need to be implemented in the storage layer
+            # For now, return a placeholder response
+            result = {
+                "success": True,
+                "project_namespace_id": namespace_id,
+                "message": "Use artifact_get_download_url with a render_id to get download URLs",
+            }
+
+            return json.dumps(result, indent=2)
+
+        except Exception as e:
+            logger.exception("Error listing renders")
+            return json.dumps({"error": str(e)})
+
+    @mcp.tool  # type: ignore[arg-type]
+    async def artifact_export_base64(render_id: str) -> str:
+        """
+        Export a rendered video as a base64-encoded string.
+
+        Exports the rendered video as a base64 string that can be
+        saved, transmitted, or used in data URIs.
+
+        Args:
+            render_id: The render/namespace ID returned from artifact_render_video
+
+        Returns:
+            JSON string with base64 data and metadata
+
+        Example:
+            result = await artifact_export_base64(render_id="ns_abc123")
+        """
+        try:
+            import base64
+
+            # Read the video data
+            video_data = await async_project_manager.storage.read_render_data(render_id)
+            if not video_data:
+                return json.dumps({"error": f"Render not found: {render_id}"})
+
+            # Get render metadata
+            render_info = await async_project_manager.storage.get_render(render_id)
+
+            # Encode as base64
+            b64_data = base64.b64encode(video_data).decode("utf-8")
+
+            return json.dumps(
+                {
+                    "success": True,
+                    "render_id": render_id,
+                    "format": render_info.metadata.format,
+                    "mime_type": f"video/{render_info.metadata.format}",
+                    "resolution": render_info.metadata.resolution,
+                    "size_bytes": render_info.metadata.file_size_bytes,
+                    "data": b64_data,
+                }
+            )
+
+        except Exception as e:
+            logger.exception("Error exporting as base64")
+            return json.dumps({"error": f"Failed to export: {str(e)}"})
+
+    @mcp.tool  # type: ignore[arg-type]
+    async def artifact_status() -> str:
+        """
+        Get the status of artifact storage and configuration.
+
+        Returns:
+            JSON with artifact storage status and capabilities
+
+        Example:
+            status = await artifact_status()
+        """
+        try:
+            from chuk_mcp_server import has_artifact_store
+
+            artifact_store_available = has_artifact_store()
+
+            result = {
+                "success": True,
+                "artifact_store_available": artifact_store_available,
+                "storage_provider": async_project_manager.storage.provider_type.value,
+                "current_project_id": async_project_manager.current_project_id,
+                "features": {
+                    "download_urls": artifact_store_available,
+                    "base64_export": True,
+                    "checkpoints": True,
+                    "render_storage": True,
+                },
+            }
+
+            if artifact_store_available:
+                result["message"] = "Artifact store configured. Download URLs are available."
+            else:
+                result["message"] = (
+                    "No artifact store configured. "
+                    "Set CHUK_ARTIFACTS_PROVIDER=s3 and configure S3 credentials for download URLs."
+                )
+
+            return json.dumps(result, indent=2)
+
+        except Exception as e:
+            logger.exception("Error getting status")
             return json.dumps({"error": str(e)})
 
     logger.info("Registered artifact-based project management tools")

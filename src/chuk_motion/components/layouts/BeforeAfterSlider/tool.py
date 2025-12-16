@@ -2,32 +2,29 @@
 
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
-from .schema import METADATA, BeforeAfterSliderProps
-
 
 def register_tool(mcp, project_manager):
     """Register the BeforeAfterSlider MCP tool."""
 
     @mcp.tool
     async def remotion_add_before_after_slider(
-        startFrame: int,
-        durationInFrames: int,
-        beforeImage: str,
-        afterImage: str,
-        beforeLabel: str = "Before",
-        afterLabel: str = "After",
+        duration: float,
+        before_image: str,
+        after_image: str,
+        before_label: str = "Before",
+        after_label: str = "After",
         orientation: str = "horizontal",
-        sliderPosition: float = 50.0,
-        animateSlider: bool = True,
-        sliderStartPosition: float = 0.0,
-        sliderEndPosition: float = 100.0,
-        showLabels: bool = True,
-        labelPosition: str = "overlay",
-        handleStyle: str = "default",
+        slider_position: float = 50.0,
+        animate_slider: bool = True,
+        slider_start_position: float = 0.0,
+        slider_end_position: float = 100.0,
+        show_labels: bool = True,
+        label_position: str = "overlay",
+        handle_style: str = "default",
         width: int = 1200,
         height: int = 800,
         position: str = "center",
-        borderRadius: int = 12,
+        border_radius: int = 12,
     ) -> str:
         """
         Add a BeforeAfterSlider component to the composition.
@@ -35,73 +32,62 @@ def register_tool(mcp, project_manager):
         Interactive before/after image comparison with sliding divider.
 
         Args:
-            startFrame: Frame to start showing the component
-            durationInFrames: How many frames to show the component
-            beforeImage: URL or path to before image
-            afterImage: URL or path to after image
-            beforeLabel: Label for before side
-            afterLabel: Label for after side
+            duration: Duration in seconds
+            before_image: URL or path to before image
+            after_image: URL or path to after image
+            before_label: Label for before side
+            after_label: Label for after side
             orientation: Slider orientation (horizontal, vertical)
-            sliderPosition: Initial slider position (0-100)
-            animateSlider: Animate slider movement
-            sliderStartPosition: Animation start position
-            sliderEndPosition: Animation end position
-            showLabels: Show before/after labels
-            labelPosition: Label position (overlay, top, bottom)
-            handleStyle: Slider handle style
+            slider_position: Initial slider position (0-100)
+            animate_slider: Animate slider movement
+            slider_start_position: Animation start position
+            slider_end_position: Animation end position
+            show_labels: Show before/after labels
+            label_position: Label position (overlay, top, bottom)
+            handle_style: Slider handle style
             width: Component width in pixels
             height: Component height in pixels
             position: Position on screen
-            borderRadius: Corner radius in pixels
+            border_radius: Corner radius in pixels
 
         Returns:
             JSON with component info
         """
-        props = BeforeAfterSliderProps(
-            startFrame=startFrame,
-            durationInFrames=durationInFrames,
-            beforeImage=beforeImage,
-            afterImage=afterImage,
-            beforeLabel=beforeLabel,
-            afterLabel=afterLabel,
-            orientation=orientation,  # type: ignore[arg-type]
-            sliderPosition=sliderPosition,
-            animateSlider=animateSlider,
-            sliderStartPosition=sliderStartPosition,
-            sliderEndPosition=sliderEndPosition,
-            showLabels=showLabels,
-            labelPosition=labelPosition,  # type: ignore[arg-type]
-            handleStyle=handleStyle,  # type: ignore[arg-type]
-            width=width,
-            height=height,
-            position=position,  # type: ignore[arg-type]
-            borderRadius=borderRadius,
-        )
+        if not project_manager.current_timeline:
+            return ErrorResponse(
+                error="No active project. Create a project first."
+            ).model_dump_json()
 
         try:
-            project = project_manager.get_active_project()
-        except Exception as e:
-            return ErrorResponse(error=str(e)).model_dump_json()
+            builder = project_manager.current_timeline
+            start_time = builder.get_total_duration_seconds()
 
-        try:
-            track_name = "comparisons"
-            project.add_component_to_track(
-                track_name=track_name,
-                component_type=METADATA.name,
-                props=props.model_dump(),
-                start_frame=startFrame,
-                duration=durationInFrames,
+            builder.add_before_after_slider(
+                start_time=start_time,
+                duration=duration,
+                before_image=before_image,
+                after_image=after_image,
+                before_label=before_label,
+                after_label=after_label,
+                orientation=orientation,
+                slider_position=slider_position,
+                animate_slider=animate_slider,
+                slider_start_position=slider_start_position,
+                slider_end_position=slider_end_position,
+                show_labels=show_labels,
+                label_position=label_position,
+                handle_style=handle_style,
+                width=width,
+                height=height,
+                position=position,
+                border_radius=border_radius,
             )
-
-            # Calculate duration in seconds (assuming 30fps)
-            duration_seconds = durationInFrames / 30.0
-            start_seconds = startFrame / 30.0
 
             return LayoutComponentResponse(
                 component="BeforeAfterSlider",
                 layout=f"{orientation}-slider",
-                start_time=start_seconds,
-                duration=duration_seconds,
+                start_time=start_time,
+                duration=duration,
             ).model_dump_json()
         except Exception as e:
             return ErrorResponse(error=str(e)).model_dump_json()

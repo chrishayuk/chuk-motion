@@ -68,9 +68,7 @@ async def test_async_project_manager_with_checkpoints():
         )
 
         # Create checkpoint
-        checkpoint = await manager.create_checkpoint(
-            name="v1.0", description="Initial version"
-        )
+        checkpoint = await manager.create_checkpoint(name="v1.0", description="Initial version")
 
         assert checkpoint.checkpoint_id is not None
         assert checkpoint.name == "v1.0"

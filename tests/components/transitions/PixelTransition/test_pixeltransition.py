@@ -3,7 +3,7 @@
 
 import asyncio
 import json
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 
 class TestPixelTransitionBuilderMethod:
@@ -162,14 +162,12 @@ class TestPixelTransitionToolRegistration:
         tool_func = mcp.tool.call_args[0][0]
 
         # Create JSON for first and second content
-        first_content_json = json.dumps({
-            "component_type": "TitleScene",
-            "props": {"text": "Before", "variant": "bold"}
-        })
-        second_content_json = json.dumps({
-            "component_type": "TitleScene",
-            "props": {"text": "After", "variant": "glass"}
-        })
+        first_content_json = json.dumps(
+            {"component_type": "TitleScene", "props": {"text": "Before", "variant": "bold"}}
+        )
+        second_content_json = json.dumps(
+            {"component_type": "TitleScene", "props": {"text": "After", "variant": "glass"}}
+        )
 
         result = asyncio.run(
             tool_func(
@@ -197,14 +195,12 @@ class TestPixelTransitionToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        first_content_json = json.dumps({
-            "component_type": "TitleScene",
-            "props": {"text": "Before"}
-        })
-        second_content_json = json.dumps({
-            "component_type": "TitleScene",
-            "props": {"text": "After"}
-        })
+        first_content_json = json.dumps(
+            {"component_type": "TitleScene", "props": {"text": "Before"}}
+        )
+        second_content_json = json.dumps(
+            {"component_type": "TitleScene", "props": {"text": "After"}}
+        )
 
         asyncio.run(
             tool_func(
@@ -258,6 +254,8 @@ class TestPixelTransitionToolRegistration:
         mcp = Mock()
         project_manager = Mock()
         timeline = Timeline(fps=30)
+        # Mock the add_pixel_transition method to raise exception
+        timeline.add_pixel_transition = Mock(side_effect=Exception("Test error"))
         project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
@@ -266,15 +264,13 @@ class TestPixelTransitionToolRegistration:
         first_content_json = json.dumps({"component_type": "TitleScene", "props": {}})
         second_content_json = json.dumps({"component_type": "TitleScene", "props": {}})
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
-            result = asyncio.run(
-                tool_func(
-                    first_content=first_content_json,
-                    second_content=second_content_json,
-                    duration=5.0,
-                )
+        result = asyncio.run(
+            tool_func(
+                first_content=first_content_json,
+                second_content=second_content_json,
+                duration=5.0,
             )
+        )
 
         result_data = json.loads(result)
         assert "error" in result_data

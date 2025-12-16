@@ -2,16 +2,13 @@
 
 from chuk_motion.models import ErrorResponse, FrameComponentResponse
 
-from .schema import METADATA, DeviceFrameProps
-
 
 def register_tool(mcp, project_manager):
     """Register the DeviceFrame MCP tool."""
 
     @mcp.tool
     async def remotion_add_device_frame(
-        startFrame: int,
-        durationInFrames: int,
+        duration: float,
         device: str = "phone",
         content: str = "",
         orientation: str = "portrait",
@@ -26,8 +23,7 @@ def register_tool(mcp, project_manager):
         Realistic device mockup (phone, tablet, laptop) with content inside.
 
         Args:
-            startFrame: Frame to start showing the component
-            durationInFrames: How many frames to show the component
+            duration: Duration in seconds
             device: Device type (phone, tablet, laptop, desktop)
             content: Content to display inside device
             orientation: Device orientation (portrait, landscape)
@@ -39,43 +35,33 @@ def register_tool(mcp, project_manager):
         Returns:
             JSON with component info
         """
-        props = DeviceFrameProps(
-            startFrame=startFrame,
-            durationInFrames=durationInFrames,
-            device=device,  # type: ignore[arg-type]
-            content=content,
-            orientation=orientation,  # type: ignore[arg-type]
-            scale=scale,
-            glare=glare,
-            shadow=shadow,
-            position=position,  # type: ignore[arg-type]
-        )
+        if not project_manager.current_timeline:
+            return ErrorResponse(
+                error="No active project. Create a project first."
+            ).model_dump_json()
 
         try:
-            project = project_manager.get_active_project()
-        except Exception as e:
-            return ErrorResponse(error=str(e)).model_dump_json()
+            builder = project_manager.current_timeline
+            start_time = builder.get_total_duration_seconds()
 
-        try:
-            track_name = "device_frames"
-            project.add_component_to_track(
-                track_name=track_name,
-                component_type=METADATA.name,
-                props=props.model_dump(),
-                start_frame=startFrame,
-                duration=durationInFrames,
+            builder.add_device_frame(
+                start_time=start_time,
+                duration=duration,
+                device=device,
+                content=content,
+                orientation=orientation,
+                scale=scale,
+                glare=glare,
+                shadow=shadow,
+                position=position,
             )
-
-            # Calculate duration in seconds (assuming 30fps)
-            duration_seconds = durationInFrames / 30.0
-            start_seconds = startFrame / 30.0
 
             return FrameComponentResponse(
                 component="DeviceFrame",
                 position=position,
                 theme=device,
-                start_time=start_seconds,
-                duration=duration_seconds,
+                start_time=start_time,
+                duration=duration,
             ).model_dump_json()
         except Exception as e:
             return ErrorResponse(error=str(e)).model_dump_json()

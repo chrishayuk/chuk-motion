@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -18,8 +17,6 @@ def register_tool(mcp, project_manager):
         gap: float = 20,
         padding: float = 40,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add ThreeByThreeGrid to the composition.
@@ -31,8 +28,6 @@ def register_tool(mcp, project_manager):
             gap: Gap between grid items
             padding: Padding from edges
             duration: Duration in seconds
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds
 
         Returns:
             JSON with component info
@@ -61,28 +56,21 @@ def register_tool(mcp, project_manager):
                         if child is not None:
                             children_components.append(child)
 
-                component = ComponentInstance(
-                    component_type="ThreeByThreeGrid",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "gap": gap,
-                        "padding": padding,
-                        "children": children_components,
-                    },
-                    layer=0,
-                )
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                builder.add_three_by_three_grid(
+                    items=children_components,
+                    start_time=start_time,
+                    gap=gap,
+                    padding=padding,
+                    duration=duration,
                 )
 
                 return LayoutComponentResponse(
                     component="ThreeByThreeGrid",
                     layout="3x3",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

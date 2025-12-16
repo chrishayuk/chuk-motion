@@ -4,8 +4,8 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![MCP](https://img.shields.io/badge/MCP-compatible-green.svg)](https://github.com/anthropics/mcp)
-[![Tests](https://img.shields.io/badge/tests-950%20passing-brightgreen.svg)](tests/)
-[![Coverage](https://img.shields.io/badge/coverage-98%25-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1471%20passing-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen.svg)](tests/)
 
 ## Overview
 
@@ -446,37 +446,53 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 chuk-motion/
 ├── src/chuk_motion/
 │   ├── server.py              # Main MCP server
-│   ├── tokens/                # Design tokens ⭐
+│   ├── async_server.py        # Async MCP server variant
+│   ├── video_manager.py       # High-level video management ⭐ NEW
+│   ├── tokens/                # Design tokens
 │   │   ├── colors.py         # Color palettes (7 themes)
 │   │   ├── typography.py     # Typography system
 │   │   ├── motion.py         # Motion design
-│   │   ├── spacing.py        # Spacing & safe margins ⭐ NEW
+│   │   ├── spacing.py        # Spacing & safe margins
 │   │   └── token_manager.py  # Token import/export
 │   ├── themes/               # Theme system
 │   │   └── youtube_themes.py # 7 YouTube-optimized themes
-│   ├── components/           # Component library ⭐
+│   ├── components/           # Component library (51 components)
 │   │   ├── charts/          # 6 chart components
 │   │   ├── overlays/        # 3 overlay components
 │   │   ├── code/            # 3 code components
 │   │   ├── layouts/         # 17 layout components
 │   │   ├── animations/      # 3 animation components
 │   │   ├── text_animations/ # 6 text animation components
-│   │   ├── frames/          # 3 frame components (BrowserFrame, DeviceFrame, Terminal)
+│   │   ├── frames/          # 3 frame components
 │   │   ├── transitions/     # 2 transition components
-│   │   └── content/         # 4 content components
+│   │   └── content/         # 5 content components
 │   ├── generator/            # TSX generation
 │   │   ├── component_builder.py    # Jinja2 templating
 │   │   ├── composition_builder.py  # Component instances
-│   │   └── timeline.py            # Track-based timeline ⭐
+│   │   └── timeline.py            # Track-based timeline
+│   ├── render/               # Video rendering ⭐ NEW
+│   │   ├── project_exporter.py    # Remotion project export
+│   │   └── video_renderer.py      # MP4 rendering via CLI
+│   ├── rendering/            # Remotion integration
+│   │   └── remotion_renderer.py   # Remotion rendering
+│   ├── storage/              # Artifact storage ⭐ NEW
+│   │   └── artifact_storage.py    # chuk-artifacts integration
+│   ├── tools/                # MCP tools
+│   │   ├── theme_tools.py         # Theme management tools
+│   │   ├── token_tools.py         # Token tools
+│   │   └── artifact_tools.py      # Artifact management tools
 │   ├── utils/                # Utilities
-│   │   └── project_manager.py     # Project scaffolding ⭐
-│   └── models.py             # Pydantic models
-├── examples/                 # Production examples ⭐
+│   │   ├── project_manager.py     # Project scaffolding
+│   │   └── async_project_manager.py # Async project manager
+│   └── models/               # Pydantic models
+│       ├── artifact_models.py     # Storage models
+│       └── responses.py           # Response models
+├── examples/                 # Production examples
 │   ├── design_system_showcase.py
 │   ├── safe_margins_demo.py
 │   ├── fibonacci_demo.py
 │   └── explore_design_system.py
-├── tests/                    # Tests
+├── tests/                    # 1471 tests
 ├── remotion-templates/       # Base Remotion templates
 └── remotion-projects/        # Generated projects (gitignored)
 ```
@@ -504,9 +520,17 @@ make typecheck  # MyPy type checking
 make test       # Run all tests
 ```
 
-**All checks must pass before committing!** The `make check` command runs linting, type checking, and all 950 tests to ensure code quality.
+**All checks must pass before committing!** The `make check` command runs linting, type checking, and all 1471 tests to ensure code quality.
 
 ## Recent Updates ⭐
+
+### Video Rendering & Storage (December 2025)
+- ✅ **Video Renderer**: Full Remotion CLI integration for MP4 export
+- ✅ **Background Rendering**: Async job system with progress tracking
+- ✅ **Artifact Storage**: Integration with chuk-artifacts for persistent storage
+- ✅ **VideoManager**: High-level API for video project management
+- ✅ **Project Exporter**: RemotionProjectExporter for scaffolding complete projects
+- ✅ **Test Coverage**: 1471 tests passing with 86% coverage
 
 ### ImageContent Component (January 2025)
 - ✅ **New ImageContent component** for displaying images in videos
@@ -528,12 +552,13 @@ make test       # Run all tests
 - ✅ Complete demo with 20 scenes (52.5 seconds)
 - ✅ Total components: **51 production-ready components**
 
-### Test Coverage Achievement (January 2025)
-- ✅ **100% test coverage** on all 17 layout component tools
-- ✅ **98% coverage** on token_manager.py (improved from 81%)
-- ✅ **950 passing tests** with comprehensive test suite
-- ✅ Added JSON parsing error tests to all layout tools
-- ✅ Removed 67 legacy tests, replaced with modular tests
+### Test Coverage Achievement (December 2025)
+- ✅ **1471 passing tests** with comprehensive test suite
+- ✅ **86% overall coverage** across the codebase
+- ✅ **100% coverage** on video_renderer.py
+- ✅ **97% coverage** on remotion_renderer.py and project_exporter.py
+- ✅ **96% coverage** on theme_tools.py
+- ✅ **94-95% coverage** on component_builder.py, timeline.py, theme_manager.py
 - ✅ All builder.py files at 100% coverage
 
 ### Component Library Expansion (January 2025)
@@ -587,19 +612,28 @@ make test       # Run all tests
 - ✅ ProjectManager API
 - ✅ Time string parsing ("1s", "500ms")
 
-### Phase 3: Rendering 🚧 IN PROGRESS
-- 🔲 Remotion render integration
-- 🔲 Export to MP4/WebM
-- 🔲 Thumbnail generation
-- 🔲 Preview generation
+### Phase 3: Rendering ✅ COMPLETE
+- ✅ Remotion render integration with video_renderer
+- ✅ Export to MP4 via Remotion CLI
+- ✅ Background rendering with job status tracking
+- ✅ Progress monitoring during renders
+- ✅ RemotionProjectExporter for project scaffolding
 
-### Phase 4: Advanced Features
+### Phase 4: Storage & Artifacts ✅ COMPLETE
+- ✅ ArtifactStorageManager with chuk-artifacts integration
+- ✅ Project storage (WORKSPACE namespaces)
+- ✅ Render storage (BLOB namespaces)
+- ✅ Asset management for media files
+- ✅ Checkpoint/versioning support
+- ✅ VideoManager for high-level video operations
+
+### Phase 5: Advanced Features
 - 🔲 Custom theme builder
 - 🔲 Animation timeline editor
 - 🔲 Audio sync
-- 🔲 Asset management
 - 🔲 Auto-captioning
 - 🔲 Light/dark mode switching
+- 🔲 Cloud rendering integration
 
 ## Contributing
 

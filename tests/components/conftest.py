@@ -4,14 +4,28 @@ Shared fixtures for component template tests.
 
 import pytest
 
+from chuk_motion.components import register_all_builders
 from chuk_motion.generator.component_builder import ComponentBuilder
+from chuk_motion.generator.composition_builder import CompositionBuilder
+from chuk_motion.generator.timeline import Timeline
 from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
+
+# Register all builder methods on both CompositionBuilder and Timeline
+# This ensures component tools work with either class in tests
+register_all_builders(CompositionBuilder)
+register_all_builders(Timeline)
 
 
 @pytest.fixture
 def component_builder():
     """Create a ComponentBuilder instance."""
     return ComponentBuilder()
+
+
+@pytest.fixture
+def composition_builder():
+    """Create a CompositionBuilder with all component methods registered."""
+    return CompositionBuilder(fps=30)
 
 
 @pytest.fixture

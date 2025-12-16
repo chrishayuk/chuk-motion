@@ -252,18 +252,18 @@ class TestGridToolRegistration:
         from unittest.mock import Mock, patch
 
         from chuk_motion.components.layouts.Grid.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
+        from chuk_motion.generator.composition_builder import CompositionBuilder
 
         mcp = Mock()
         project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
+        builder = CompositionBuilder(fps=30)
+        project_manager.current_timeline = builder
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock add_grid to raise exception
+        with patch.object(builder, "add_grid", side_effect=Exception("Test error")):
             result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
 
         result_data = json.loads(result)
@@ -335,7 +335,9 @@ class TestGridToolRegistration:
         tool_func = mcp.tool.call_args[0][0]
 
         # Mock parse_nested_component to return None
-        with patch('chuk_motion.components.layouts.Grid.tool.parse_nested_component', return_value=None):
+        with patch(
+            "chuk_motion.components.layouts.Grid.tool.parse_nested_component", return_value=None
+        ):
             result = asyncio.run(tool_func(items='[{"title": "A"}]', duration=5.0))
 
         # Should still succeed, just with no children added

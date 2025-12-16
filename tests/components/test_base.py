@@ -15,9 +15,7 @@ class TestComponentMetadata:
         from chuk_motion.components.base import ComponentMetadata
 
         metadata = ComponentMetadata(
-            name="TestComponent",
-            description="A test component",
-            category="test"
+            name="TestComponent", description="A test component", category="test"
         )
 
         assert metadata.name == "TestComponent"
@@ -30,10 +28,7 @@ class TestComponentMetadata:
 
         with pytest.raises(ValidationError):
             ComponentMetadata(
-                name="Test",
-                description="Test",
-                category="test",
-                extra_field="not allowed"
+                name="Test", description="Test", category="test", extra_field="not allowed"
             )
 
 
@@ -44,11 +39,7 @@ class TestComponentInfo:
         """Test creating ComponentInfo with minimal fields."""
         from chuk_motion.components.base import ComponentInfo, ComponentMetadata
 
-        metadata = ComponentMetadata(
-            name="TestComponent",
-            description="Test",
-            category="test"
-        )
+        metadata = ComponentMetadata(name="TestComponent", description="Test", category="test")
 
         info = ComponentInfo(metadata=metadata)
 
@@ -62,11 +53,7 @@ class TestComponentInfo:
         """Test creating ComponentInfo with all fields."""
         from chuk_motion.components.base import ComponentInfo, ComponentMetadata
 
-        metadata = ComponentMetadata(
-            name="TestComponent",
-            description="Test",
-            category="test"
-        )
+        metadata = ComponentMetadata(name="TestComponent", description="Test", category="test")
 
         def mock_register_tool():
             pass
@@ -81,7 +68,7 @@ class TestComponentInfo:
             template_path=template_path,
             register_tool=mock_register_tool,
             add_to_composition=mock_add_to_composition,
-            directory_name="overlays"
+            directory_name="overlays",
         )
 
         assert info.metadata == metadata
@@ -94,11 +81,7 @@ class TestComponentInfo:
         """Test ComponentInfo.name property."""
         from chuk_motion.components.base import ComponentInfo, ComponentMetadata
 
-        metadata = ComponentMetadata(
-            name="MyComponent",
-            description="Test",
-            category="test"
-        )
+        metadata = ComponentMetadata(name="MyComponent", description="Test", category="test")
 
         info = ComponentInfo(metadata=metadata)
 
@@ -110,11 +93,7 @@ class TestComponentInfo:
         """Test ComponentInfo.category property."""
         from chuk_motion.components.base import ComponentInfo, ComponentMetadata
 
-        metadata = ComponentMetadata(
-            name="Test",
-            description="Test",
-            category="overlay"
-        )
+        metadata = ComponentMetadata(name="Test", description="Test", category="overlay")
 
         info = ComponentInfo(metadata=metadata)
 
@@ -126,14 +105,7 @@ class TestComponentInfo:
         """Test that ComponentInfo rejects extra fields."""
         from chuk_motion.components.base import ComponentInfo, ComponentMetadata
 
-        metadata = ComponentMetadata(
-            name="Test",
-            description="Test",
-            category="test"
-        )
+        metadata = ComponentMetadata(name="Test", description="Test", category="test")
 
         with pytest.raises(ValidationError):
-            ComponentInfo(
-                metadata=metadata,
-                extra_field="not allowed"
-            )
+            ComponentInfo(metadata=metadata, extra_field="not allowed")

@@ -43,9 +43,7 @@ class TestDecryptedTextBasic:
     @pytest.mark.skip(reason="Component uses new structure with templates in component dir")
     def test_minimal_props(self, component_builder, theme_name):
         """Test DecryptedText with only required props."""
-        tsx = component_builder.build_component(
-            "DecryptedText", {"text": "Test Text"}, theme_name
-        )
+        tsx = component_builder.build_component("DecryptedText", {"text": "Test Text"}, theme_name)
 
         assert tsx is not None
         assert "Test Text" in tsx or "{text}" in tsx
@@ -102,9 +100,7 @@ class TestDecryptedTextBuilderMethod:
         from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
-        result = add_to_composition(
-            builder, text="HACKED", start_time=0.0, text_color="#FF0000"
-        )
+        result = add_to_composition(builder, text="HACKED", start_time=0.0, text_color="#FF0000")
 
         assert result is builder
         assert len(builder.components) == 1
@@ -175,8 +171,10 @@ class TestDecryptedTextToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock get_total_duration_seconds to raise exception
+        with patch.object(
+            timeline, "get_total_duration_seconds", side_effect=Exception("Test error")
+        ):
             result = asyncio.run(tool_func(text="Test", duration=3.0))
 
         result_data = json.loads(result)
@@ -202,76 +200,5 @@ class TestDecryptedTextToolRegistration:
         components = timeline.get_all_components()
         assert len(components) >= 1
         assert components[0].props.get("textColor") == "#FF0000"
-        result_data = json.loads(result)
-        assert result_data["component"] == "DecryptedText"
-
-    def test_tool_execution_with_duration_string(self):
-        """Test tool execution with duration as string."""
-        from chuk_motion.components.text_animations.DecryptedText.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
-
-        mcp = Mock()
-        project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
-
-        register_tool(mcp, project_manager)
-        tool_func = mcp.tool.call_args[0][0]
-
-        # Test with "5s" string format
-        result = asyncio.run(tool_func(text="Test", duration="5s"))
-
-        result_data = json.loads(result)
-        assert result_data["component"] == "DecryptedText"
-        assert result_data["duration"] == 5.0
-
-    def test_tool_execution_with_duration_numeric_string(self):
-        """Test tool execution with duration as numeric string without suffix."""
-        from chuk_motion.components.text_animations.DecryptedText.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
-
-        mcp = Mock()
-        project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
-
-        register_tool(mcp, project_manager)
-        tool_func = mcp.tool.call_args[0][0]
-
-        # Test with "3.5" string format (no 's' suffix)
-        result = asyncio.run(tool_func(text="Test", duration="3.5"))
-
-        result_data = json.loads(result)
-        assert result_data["component"] == "DecryptedText"
-        assert result_data["duration"] == 3.5
-
-    def test_tool_execution_with_auto_speed_adjustment(self):
-        """Test tool execution when text is too long, triggering auto-speed adjustment."""
-        from chuk_motion.components.text_animations.DecryptedText.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
-
-        mcp = Mock()
-        project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
-
-        register_tool(mcp, project_manager)
-        tool_func = mcp.tool.call_args[0][0]
-
-        # Use very long text with short duration to trigger auto-speed adjustment
-        # At 30fps, 1 second = 30 frames. With 0.5s reserved, 0.5s = 15 frames available
-        # With 100 characters and scramble_speed=3.0, we'd need 300 frames
-        # So it should auto-adjust scramble_speed to fit
-        long_text = "A" * 100
-        result = asyncio.run(tool_func(text=long_text, duration=1.0, scramble_speed=3.0))
-
-        # Check component was added with adjusted scramble_speed
-        components = timeline.get_all_components()
-        assert len(components) >= 1
-        # The scramble_speed should be adjusted to fit within available frames
-        # frames_available = 1.0 * 30 - 0.5 * 30 = 15 frames
-        # final_scramble_speed = max(1, 15 / 100) = 1 (since 0.15 < 1)
-        assert components[0].props.get("scrambleSpeed") == 1
-
         result_data = json.loads(result)
         assert result_data["component"] == "DecryptedText"

@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -21,8 +20,6 @@ def register_tool(mcp, project_manager):
         gap: float = 20,
         padding: float = 40,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add OverTheShoulder layout to the composition.
@@ -37,8 +34,6 @@ def register_tool(mcp, project_manager):
             gap: Gap between elements
             padding: Padding from edges
             duration: Duration in seconds or time string
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
@@ -61,31 +56,26 @@ def register_tool(mcp, project_manager):
                 screen_component = parse_nested_component(screen_parsed)
                 shoulder_component = parse_nested_component(shoulder_parsed)
 
-                component = ComponentInstance(
-                    component_type="OverTheShoulder",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "screen_content": screen_component,
-                        "shoulder_overlay": shoulder_component,
-                        "overlay_position": overlay_position,
-                        "overlay_size": overlay_size,
-                        "gap": gap,
-                        "padding": padding,
-                    },
-                    layer=0,
-                )
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Add component using builder
+                builder.add_over_the_shoulder(
+                    start_time=start_time,
+                    screen_content=screen_component,
+                    shoulder_overlay=shoulder_component,
+                    overlay_position=overlay_position,
+                    overlay_size=overlay_size,
+                    gap=gap,
+                    padding=padding,
+                    duration=duration,
                 )
 
                 return LayoutComponentResponse(
                     component="OverTheShoulder",
                     layout=overlay_position,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

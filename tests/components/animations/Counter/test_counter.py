@@ -156,7 +156,7 @@ class TestCounterToolRegistration:
         """Test tool execution handles exceptions."""
         import asyncio
         import json
-        from unittest.mock import Mock, patch
+        from unittest.mock import Mock
 
         from chuk_motion.components.animations.Counter.tool import register_tool
         from chuk_motion.generator.timeline import Timeline
@@ -164,14 +164,14 @@ class TestCounterToolRegistration:
         mcp = Mock()
         project_manager = Mock()
         timeline = Timeline(fps=30)
+        # Mock the add_counter method to raise exception
+        timeline.add_counter = Mock(side_effect=Exception("Test error"))
         project_manager.current_timeline = timeline
 
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
-            result = asyncio.run(tool_func(end_value=100, duration=2.0))
+        result = asyncio.run(tool_func(end_value=100, duration=2.0))
 
         result_data = json.loads(result)
         assert "error" in result_data

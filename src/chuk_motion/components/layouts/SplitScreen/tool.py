@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -14,19 +13,12 @@ def register_tool(mcp, project_manager):
 
     @mcp.tool
     async def remotion_add_split_screen(
-        left: str | None = None,
-        right: str | None = None,
-        top: str | None = None,
-        bottom: str | None = None,
-        orientation: str = "horizontal",
-        ratio: float = 0.5,
+        left_content: str | None = None,
+        right_content: str | None = None,
+        orientation: str | None = None,
+        layout: str | None = None,
         gap: float = 20,
-        padding: float = 40,
-        divider_width: float | None = None,
-        divider_color: str | None = None,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add SplitScreen to the composition.
@@ -34,28 +26,12 @@ def register_tool(mcp, project_manager):
         Layout component for side-by-side or top-bottom content.
 
         Args:
-            left: JSON component for left panel. Format: {"type": "ComponentName", "config": {...}}
-                Example with video:
-                {
-                    "type": "VideoContent",
-                    "config": {
-                        "src": "https://example.com/video.mp4",
-                        "muted": true,
-                        "fit": "cover"
-                    }
-                }
-            right: JSON component for right panel. Same format as left
-            top: JSON component for top panel. Same format as left
-            bottom: JSON component for bottom panel. Same format as left
-            orientation: Orientation (horizontal or vertical, default: horizontal)
-            ratio: Split ratio 0.0-1.0 (default: 0.5 for 50/50)
+            left_content: JSON component for left panel. Format: {"type": "ComponentName", "config": {...}}
+            right_content: JSON component for right panel. Same format as left_content
+            orientation: Orientation (horizontal or vertical)
+            layout: Layout style
             gap: Gap between sections
-            padding: Padding from edges
-            divider_width: Width of divider line between panels
-            divider_color: Color of divider line
             duration: Duration in seconds
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds
 
         Returns:
             JSON with component info
@@ -68,10 +44,8 @@ def register_tool(mcp, project_manager):
                 ).model_dump_json()
 
             try:
-                left_parsed = json.loads(left) if left else None
-                right_parsed = json.loads(right) if right else None
-                top_parsed = json.loads(top) if top else None
-                bottom_parsed = json.loads(bottom) if bottom else None
+                left_parsed = json.loads(left_content) if left_content else None
+                right_parsed = json.loads(right_content) if right_content else None
             except json.JSONDecodeError as e:
                 return ErrorResponse(error=f"Invalid component JSON: {str(e)}").model_dump_json()
 
@@ -79,40 +53,26 @@ def register_tool(mcp, project_manager):
                 # Convert nested components to ComponentInstance objects
                 left_component = parse_nested_component(left_parsed)
                 right_component = parse_nested_component(right_parsed)
-                top_component = parse_nested_component(top_parsed)
-                bottom_component = parse_nested_component(bottom_parsed)
 
-                component = ComponentInstance(
-                    component_type="SplitScreen",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "orientation": orientation,
-                        "ratio": ratio,
-                        "gap": gap,
-                        "padding": padding,
-                        "divider_width": divider_width,
-                        "divider_color": divider_color,
-                        "left": left_component,
-                        "right": right_component,
-                        "top": top_component,
-                        "bottom": bottom_component,
-                    },
-                    layer=0,
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
+
+                # Add component using builder
+                builder.add_split_screen(
+                    start_time=start_time,
+                    orientation=orientation,
+                    layout=layout,
+                    gap=gap,
+                    left_content=left_component,
+                    right_content=right_component,
+                    duration=duration,
                 )
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
-                )
-
-                ratio_pct = f"{int(ratio * 100)}-{int((1 - ratio) * 100)}"
-                layout_desc = f"{orientation}-{ratio_pct}"
                 return LayoutComponentResponse(
                     component="SplitScreen",
-                    layout=layout_desc,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    layout=layout or orientation or "horizontal",
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

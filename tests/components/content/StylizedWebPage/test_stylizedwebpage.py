@@ -159,15 +159,12 @@ class TestStylizedWebPageToolRegistration:
     def test_tool_execution_basic(self):
         """Test basic tool execution."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -180,19 +177,16 @@ class TestStylizedWebPageToolRegistration:
         assert result_data["component"] == "StylizedWebPage"
 
         # Verify component was added
-        timeline_mock.add_component.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_all_params(self):
         """Test tool execution with all parameters."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 60
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=2.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -213,32 +207,23 @@ class TestStylizedWebPageToolRegistration:
                 theme="dark",
                 accent_color="secondary",
                 duration=5.0,
-                track="overlay",
-                gap_before=1.0,
             )
         )
 
         result_data = json.loads(result)
         assert result_data["component"] == "StylizedWebPage"
-        assert result_data["start_time"] == 2.0
 
-        # Verify component was added with correct params
-        call_args = timeline_mock.add_component.call_args
-        assert call_args[1]["duration"] == 5.0
-        assert call_args[1]["track"] == "overlay"
-        assert call_args[1]["gap_before"] == 1.0
+        # Verify component was added
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_default_sidebar_items(self):
         """Test tool execution with default sidebar_items."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -251,21 +236,18 @@ class TestStylizedWebPageToolRegistration:
         assert result_data["component"] == "StylizedWebPage"
 
         # Verify the component props have default sidebar items
-        call_args = timeline_mock.add_component.call_args
-        component_instance = call_args[0][0]
-        assert component_instance.props["sidebarItems"] == ["Dashboard", "Analytics", "Settings"]
+        components = timeline.get_all_components()
+        assert len(components) >= 1
+        assert components[0].props["sidebarItems"] == ["Dashboard", "Analytics", "Settings"]
 
     def test_tool_execution_default_content_lines(self):
         """Test tool execution with default content_lines."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -278,9 +260,9 @@ class TestStylizedWebPageToolRegistration:
         assert result_data["component"] == "StylizedWebPage"
 
         # Verify the component props have default content lines
-        call_args = timeline_mock.add_component.call_args
-        component_instance = call_args[0][0]
-        assert component_instance.props["contentLines"] == [
+        components = timeline.get_all_components()
+        assert len(components) >= 1
+        assert components[0].props["contentLines"] == [
             "Welcome to our site",
             "Explore our features",
             "Get started today",
@@ -289,14 +271,11 @@ class TestStylizedWebPageToolRegistration:
     def test_tool_execution_custom_lists(self):
         """Test tool execution with custom lists."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -312,23 +291,20 @@ class TestStylizedWebPageToolRegistration:
         assert result_data["component"] == "StylizedWebPage"
 
         # Verify the component props have custom values
-        call_args = timeline_mock.add_component.call_args
-        component_instance = call_args[0][0]
-        assert component_instance.props["sidebarItems"] == custom_sidebar
-        assert component_instance.props["contentLines"] == custom_content
+        components = timeline.get_all_components()
+        assert len(components) >= 1
+        assert components[0].props["sidebarItems"] == custom_sidebar
+        assert components[0].props["contentLines"] == custom_content
 
     @pytest.mark.parametrize("theme", ["light", "dark"])
     def test_tool_execution_themes(self, theme):
         """Test tool execution with different themes."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -344,14 +320,11 @@ class TestStylizedWebPageToolRegistration:
     def test_tool_execution_accent_colors(self, accent_color):
         """Test tool execution with different accent colors."""
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -383,19 +356,23 @@ class TestStylizedWebPageToolRegistration:
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
+        from unittest.mock import patch
+
         from chuk_motion.components.content.StylizedWebPage.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
-        timeline_mock = Mock()
-        timeline_mock.add_component = Mock(side_effect=Exception("Test error"))
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func())
+        # Patch add_stylized_web_page to raise exception
+        with patch.object(timeline, "add_stylized_web_page", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func())
 
         result_data = json.loads(result)
         assert "error" in result_data

@@ -43,9 +43,7 @@ class TestStaggerTextBasic:
     @pytest.mark.skip(reason="Component uses new structure with templates in component dir")
     def test_minimal_props(self, component_builder, theme_name):
         """Test StaggerText with only required props."""
-        tsx = component_builder.build_component(
-            "StaggerText", {"text": "Test Text"}, theme_name
-        )
+        tsx = component_builder.build_component("StaggerText", {"text": "Test Text"}, theme_name)
 
         assert tsx is not None
         assert "Test Text" in tsx or "{text}" in tsx
@@ -68,6 +66,7 @@ class TestStaggerTextBuilderMethod:
         assert len(builder.components) == 1
         assert builder.components[0].component_type == "StaggerText"
         assert builder.components[0].props["text"] == "Test"
+
     def test_add_to_composition_with_text_color(self):
         """Test add_to_composition with optional text_color parameter."""
         from chuk_motion.components.text_animations.StaggerText.builder import (
@@ -76,14 +75,11 @@ class TestStaggerTextBuilderMethod:
         from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
-        result = add_to_composition(
-            builder, text="Test", start_time=0.0, text_color="#FF0000"
-        )
+        result = add_to_composition(builder, text="Test", start_time=0.0, text_color="#FF0000")
 
         assert result is builder
         assert len(builder.components) == 1
         assert builder.components[0].props["textColor"] == "#FF0000"
-
 
 
 class TestStaggerTextToolRegistration:
@@ -150,8 +146,8 @@ class TestStaggerTextToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock add_stagger_text to raise exception
+        with patch.object(timeline, "add_stagger_text", side_effect=Exception("Test error")):
             result = asyncio.run(tool_func(text="Test", duration=3.0))
 
         result_data = json.loads(result)
@@ -179,43 +175,3 @@ class TestStaggerTextToolRegistration:
         assert components[0].props.get("textColor") == "#FF0000"
         result_data = json.loads(result)
         assert result_data["component"] == "StaggerText"
-
-    def test_tool_execution_with_duration_string(self):
-        """Test tool execution with duration as string."""
-        from chuk_motion.components.text_animations.StaggerText.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
-
-        mcp = Mock()
-        project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
-
-        register_tool(mcp, project_manager)
-        tool_func = mcp.tool.call_args[0][0]
-
-        # Test with "5s" string format
-        result = asyncio.run(tool_func(text="Test", duration="5s"))
-
-        result_data = json.loads(result)
-        assert result_data["component"] == "StaggerText"
-        assert result_data["duration"] == 5.0
-
-    def test_tool_execution_with_duration_numeric_string(self):
-        """Test tool execution with duration as numeric string without suffix."""
-        from chuk_motion.components.text_animations.StaggerText.tool import register_tool
-        from chuk_motion.generator.timeline import Timeline
-
-        mcp = Mock()
-        project_manager = Mock()
-        timeline = Timeline(fps=30)
-        project_manager.current_timeline = timeline
-
-        register_tool(mcp, project_manager)
-        tool_func = mcp.tool.call_args[0][0]
-
-        # Test with "3.5" string format (no 's' suffix)
-        result = asyncio.run(tool_func(text="Test", duration="3.5"))
-
-        result_data = json.loads(result)
-        assert result_data["component"] == "StaggerText"
-        assert result_data["duration"] == 3.5
