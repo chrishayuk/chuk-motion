@@ -43,9 +43,7 @@ class TestWavyTextBasic:
     @pytest.mark.skip(reason="Component uses new structure with templates in component dir")
     def test_minimal_props(self, component_builder, theme_name):
         """Test WavyText with only required props."""
-        tsx = component_builder.build_component(
-            "WavyText", {"text": "Test Text"}, theme_name
-        )
+        tsx = component_builder.build_component("WavyText", {"text": "Test Text"}, theme_name)
 
         assert tsx is not None
         assert "Test Text" in tsx or "{text}" in tsx
@@ -68,6 +66,7 @@ class TestWavyTextBuilderMethod:
         assert len(builder.components) == 1
         assert builder.components[0].component_type == "WavyText"
         assert builder.components[0].props["text"] == "Test"
+
     def test_add_to_composition_with_text_color(self):
         """Test add_to_composition with optional text_color parameter."""
         from chuk_motion.components.text_animations.WavyText.builder import (
@@ -76,14 +75,11 @@ class TestWavyTextBuilderMethod:
         from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
-        result = add_to_composition(
-            builder, text="Test", start_time=0.0, text_color="#FF0000"
-        )
+        result = add_to_composition(builder, text="Test", start_time=0.0, text_color="#FF0000")
 
         assert result is builder
         assert len(builder.components) == 1
         assert builder.components[0].props["textColor"] == "#FF0000"
-
 
 
 class TestWavyTextToolRegistration:
@@ -150,8 +146,8 @@ class TestWavyTextToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock add_wavy_text to raise exception
+        with patch.object(timeline, "add_wavy_text", side_effect=Exception("Test error")):
             result = asyncio.run(tool_func(text="Test", duration=3.0))
 
         result_data = json.loads(result)

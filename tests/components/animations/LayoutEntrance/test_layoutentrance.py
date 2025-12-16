@@ -97,15 +97,12 @@ class TestLayoutEntranceToolRegistration:
     def test_tool_execution_basic(self):
         """Test basic tool execution with valid content."""
         from chuk_motion.components.animations.LayoutEntrance.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -121,19 +118,16 @@ class TestLayoutEntranceToolRegistration:
         assert result_data["component"] == "LayoutEntrance"
 
         # Verify component was added
-        timeline_mock.add_component.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_all_params(self):
         """Test tool execution with all parameters."""
         from chuk_motion.components.animations.LayoutEntrance.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 60
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=2.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -148,20 +142,18 @@ class TestLayoutEntranceToolRegistration:
                 entrance_type="scale_in_pop",
                 entrance_delay=0.5,
                 duration=5.0,
-                track="overlay",
-                gap_before=1.0,
             )
         )
 
         result_data = json.loads(result)
         assert result_data["component"] == "LayoutEntrance"
-        assert result_data["start_time"] == 2.0
+        assert result_data["duration"] == 5.0
 
-        # Verify component was added with correct params
-        call_args = timeline_mock.add_component.call_args
-        assert call_args[1]["duration"] == 5.0
-        assert call_args[1]["track"] == "overlay"
-        assert call_args[1]["gap_before"] == 1.0
+        # Verify component was added
+        components = timeline.get_all_components()
+        assert len(components) >= 1
+        comp = components[0]
+        assert comp.component_type == "LayoutEntrance"
 
     @pytest.mark.parametrize(
         "entrance_type",
@@ -180,14 +172,11 @@ class TestLayoutEntranceToolRegistration:
     def test_tool_execution_entrance_types(self, entrance_type):
         """Test tool execution with different entrance types."""
         from chuk_motion.components.animations.LayoutEntrance.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -258,14 +247,11 @@ class TestLayoutEntranceToolRegistration:
     def test_tool_execution_invalid_content_format(self):
         """Test tool execution with invalid content format."""
         from chuk_motion.components.animations.LayoutEntrance.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -303,13 +289,15 @@ class TestLayoutEntranceToolRegistration:
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully."""
+        from unittest.mock import patch
+
         from chuk_motion.components.animations.LayoutEntrance.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
-        timeline_mock = Mock()
-        timeline_mock.add_component = Mock(side_effect=Exception("Test error"))
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -317,7 +305,9 @@ class TestLayoutEntranceToolRegistration:
 
         content = json.dumps({"type": "TitleScene", "config": {"text": "Hello"}})
 
-        result = asyncio.run(tool_func(content=content))
+        # Patch add_layout_entrance to raise an error
+        with patch.object(timeline, "add_layout_entrance", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(content=content))
 
         result_data = json.loads(result)
         assert "error" in result_data

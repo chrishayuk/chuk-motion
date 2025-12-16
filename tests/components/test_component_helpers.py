@@ -2,7 +2,6 @@
 """Tests for component helper functions."""
 
 
-
 class TestParseNestedComponent:
     """Tests for parse_nested_component helper function."""
 
@@ -36,10 +35,7 @@ class TestParseNestedComponent:
         from chuk_motion.components.component_helpers import parse_nested_component
         from chuk_motion.generator.composition_builder import ComponentInstance
 
-        comp_dict = {
-            "type": "TitleScene",
-            "config": {"text": "Hello", "variant": "bold"}
-        }
+        comp_dict = {"type": "TitleScene", "config": {"text": "Hello", "variant": "bold"}}
 
         result = parse_nested_component(comp_dict)
         assert isinstance(result, ComponentInstance)
@@ -54,12 +50,7 @@ class TestParseNestedComponent:
 
         comp_dict = {
             "type": "Container",
-            "config": {
-                "content": {
-                    "type": "TitleScene",
-                    "config": {"text": "Nested"}
-                }
-            }
+            "config": {"content": {"type": "TitleScene", "config": {"text": "Nested"}}},
         }
 
         result = parse_nested_component(comp_dict)
@@ -81,7 +72,7 @@ class TestParseNestedComponent:
                     {"type": "TitleScene", "config": {"text": "Item 1"}},
                     {"type": "TitleScene", "config": {"text": "Item 2"}},
                 ]
-            }
+            },
         }
 
         result = parse_nested_component(comp_dict)
@@ -108,7 +99,7 @@ class TestParseNestedComponent:
                     42,
                     {"not": "a component"},
                 ]
-            }
+            },
         }
 
         result = parse_nested_component(comp_dict)

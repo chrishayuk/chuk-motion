@@ -252,6 +252,8 @@ class ThemeManager:
         """
         try:
             json_content = await self.vfs.read_text(file_path)
+            if not json_content:
+                raise ValueError("File is empty or could not be read")
             theme_data = json.loads(json_content)
 
             # Validate and create theme using Pydantic

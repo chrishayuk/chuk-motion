@@ -90,15 +90,12 @@ class TestDemoBoxToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.content.DemoBox.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with current_timeline
         pm_mock = Mock()
-        timeline_mock = Mock()
-        component_mock = Mock()
-        component_mock.start_frame = 0
-        timeline_mock.add_component = Mock(return_value=component_mock)
-        timeline_mock.frames_to_seconds = Mock(return_value=0.0)
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -106,11 +103,7 @@ class TestDemoBoxToolRegistration:
         tool_func = mcp_mock.tool.call_args[0][0]
 
         # Execute with all parameters
-        result = asyncio.run(
-            tool_func(
-                label="Test Label", color="primary", duration=5.0, track="main", gap_before=None
-            )
-        )
+        result = asyncio.run(tool_func(label="Test Label", color="primary", duration=5.0))
 
         # Parse JSON response
         result_data = json.loads(result)
@@ -118,7 +111,7 @@ class TestDemoBoxToolRegistration:
         assert result_data["duration"] == 5.0
 
         # Verify component was added
-        timeline_mock.add_component.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
@@ -145,20 +138,23 @@ class TestDemoBoxToolRegistration:
         """Test tool handles errors gracefully."""
         import asyncio
         import json
-        from unittest.mock import Mock
+        from unittest.mock import Mock, patch
 
         from chuk_motion.components.content.DemoBox.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
         # Mock ProjectManager with timeline that raises an error
         pm_mock = Mock()
-        timeline_mock = Mock()
-        timeline_mock.add_component = Mock(side_effect=Exception("Test error"))
-        pm_mock.current_timeline = timeline_mock
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        result = asyncio.run(tool_func(label="Test"))
+        # Patch add_demo_box to raise exception
+        with patch.object(timeline, "add_demo_box", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(label="Test"))
+
         result_data = json.loads(result)
         assert "error" in result_data

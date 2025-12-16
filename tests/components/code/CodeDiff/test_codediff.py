@@ -112,96 +112,80 @@ class TestCodeDiffToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager and Project
-        pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock()
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
-        mcp_mock = Mock()
-        register_tool(mcp_mock, pm_mock)
-
-        tool_func = mcp_mock.tool.call_args[0][0]
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
 
         # Execute with all parameters
         lines = json.dumps([{"type": "added", "content": "new line"}])
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
+                duration=5.0,
                 lines=lines,
                 mode="unified",
                 language="typescript",
-                showLineNumbers=True,
-                showHeatmap=False,
+                show_line_numbers=True,
+                show_heatmap=False,
                 title="Code Comparison",
-                leftLabel="Before",
-                rightLabel="After",
+                left_label="Before",
+                right_label="After",
                 theme="dark",
                 width=1400,
                 height=800,
                 position="center",
-                animateLines=True,
+                animate_lines=True,
             )
         )
 
-        # Parse JSON response
-        import json
-
-        response = json.loads(result)
-
-        # Check Pydantic response structure
-        assert response["component"] == "CodeDiff"
-        assert "start_time" in response
-        assert "duration" in response
-        assert isinstance(response["start_time"], (int, float))
-        assert isinstance(response["duration"], (int, float))
-
-        # Verify component was added
-        project_mock.add_component_to_track.assert_called_once()
+        # Check component was added
+        assert len(timeline.get_all_components()) >= 1
+        result_data = json.loads(result)
+        assert result_data["component"] == "CodeDiff"
 
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
         import asyncio
+        import json
         from unittest.mock import Mock
 
         from chuk_motion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager and Project
-        pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock()
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
 
-        mcp_mock = Mock()
-        register_tool(mcp_mock, pm_mock)
-        tool_func = mcp_mock.tool.call_args[0][0]
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
 
         # Test with invalid JSON - should handle gracefully
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
+                duration=5.0,
                 lines="invalid json",  # Invalid JSON
                 mode="unified",
                 language="typescript",
-                showLineNumbers=True,
-                showHeatmap=False,
+                show_line_numbers=True,
+                show_heatmap=False,
                 title="Code Comparison",
-                leftLabel="Before",
-                rightLabel="After",
+                left_label="Before",
+                right_label="After",
                 theme="dark",
                 width=1400,
                 height=800,
                 position="center",
-                animateLines=True,
+                animate_lines=True,
             )
         )
 
         # Should not crash, should handle gracefully and return success (invalid JSON becomes empty array)
-        import json
-
         assert result is not None
         response = json.loads(result)
         assert response["component"] == "CodeDiff"
@@ -209,51 +193,46 @@ class TestCodeDiffToolRegistration:
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
         import asyncio
-        import tempfile
-        from unittest.mock import Mock
-
-        from chuk_motion.components.code.CodeDiff.tool import register_tool
-        from chuk_motion.utils.project_manager import ProjectManager
-
-        with tempfile.TemporaryDirectory() as tmpdir:
-            pm = ProjectManager(tmpdir)
-            # Don't create or set active project
-
-            mcp_mock = Mock()
-            register_tool(mcp_mock, pm)
-
-            tool_func = mcp_mock.tool.call_args[0][0]
-
-            # Should return an error response when no project is set
-            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150, lines="[]"))
-
-            import json
-
-            response = json.loads(result)
-            assert "error" in response
-
-    def test_tool_execution_error_handling(self):
-        """Test tool handles errors gracefully."""
-        import asyncio
         import json
         from unittest.mock import Mock
 
         from chuk_motion.components.code.CodeDiff.tool import register_tool
 
-        # Mock ProjectManager with valid project but mock add_component_to_track to raise error
-        pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track.side_effect = Exception("Component creation failed")
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        mcp = Mock()
+        project_manager = Mock()
+        project_manager.current_timeline = None  # No project
 
-        mcp_mock = Mock()
-        register_tool(mcp_mock, pm_mock)
-        tool_func = mcp_mock.tool.call_args[0][0]
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
 
-        # Call tool which should catch the exception
-        result = asyncio.run(tool_func(startFrame=0, durationInFrames=150, lines="[]"))
+        # Should return an error response when no project is set
+        result = asyncio.run(tool_func(duration=5.0, lines="[]"))
 
-        # Should return error response
         response = json.loads(result)
         assert "error" in response
-        assert "Component creation failed" in response["error"]
+        assert "No active project" in response["error"]
+
+    def test_tool_execution_error_handling(self):
+        """Test tool handles errors gracefully."""
+        import asyncio
+        import json
+        from unittest.mock import Mock, patch
+
+        from chuk_motion.components.code.CodeDiff.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
+
+        mcp = Mock()
+        project_manager = Mock()
+        timeline = Timeline(fps=30)
+        project_manager.current_timeline = timeline
+
+        register_tool(mcp, project_manager)
+        tool_func = mcp.tool.call_args[0][0]
+
+        # Mock add_code_diff to raise exception
+        with patch.object(timeline, "add_code_diff", side_effect=Exception("Test error")):
+            result = asyncio.run(tool_func(duration=5.0, lines="[]"))
+
+        result_data = json.loads(result)
+        assert "error" in result_data
+        assert "Test error" in result_data["error"]

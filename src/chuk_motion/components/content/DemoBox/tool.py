@@ -3,7 +3,6 @@
 
 import asyncio
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ComponentResponse, ErrorResponse
 
 
@@ -15,8 +14,6 @@ def register_tool(mcp, project_manager):
         label: str,
         color: str = "primary",
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add DemoBox to the composition.
@@ -27,8 +24,6 @@ def register_tool(mcp, project_manager):
             label: Text label to display in the box
             color: Color variant (primary, secondary, etc.)
             duration: Duration in seconds or time string (e.g., "2s", "500ms")
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
@@ -39,26 +34,19 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
-                component = ComponentInstance(
-                    component_type="DemoBox",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "label": label,
-                        "color": color,
-                    },
-                    layer=0,
-                )
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                builder.add_demo_box(
+                    label=label,
+                    start_time=start_time,
+                    color=color,
+                    duration=duration,
                 )
 
                 return ComponentResponse(
                     component="DemoBox",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

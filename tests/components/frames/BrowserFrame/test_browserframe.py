@@ -112,12 +112,12 @@ class TestBrowserFrameToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.BrowserFrame.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager and Project
+        # Mock ProjectManager with Timeline
         pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock()
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -128,13 +128,12 @@ class TestBrowserFrameToolRegistration:
         tabs = json.dumps([{"title": "Tab 1", "url": "https://example.com"}])
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
+                duration=5.0,
                 url="https://example.com",
                 theme="chrome",
                 tabs=tabs,
-                showStatus=False,
-                statusText="",
+                show_status=False,
+                status_text="",
                 content="",
                 width=1200,
                 height=800,
@@ -155,7 +154,7 @@ class TestBrowserFrameToolRegistration:
         assert "duration" in response
 
         # Verify component was added
-        project_mock.add_component_to_track.assert_called_once()
+        assert len(timeline.get_all_components()) >= 1
 
     def test_tool_json_parsing_error(self):
         """Test tool handles JSON parsing errors."""
@@ -163,12 +162,12 @@ class TestBrowserFrameToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.BrowserFrame.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager and Project
+        # Mock ProjectManager with Timeline
         pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock()
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        timeline = Timeline(fps=30)
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
@@ -177,13 +176,12 @@ class TestBrowserFrameToolRegistration:
         # Test with invalid JSON - should handle gracefully
         result = asyncio.run(
             tool_func(
-                startFrame=0,
-                durationInFrames=150,
+                duration=5.0,
                 url="https://example.com",
                 theme="chrome",
                 tabs="invalid json",  # Invalid JSON
-                showStatus=False,
-                statusText="",
+                show_status=False,
+                status_text="",
                 content="",
                 width=1200,
                 height=800,
@@ -203,28 +201,26 @@ class TestBrowserFrameToolRegistration:
     def test_tool_execution_no_project(self):
         """Test tool execution without active project."""
         import asyncio
-        import tempfile
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.BrowserFrame.tool import register_tool
-        from chuk_motion.utils.project_manager import ProjectManager
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            pm = ProjectManager(tmpdir)
-            # Don't create or set active project
+        # Mock ProjectManager with no timeline
+        pm_mock = Mock()
+        pm_mock.current_timeline = None
 
-            mcp_mock = Mock()
-            register_tool(mcp_mock, pm)
+        mcp_mock = Mock()
+        register_tool(mcp_mock, pm_mock)
 
-            tool_func = mcp_mock.tool.call_args[0][0]
+        tool_func = mcp_mock.tool.call_args[0][0]
 
-            # Should return an error response when no project is set
-            result = asyncio.run(tool_func(startFrame=0, durationInFrames=150))
+        # Should return an error response when no project is set
+        result = asyncio.run(tool_func(duration=5.0))
 
-            import json
+        import json
 
-            response = json.loads(result)
-            assert "error" in response
+        response = json.loads(result)
+        assert "error" in response
 
     def test_tool_execution_error_handling(self):
         """Test tool handles errors gracefully when add_component_to_track fails."""
@@ -233,20 +229,20 @@ class TestBrowserFrameToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.BrowserFrame.tool import register_tool
+        from chuk_motion.generator.timeline import Timeline
 
-        # Mock ProjectManager with project that raises an error on add_component_to_track
+        # Mock ProjectManager with Timeline
         pm_mock = Mock()
-        project_mock = Mock()
-        project_mock.add_component_to_track = Mock(side_effect=Exception("Test error"))
-        pm_mock.get_active_project = Mock(return_value=project_mock)
+        timeline = Timeline(fps=30)
+        # Mock the add_browser_frame method to raise exception
+        timeline.add_browser_frame = Mock(side_effect=Exception("Test error"))
+        pm_mock.current_timeline = timeline
 
         mcp_mock = Mock()
         register_tool(mcp_mock, pm_mock)
         tool_func = mcp_mock.tool.call_args[0][0]
 
-        result = asyncio.run(
-            tool_func(startFrame=0, durationInFrames=150, url="https://example.com")
-        )
+        result = asyncio.run(tool_func(duration=5.0, url="https://example.com"))
 
         response = json.loads(result)
         assert "error" in response

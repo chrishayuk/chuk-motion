@@ -148,8 +148,8 @@ class TestSubscribeButtonToolRegistration:
         register_tool(mcp, project_manager)
         tool_func = mcp.tool.call_args[0][0]
 
-        # Mock add_component to raise exception
-        with patch.object(timeline, "add_component", side_effect=Exception("Test error")):
+        # Mock add_subscribe_button to raise exception
+        with patch.object(timeline, "add_subscribe_button", side_effect=Exception("Test error")):
             result = asyncio.run(tool_func(duration=5.0))
 
         result_data = json.loads(result)

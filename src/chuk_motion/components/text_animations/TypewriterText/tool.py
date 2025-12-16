@@ -3,7 +3,6 @@
 
 import asyncio
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ComponentResponse, ErrorResponse
 
 
@@ -21,9 +20,7 @@ def register_tool(mcp, project_manager):
         type_speed: float = 2.0,
         position: str = "center",
         align: str = "left",
-        duration: float | str = 3.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
+        duration: float = 3.0,
     ) -> str:
         """
         Add TypewriterText classic typing animation with cursor.
@@ -43,9 +40,7 @@ def register_tool(mcp, project_manager):
             type_speed: Characters per second (default: 2.0)
             position: Screen position (center, top, bottom, left) - default: center
             align: Text alignment (left, center, right) - default: left
-            duration: Total duration in seconds or time string (e.g., "3s", "300ms")
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
+            duration: Total duration in seconds (default: 3.0)
 
         Returns:
             JSON with component info
@@ -76,67 +71,30 @@ def register_tool(mcp, project_manager):
         """
 
         def _add():
-            if not project_manager.current_timeline:
+            builder = project_manager.current_timeline
+            if not builder:
                 return ErrorResponse(error="No active project.").model_dump_json()
 
             try:
-                # Parse duration if it's a string
-                actual_duration = duration
-                if isinstance(duration, str):
-                    # Simple parsing for "Xs" format
-                    if duration.endswith('s'):
-                        actual_duration = float(duration[:-1])
-                    else:
-                        actual_duration = float(duration)
-
-                # Calculate if we need to speed up typing to fit in the given duration
-                text_length = len(text)
-                # Reserve 1.0 second for cursor to blink at the end
-                time_available_for_typing = max(actual_duration - 1.0, 0.5)
-
-                # Calculate minimum speed needed to finish in time
-                min_speed_needed = text_length / time_available_for_typing
-
-                # Use the faster of: requested speed or minimum needed speed
-                final_type_speed = max(type_speed, min_speed_needed)
-
-                # Use the requested duration (don't extend it)
-                final_duration = actual_duration
-
-                # Build props - use calculated type_speed to ensure completion
-                props = {
-                    "text": text,
-                    "fontSize": font_size,
-                    "fontWeight": font_weight,
-                    "showCursor": show_cursor,
-                    "typeSpeed": final_type_speed,
-                    "position": position,
-                    "align": align,
-                }
-
-                if text_color:
-                    props["textColor"] = text_color
-                if cursor_color:
-                    props["cursorColor"] = cursor_color
-
-                component = ComponentInstance(
-                    component_type="TypewriterText",
-                    start_frame=0,
-                    duration_frames=0,
-                    props=props,
-                    layer=0,
-                )
-
-                component = project_manager.current_timeline.add_component(
-                    component, duration=final_duration, track=track, gap_before=gap_before
+                start_time = builder.get_total_duration_seconds()
+                builder.add_typewriter_text(
+                    text=text,
+                    font_size=font_size,
+                    font_weight=font_weight,
+                    text_color=text_color,
+                    cursor_color=cursor_color,
+                    show_cursor=show_cursor,
+                    type_speed=type_speed,
+                    position=position,
+                    align=align,
+                    start_time=start_time,
+                    duration=duration,
                 )
 
                 return ComponentResponse(
                     component="TypewriterText",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
-                    duration=final_duration,
+                    start_time=start_time,
+                    duration=duration,
                 ).model_dump_json()
             except Exception as e:
                 return ErrorResponse(error=str(e)).model_dump_json()

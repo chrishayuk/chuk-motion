@@ -4,7 +4,6 @@
 import asyncio
 import json
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ChartComponentResponse, ErrorResponse
 
 
@@ -17,17 +16,12 @@ def register_tool(mcp, project_manager):
         title: str | None = None,
         xlabel: str | None = None,
         ylabel: str | None = None,
-        duration: float | str = 4.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
+        duration: float = 4.0,
     ) -> str:
         """
         Add an animated bar chart to the composition.
 
         Animated vertical bar chart for comparing categories.
-
-        Valid props: data, title, xlabel, ylabel, duration, track, gap_before
-        Invalid props: variant, style, color, theme, animation (these don't exist)
 
         Args:
             data: JSON array of {label, value} objects. Optionally include "color" per bar.
@@ -36,9 +30,7 @@ def register_tool(mcp, project_manager):
             title: Optional chart title
             xlabel: Optional x-axis label
             ylabel: Optional y-axis label
-            duration: How long to animate (seconds) or time string
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
+            duration: How long to animate in seconds (default: 4.0)
 
         Returns:
             JSON with component info
@@ -53,7 +45,8 @@ def register_tool(mcp, project_manager):
         """
 
         def _add():
-            if not project_manager.current_timeline:
+            builder = project_manager.current_timeline
+            if not builder:
                 return ErrorResponse(
                     error="No active project. Create a project first."
                 ).model_dump_json()
@@ -64,30 +57,24 @@ def register_tool(mcp, project_manager):
                 return ErrorResponse(error=f"Invalid data JSON: {str(e)}").model_dump_json()
 
             try:
-                component = ComponentInstance(
-                    component_type="BarChart",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "data": data_parsed,
-                        "title": title,
-                        "xlabel": xlabel,
-                        "ylabel": ylabel,
-                    },
-                    layer=0,
-                )
+                # Get current end time as start time for new component
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Use the builder method registered by register_all_builders
+                builder.add_bar_chart(
+                    data=data_parsed,
+                    title=title,
+                    xlabel=xlabel,
+                    ylabel=ylabel,
+                    start_time=start_time,
+                    duration=duration,
                 )
 
                 return ChartComponentResponse(
                     component="BarChart",
                     data_points=len(data_parsed),
                     title=title,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

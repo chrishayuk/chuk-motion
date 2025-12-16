@@ -185,3 +185,96 @@ class TestErrorHandling:
 
         # Should use template defaults
         assert tsx is not None
+
+
+class TestConvenienceMethods:
+    """Tests for convenience builder methods."""
+
+    def test_build_lower_third_basic(self, component_builder):
+        """Test building a basic LowerThird component."""
+        tsx = component_builder.build_lower_third(name="John Doe")
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+        assert len(tsx) > 0
+
+    def test_build_lower_third_with_title(self, component_builder):
+        """Test building a LowerThird with title."""
+        tsx = component_builder.build_lower_third(
+            name="Jane Smith",
+            title="Software Engineer",
+        )
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+
+    def test_build_lower_third_with_all_options(self, component_builder):
+        """Test building a LowerThird with all options."""
+        tsx = component_builder.build_lower_third(
+            name="Test User",
+            title="CEO",
+            variant="bold",
+            position="bottom_right",
+            theme_name="finance",
+        )
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+
+    def test_build_title_scene_basic(self, component_builder):
+        """Test building a basic TitleScene component."""
+        tsx = component_builder.build_title_scene(text="Welcome")
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+        assert len(tsx) > 0
+
+    def test_build_title_scene_with_subtitle(self, component_builder):
+        """Test building a TitleScene with subtitle."""
+        tsx = component_builder.build_title_scene(
+            text="Main Title",
+            subtitle="This is a subtitle",
+        )
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+
+    def test_build_title_scene_with_all_options(self, component_builder):
+        """Test building a TitleScene with all options."""
+        tsx = component_builder.build_title_scene(
+            text="Amazing Title",
+            subtitle="With all options",
+            variant="kinetic",
+            animation="slide_up",
+            theme_name="creator",
+        )
+
+        assert tsx is not None
+        assert isinstance(tsx, str)
+
+
+class TestThemeStyles:
+    """Tests for get_theme_styles method."""
+
+    def test_get_theme_styles_tech(self, component_builder):
+        """Test getting theme styles for tech theme."""
+        styles = component_builder.get_theme_styles("tech")
+
+        assert styles is not None
+        assert "themeStyles" in styles
+        assert "primary" in styles
+
+    def test_get_theme_styles_finance(self, component_builder):
+        """Test getting theme styles for finance theme."""
+        styles = component_builder.get_theme_styles("finance")
+
+        assert styles is not None
+        assert "themeStyles" in styles
+
+    def test_get_theme_styles_invalid_fallback(self, component_builder):
+        """Test getting theme styles with invalid theme falls back to tech."""
+        styles = component_builder.get_theme_styles("nonexistent_theme")
+
+        # Should return tech theme as fallback
+        assert styles is not None
+        assert "themeStyles" in styles

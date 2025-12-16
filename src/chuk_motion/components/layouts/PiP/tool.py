@@ -5,7 +5,6 @@ import asyncio
 import json
 
 from chuk_motion.components.component_helpers import parse_nested_component
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import ErrorResponse, LayoutComponentResponse
 
 
@@ -20,8 +19,6 @@ def register_tool(mcp, project_manager):
         overlay_size: float = 20,
         margin: float = 40,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add PiP (Picture-in-Picture) to the composition.
@@ -35,8 +32,6 @@ def register_tool(mcp, project_manager):
             overlay_size: Overlay size (percentage of screen)
             margin: Margin from edges
             duration: Duration in seconds
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds
 
         Returns:
             JSON with component info
@@ -59,30 +54,25 @@ def register_tool(mcp, project_manager):
                 main_component = parse_nested_component(main_parsed)
                 pip_component = parse_nested_component(pip_parsed)
 
-                component = ComponentInstance(
-                    component_type="PiP",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "mainContent": main_component,
-                        "pipContent": pip_component,
-                        "position": position,
-                        "overlay_size": overlay_size,
-                        "margin": margin,
-                    },
-                    layer=0,
-                )
+                # Get builder and start time
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                # Add component using builder
+                builder.add_pi_p(
+                    start_time=start_time,
+                    main_content=main_component,
+                    pip_content=pip_component,
+                    position=position,
+                    overlay_size=overlay_size,
+                    margin=margin,
+                    duration=duration,
                 )
 
                 return LayoutComponentResponse(
                     component="PiP",
                     layout=position,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

@@ -772,8 +772,12 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                             # Special handling for Mosaic clips - wrap in {content: ...} object
                             if comp.component_type == "Mosaic" and key == "clips":
                                 # Render child inline within the content object
-                                child_jsx = self._render_component_jsx(child_item, indent + 6).strip()
-                                children_jsx.append(f"{spaces}    {{\n{spaces}      content: {child_jsx}\n{spaces}    }}")
+                                child_jsx = self._render_component_jsx(
+                                    child_item, indent + 6
+                                ).strip()
+                                children_jsx.append(
+                                    f"{spaces}    {{\n{spaces}      content: {child_jsx}\n{spaces}    }}"
+                                )
                             else:
                                 child_jsx = self._render_component_jsx(child_item, indent + 4)
                                 children_jsx.append(child_jsx)
@@ -826,7 +830,12 @@ export const VideoComposition: React.FC<VideoCompositionProps> = ({{ theme }}) =
                 return self._render_simple_component(comp, indent)
 
         # Handle overlay and animation components with content
-        elif comp.component_type in ["TextOverlay", "LowerThird", "SubscribeButton", "LayoutEntrance"]:
+        elif comp.component_type in [
+            "TextOverlay",
+            "LowerThird",
+            "SubscribeButton",
+            "LayoutEntrance",
+        ]:
             content = comp.props.get("content")
             if isinstance(content, ComponentInstance):
                 content_jsx = self._render_component_jsx(content, indent + 4)

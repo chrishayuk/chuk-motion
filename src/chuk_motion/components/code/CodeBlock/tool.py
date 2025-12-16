@@ -3,7 +3,6 @@
 
 import asyncio
 
-from chuk_motion.generator.composition_builder import ComponentInstance
 from chuk_motion.models import CodeComponentResponse, ErrorResponse
 
 
@@ -18,9 +17,7 @@ def register_tool(mcp, project_manager):
         variant: str | None = None,
         animation: str | None = None,
         show_line_numbers: bool = True,
-        duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
+        duration: float = 5.0,
     ) -> str:
         """
         Add CodeBlock to the composition.
@@ -33,39 +30,31 @@ def register_tool(mcp, project_manager):
             title: Optional title/filename
             variant: Style variant (minimal, terminal, editor, glass)
             animation: Entrance animation
-            show_line_numbers: Show line numbers
-            duration: Duration in seconds
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds (overrides track default)
+            show_line_numbers: Show line numbers (default: True)
+            duration: Duration in seconds (default: 5.0)
 
         Returns:
             JSON with component info
         """
 
         def _add():
-            if not project_manager.current_timeline:
+            builder = project_manager.current_timeline
+            if not builder:
                 return ErrorResponse(
                     error="No active project. Create a project first."
                 ).model_dump_json()
 
             try:
-                component = ComponentInstance(
-                    component_type="CodeBlock",
-                    start_frame=0,
-                    duration_frames=0,
-                    props={
-                        "code": code,
-                        "language": language,
-                        "title": title,
-                        "variant": variant,
-                        "animation": animation,
-                        "show_line_numbers": show_line_numbers,
-                    },
-                    layer=0,
-                )
-
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                start_time = builder.get_total_duration_seconds()
+                builder.add_code_block(
+                    code=code,
+                    start_time=start_time,
+                    language=language,
+                    title=title,
+                    variant=variant,
+                    animation=animation,
+                    show_line_numbers=show_line_numbers,
+                    duration=duration,
                 )
 
                 lines = len(code.split("\n"))
@@ -73,9 +62,7 @@ def register_tool(mcp, project_manager):
                     component="CodeBlock",
                     language=language or "text",
                     lines=lines,
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except Exception as e:

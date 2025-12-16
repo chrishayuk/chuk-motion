@@ -17,8 +17,6 @@ def register_tool(mcp, project_manager):
         cascade_type: str = "from_edges",
         stagger_delay: float = 0.08,
         duration: float | str = 5.0,
-        track: str = "main",
-        gap_before: float | str | None = None,
     ) -> str:
         """
         Add PanelCascade for staggered panel entrance animations.
@@ -68,8 +66,6 @@ def register_tool(mcp, project_manager):
                 - "wave": Wave pattern across panels (dynamic, flowing)
             stagger_delay: Delay between each panel animation in seconds (default: 0.08)
             duration: Total duration in seconds or time string (e.g., "5s", "500ms")
-            track: Track name (default: "main")
-            gap_before: Gap before component in seconds or time string
 
         Returns:
             JSON with component info
@@ -137,30 +133,20 @@ def register_tool(mcp, project_manager):
                         error=f"Invalid cascade_type. Must be one of: {', '.join(valid_types)}"
                     ).model_dump_json()
 
-                # Build props
-                props = {
-                    "items": panel_components,
-                    "cascadeType": cascade_type,
-                    "staggerDelay": stagger_delay,
-                }
+                builder = project_manager.current_timeline
+                start_time = builder.get_total_duration_seconds()
 
-                component = ComponentInstance(
-                    component_type="PanelCascade",
-                    start_frame=0,
-                    duration_frames=0,
-                    props=props,
-                    layer=0,
-                )
-
-                component = project_manager.current_timeline.add_component(
-                    component, duration=duration, track=track, gap_before=gap_before
+                builder.add_panel_cascade(
+                    start_time=start_time,
+                    items=panel_components,
+                    cascade_type=cascade_type,
+                    stagger_delay=stagger_delay,
+                    duration=duration,
                 )
 
                 return ComponentResponse(
                     component="PanelCascade",
-                    start_time=project_manager.current_timeline.frames_to_seconds(
-                        component.start_frame
-                    ),
+                    start_time=start_time,
                     duration=duration,
                 ).model_dump_json()
             except json.JSONDecodeError as e:

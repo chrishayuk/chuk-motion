@@ -12,12 +12,8 @@ class ImageContentConfig(BaseModel):
     fit: str = Field(
         default="cover", description="How image fits in container: 'contain', 'cover', or 'fill'"
     )
-    opacity: float = Field(
-        default=1.0, description="Image opacity (0.0 to 1.0)", ge=0.0, le=1.0
-    )
-    border_radius: int = Field(
-        default=0, description="Border radius in pixels", ge=0
-    )
+    opacity: float = Field(default=1.0, description="Image opacity (0.0 to 1.0)", ge=0.0, le=1.0)
+    border_radius: int = Field(default=0, description="Border radius in pixels", ge=0)
 
 
 TOOL_DEFINITION = {

@@ -240,3 +240,60 @@ class TestThemeTools:
 
         data = json.loads(result)
         assert "popular_themes" in data or "recommendations" in data
+
+    async def test_create_custom_theme_invalid_base(self, mcp_with_theme_tools):
+        """Test creating custom theme with invalid base theme."""
+        tool = mcp_with_theme_tools.tools["remotion_create_custom_theme"]
+        result = await tool(
+            name="Invalid Base",
+            description="Test with invalid base",
+            base_theme="nonexistent_theme",
+        )
+
+        data = json.loads(result)
+        # Should return an error since base theme doesn't exist
+        assert "error" in data
+
+    async def test_create_custom_theme_invalid_color_json(self, mcp_with_theme_tools):
+        """Test creating custom theme with invalid color JSON."""
+        tool = mcp_with_theme_tools.tools["remotion_create_custom_theme"]
+        result = await tool(
+            name="Bad Colors",
+            description="Test with invalid colors",
+            base_theme="tech",
+            primary_colors="not valid json",
+        )
+
+        data = json.loads(result)
+        assert "error" in data
+        assert "Invalid color JSON" in data["error"]
+
+    async def test_create_custom_theme_with_accent_colors(self, mcp_with_theme_tools):
+        """Test creating custom theme with accent colors."""
+        tool = mcp_with_theme_tools.tools["remotion_create_custom_theme"]
+        result = await tool(
+            name="Accented Theme",
+            description="Theme with custom accent colors",
+            base_theme="tech",
+            accent_colors='["#00FF00", "#00CC00"]',
+        )
+
+        data = json.loads(result)
+        assert data["status"] == "success"
+        assert "theme_key" in data
+
+    async def test_export_theme_invalid(self, mcp_with_theme_tools):
+        """Test exporting a non-existent theme."""
+        tool = mcp_with_theme_tools.tools["remotion_export_theme"]
+        result = await tool(theme_name="nonexistent_theme", file_path="test.json")
+
+        data = json.loads(result)
+        assert "error" in data
+
+    async def test_import_theme_invalid_file(self, mcp_with_theme_tools):
+        """Test importing from non-existent file."""
+        tool = mcp_with_theme_tools.tools["remotion_import_theme"]
+        result = await tool(file_path="nonexistent_file.json")
+
+        data = json.loads(result)
+        assert "error" in data

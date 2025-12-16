@@ -1,0 +1,52 @@
+# fly.toml app configuration file for chuk-motion
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'chuk-motion'
+primary_region = 'lhr'
+
+[build]
+
+[env]
+  # Artifact storage configuration - uses chuk-artifacts with S3 backend
+  CHUK_MOTION_STORAGE_PROVIDER = "s3"
+
+  # Chromium for Remotion rendering
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+  PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+
+  # Redis configuration for session/metadata storage
+  # REDIS_URL is set via secrets: fly secrets set REDIS_URL="redis://..."
+
+  # S3/Tigris configuration (credentials via secrets)
+  # AWS_ACCESS_KEY_ID - set via: fly secrets set AWS_ACCESS_KEY_ID="..."
+  # AWS_SECRET_ACCESS_KEY - set via: fly secrets set AWS_SECRET_ACCESS_KEY="..."
+  # AWS_ENDPOINT_URL_S3 - set via: fly secrets set AWS_ENDPOINT_URL_S3="https://fly.storage.tigris.dev"
+  # BUCKET_NAME - set via: fly secrets set BUCKET_NAME="chuk-motion-artifacts"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[http_service.checks]]
+  interval = "15s"
+  timeout = "10s"
+  grace_period = "5s"
+  method = "GET"
+  path = "/health"
+
+[http_service.concurrency]
+  type = "requests"
+  hard_limit = 250
+  soft_limit = 200
+
+[[vm]]
+  # Video rendering with Remotion/Chromium needs substantial memory
+  memory = '4gb'
+  cpu_kind = 'shared'
+  cpus = 4

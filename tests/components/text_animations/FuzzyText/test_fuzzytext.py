@@ -43,9 +43,7 @@ class TestFuzzyTextBasic:
     @pytest.mark.skip(reason="Component uses new structure with templates in component dir")
     def test_minimal_props(self, component_builder, theme_name):
         """Test FuzzyText with only required props."""
-        tsx = component_builder.build_component(
-            "FuzzyText", {"text": "Test Text"}, theme_name
-        )
+        tsx = component_builder.build_component("FuzzyText", {"text": "Test Text"}, theme_name)
 
         assert tsx is not None
         assert "Test Text" in tsx or "{text}" in tsx
@@ -77,14 +75,11 @@ class TestFuzzyTextBuilderMethod:
         from chuk_motion.generator.composition_builder import CompositionBuilder
 
         builder = CompositionBuilder()
-        result = add_to_composition(
-            builder, text="Test", start_time=0.0, text_color="#FF0000"
-        )
+        result = add_to_composition(builder, text="Test", start_time=0.0, text_color="#FF0000")
 
         assert result is builder
         assert len(builder.components) == 1
         assert builder.components[0].props["textColor"] == "#FF0000"
-
 
 
 class TestFuzzyTextToolRegistration:

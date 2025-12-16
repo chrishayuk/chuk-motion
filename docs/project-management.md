@@ -311,8 +311,460 @@ Error: Cannot find module '@remotion/cli'
 ```
 **Solution**: Run `npm install` in the project directory
 
+## CHUK Artifacts Integration
+
+### Overview
+
+`chuk-motion` will integrate with [chuk-artifacts](https://github.com/chrishayuk/chuk-artifacts) to provide a **unified VFS-backed storage substrate** for all project files, rendered videos, assets, and artifacts. This integration enables:
+
+- **Namespace-based storage** for projects (WORKSPACE) and renders (BLOB)
+- **Scope-based isolation** (SESSION, USER, SANDBOX)
+- **Provider flexibility** (memory, filesystem, S3, SQLite)
+- **Checkpoint versioning** for projects and renders
+- **Multi-tenancy** with automatic access control
+- **Production scalability** across different storage backends
+
+### Architecture
+
+```
+chuk-motion Storage Architecture (with chuk-artifacts)
+======================================================
+
+┌─────────────────────────────────────────────────────────────────┐
+│                       chuk-motion MCP Server                     │
+│                                                                   │
+│  • remotion_create_project → WORKSPACE namespace                │
+│  • remotion_render_video → BLOB namespace (rendered MP4)        │
+│  • remotion_store_asset → BLOB namespace (images, audio)        │
+│  • remotion_checkpoint_project → checkpoint namespace           │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       │ ArtifactStore API
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        chuk-artifacts                            │
+│                  (Unified Namespace Management)                  │
+│                                                                   │
+│  WORKSPACE namespaces:                                           │
+│  • Remotion project files (TSX, config, package.json)           │
+│  • Multi-file directory trees                                    │
+│  • Full VFS access (ls, cp, mv, mkdir, find)                    │
+│                                                                   │
+│  BLOB namespaces:                                                │
+│  • Rendered videos (MP4, WebM)                                   │
+│  • Thumbnails and previews                                       │
+│  • Media assets (images, audio, fonts)                          │
+│  • Single file storage with metadata                             │
+│                                                                   │
+│  Storage Scopes:                                                 │
+│  • SESSION: Ephemeral renders, previews (TTL cleanup)           │
+│  • USER: Personal projects and renders (persistent)             │
+│  • SANDBOX: Shared templates and resources (all users)          │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       │ VFS Provider API
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    chuk-virtual-fs                               │
+│                  (Unified VFS Layer)                             │
+│                                                                   │
+│  Provider-agnostic file operations:                              │
+│  • ls(), mkdir(), rm(), cp(), mv()                              │
+│  • read_file(), write_file()                                    │
+│  • find(), batch operations                                     │
+│  • Metadata management                                          │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       │ Storage Provider Selection
+                       ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   Storage Providers                              │
+│                                                                   │
+│  Development:    vfs-memory (fast, ephemeral)                   │
+│  Local:          vfs-filesystem (persistent, local)             │
+│  Embedded:       vfs-sqlite (portable, queryable)               │
+│  Production:     vfs-s3 (cloud, distributed, scalable)          │
+└──────────────────────┬──────────────────────────────────────────┘
+                       │
+                       ▼
+              grid/{sandbox}/{scope}/{namespace_id}/
+```
+
+### Namespace Types
+
+#### WORKSPACE Namespaces (Project Files)
+
+Each Remotion project becomes a WORKSPACE namespace:
+
+```python
+# Create project as WORKSPACE namespace
+workspace = await artifact_store.create_namespace(
+    type=NamespaceType.WORKSPACE,
+    name="my_video_project",
+    scope=StorageScope.USER,
+    user_id="alice"
+)
+
+# Project files stored in namespace
+grid/default/user-alice/{namespace_id}/
+├── .workspace                 # Metadata
+├── package.json
+├── remotion.config.ts
+├── tsconfig.json
+└── src/
+    ├── index.ts
+    ├── Root.tsx
+    ├── VideoComposition.tsx
+    └── components/
+        ├── TitleScene.tsx
+        └── LowerThird.tsx
+
+# Get VFS for project operations
+vfs = artifact_store.get_namespace_vfs(workspace.namespace_id)
+files = await vfs.ls("/src/components")
+```
+
+#### BLOB Namespaces (Rendered Videos & Assets)
+
+Rendered videos and assets stored as BLOB namespaces:
+
+```python
+# Store rendered video as BLOB
+render_blob = await artifact_store.create_namespace(
+    type=NamespaceType.BLOB,
+    scope=StorageScope.USER,
+    user_id="alice"
+)
+
+# Write MP4 data
+await artifact_store.write_namespace(
+    render_blob.namespace_id,
+    data=mp4_bytes
+)
+
+# Add metadata
+vfs = artifact_store.get_namespace_vfs(render_blob.namespace_id)
+await vfs.set_metadata("/_data", {
+    "project_id": workspace.namespace_id,
+    "format": "mp4",
+    "resolution": "1920x1080",
+    "fps": 30,
+    "duration_seconds": 45.5,
+    "render_date": "2025-01-30"
+})
+```
+
+### Storage Scopes
+
+| Scope | Use Case | Lifecycle | Grid Path |
+|-------|----------|-----------|-----------|
+| **SESSION** | Temporary previews, draft renders | Ephemeral (session lifetime) | `grid/default/sess-{session_id}/{ns_id}` |
+| **USER** | Personal projects, final renders | Persistent (user-owned) | `grid/default/user-{user_id}/{ns_id}` |
+| **SANDBOX** | Shared templates, example projects | Persistent (shared) | `grid/default/shared/{ns_id}` |
+
+**Examples:**
+
+```python
+# Session-scoped preview (auto-cleanup when session ends)
+preview = await artifact_store.create_namespace(
+    type=NamespaceType.BLOB,
+    scope=StorageScope.SESSION,
+    ttl_hours=24  # Auto-delete after 24 hours
+)
+
+# User-scoped project (persistent)
+project = await artifact_store.create_namespace(
+    type=NamespaceType.WORKSPACE,
+    name="my_tutorial_video",
+    scope=StorageScope.USER,
+    user_id="alice"
+)
+
+# Sandbox-scoped template (shared with all users)
+template = await artifact_store.create_namespace(
+    type=NamespaceType.WORKSPACE,
+    name="tech_intro_template",
+    scope=StorageScope.SANDBOX
+)
+```
+
+### Checkpoint System
+
+Version control for projects and renders using checkpoints:
+
+```python
+# Create checkpoint of project
+checkpoint = await artifact_store.checkpoint_namespace(
+    workspace.namespace_id,
+    name="v1.0-ready-for-review",
+    description="All animations complete, awaiting feedback"
+)
+
+# Make changes to project...
+await artifact_store.write_namespace(
+    workspace.namespace_id,
+    path="/src/VideoComposition.tsx",
+    data=updated_composition
+)
+
+# Restore from checkpoint if needed
+await artifact_store.restore_namespace(
+    workspace.namespace_id,
+    checkpoint.checkpoint_id
+)
+
+# List all checkpoints
+checkpoints = await artifact_store.list_checkpoints(workspace.namespace_id)
+# [
+#   {"id": "cp_123", "name": "v1.0-ready-for-review", "created": "2025-01-30T10:00:00Z"},
+#   {"id": "cp_124", "name": "v1.1-final", "created": "2025-01-30T14:30:00Z"}
+# ]
+```
+
+### Asset Management
+
+Media assets (images, audio, fonts) stored as BLOB namespaces with metadata:
+
+```python
+# Store image asset
+image_asset = await artifact_store.create_namespace(
+    type=NamespaceType.BLOB,
+    scope=StorageScope.USER,
+    user_id="alice"
+)
+
+await artifact_store.write_namespace(
+    image_asset.namespace_id,
+    data=image_bytes
+)
+
+# Add searchable metadata
+vfs = artifact_store.get_namespace_vfs(image_asset.namespace_id)
+await vfs.set_metadata("/_data", {
+    "asset_type": "image",
+    "mime_type": "image/png",
+    "width": 1920,
+    "height": 1080,
+    "tags": ["background", "tech", "gradient"],
+    "project_ids": [workspace.namespace_id]
+})
+
+# Search for assets by metadata
+python_files = await vfs.find(pattern="*.png", path="/", recursive=True)
+```
+
+### Production Deployment Patterns
+
+#### Development (Memory Provider)
+
+```python
+# Fast, ephemeral storage for development
+export ARTIFACT_PROVIDER=vfs-memory
+export SESSION_PROVIDER=memory
+
+store = ArtifactStore()  # Uses memory by default
+```
+
+#### Local Deployment (Filesystem Provider)
+
+```python
+# Persistent local storage
+export ARTIFACT_PROVIDER=vfs-filesystem
+export VFS_ROOT_PATH=/var/chuk-motion/artifacts
+
+# Projects and renders stored locally
+# Good for: Single-user installs, edge devices
+```
+
+#### Embedded Deployment (SQLite Provider)
+
+```python
+# Portable database storage
+export ARTIFACT_PROVIDER=vfs-sqlite
+export SQLITE_DB_PATH=/data/chuk-motion.db
+
+# Single file, queryable
+# Good for: Desktop apps, portable installs
+```
+
+#### Production Cloud (S3 Provider)
+
+```python
+# Scalable cloud storage with Redis sessions
+export ARTIFACT_PROVIDER=vfs-s3
+export SESSION_PROVIDER=redis
+export AWS_S3_BUCKET=chuk-motion-artifacts
+export REDIS_URL=redis://prod-redis:6379/0
+
+# Multi-tenant, distributed, scalable
+# Good for: SaaS, multi-user platforms
+```
+
+#### Hybrid Deployment
+
+```python
+# Different scopes, different backends
+# SESSION: vfs-memory (fast ephemeral)
+# USER: vfs-s3 (persistent cloud)
+# SANDBOX: vfs-filesystem (local shared templates)
+
+await artifact_store.create_namespace(
+    type=NamespaceType.BLOB,
+    scope=StorageScope.SESSION,
+    provider_type="vfs-memory"  # Fast preview renders
+)
+
+await artifact_store.create_namespace(
+    type=NamespaceType.WORKSPACE,
+    scope=StorageScope.USER,
+    provider_type="vfs-s3"  # User projects in cloud
+)
+```
+
+### Migration Path
+
+**Current Architecture:**
+```
+remotion-projects/
+├── project1/
+│   ├── package.json
+│   └── src/...
+└── project2/
+    ├── package.json
+    └── src/...
+```
+
+**Target Architecture (with chuk-artifacts):**
+```
+grid/default/
+├── sess-{session_id}/
+│   └── {namespace_id}/  # Temporary preview renders (SESSION)
+├── user-{user_id}/
+│   ├── {namespace_id}/  # User project workspace (USER)
+│   └── {namespace_id}/  # User rendered video blob (USER)
+└── shared/
+    └── {namespace_id}/  # Shared template workspace (SANDBOX)
+```
+
+### Benefits
+
+1. **Multi-tenancy**: Automatic user/session isolation
+2. **Scalability**: Switch storage backends via configuration
+3. **Versioning**: Built-in checkpoint system for projects and renders
+4. **Cloud-native**: S3 backend for distributed deployments
+5. **Testability**: Memory provider for instant testing
+6. **Consistency**: Same storage API as chuk-ai-planner, chuk-mcp-server
+7. **Asset Management**: Metadata-based search and organization
+8. **Production-ready**: Grid architecture, access control, TTL cleanup
+
+## Roadmap
+
+### Phase 1: Foundation ✅ COMPLETE
+- ✅ Design token system (colors, typography, motion, spacing)
+- ✅ Component registry with 51 components
+- ✅ 7 YouTube-optimized themes
+- ✅ Discovery tools for LLMs
+- ✅ Track-based timeline system
+- ✅ Platform safe margin support
+
+### Phase 2: Generation ✅ COMPLETE
+- ✅ TSX component generation with Jinja2
+- ✅ Remotion project scaffolding
+- ✅ Composition builder with ComponentInstance
+- ✅ ProjectManager API
+- ✅ Time string parsing ("1s", "500ms")
+
+### Phase 3: Rendering & Artifact Storage 🚧 IN PROGRESS
+- 🔲 **Remotion render integration via CLI**
+- 🔲 **chuk-artifacts integration for rendered videos**
+  - 🔲 Store renders as BLOB namespaces
+  - 🔲 Metadata tracking (resolution, fps, duration, format)
+  - 🔲 Session-scoped temporary renders with TTL
+  - 🔲 User-scoped persistent renders
+- 🔲 **Export to MP4/WebM as artifacts**
+  - 🔲 Streaming writes for large files
+  - 🔲 Checksum validation
+  - 🔲 Format conversion support
+- 🔲 **Thumbnail generation**
+  - 🔲 Auto-generate thumbnails from renders
+  - 🔲 Store thumbnails as BLOB namespaces
+  - 🔲 Multiple thumbnail sizes (small, medium, large)
+- 🔲 **Preview generation**
+  - 🔲 Low-resolution preview renders
+  - 🔲 TTL-based cleanup for previews
+  - 🔲 Session-scoped preview storage
+
+### Phase 3.5: Storage Architecture Migration 🆕 PLANNED
+- 🔲 **Migrate from filesystem to chuk-artifacts namespaces**
+  - 🔲 Replace `remotion-projects/` directory with WORKSPACE namespaces
+  - 🔲 Update ProjectManager to use ArtifactStore API
+  - 🔲 Migrate existing projects to namespaces
+- 🔲 **WORKSPACE namespaces for project files**
+  - 🔲 Project creation as WORKSPACE namespace
+  - 🔲 VFS-backed project file operations
+  - 🔲 Grid-based project organization
+- 🔲 **BLOB namespaces for rendered videos**
+  - 🔲 Store MP4/WebM renders as blobs
+  - 🔲 Metadata for render tracking
+  - 🔲 Batch render operations
+- 🔲 **Scope-based isolation**
+  - 🔲 SESSION scope for temporary work
+  - 🔲 USER scope for persistent projects
+  - 🔲 SANDBOX scope for shared templates
+- 🔲 **Provider-agnostic storage**
+  - 🔲 Memory provider for development
+  - 🔲 Filesystem provider for local deployments
+  - 🔲 S3 provider for production cloud
+  - 🔲 SQLite provider for embedded/desktop
+- 🔲 **Checkpoint system integration**
+  - 🔲 Project versioning with checkpoints
+  - 🔲 Render versioning with checkpoints
+  - 🔲 Restore from checkpoint functionality
+
+### Phase 4: Advanced Features 🔮 FUTURE
+- 🔲 **Custom theme builder**
+  - 🔲 Visual theme editor
+  - 🔲 Theme versioning with checkpoints
+  - 🔲 Theme templates as SANDBOX namespaces
+- 🔲 **Animation timeline editor**
+  - 🔲 Visual timeline editing
+  - 🔲 Real-time preview
+- 🔲 **Audio sync**
+  - 🔲 Audio file support
+  - 🔲 Beat detection and sync
+- 🔲 **Asset management**
+  - 🔲 Media assets via chuk-artifacts BLOB namespaces
+  - 🔲 Metadata-based asset search and discovery
+  - 🔲 Batch asset operations (upload, tag, organize)
+  - 🔲 Asset collections and libraries
+  - 🔲 Image/video/audio asset support
+  - 🔲 Asset versioning with checkpoints
+- 🔲 **Auto-captioning**
+  - 🔲 Speech-to-text integration
+  - 🔲 Caption overlays
+  - 🔲 Store captions as artifacts
+- 🔲 **Light/dark mode switching**
+  - 🔲 Theme variants
+  - 🔲 Dynamic mode switching
+
+### Phase 5: Multi-tenancy & Production 🔮 FUTURE
+- 🔲 **Multi-tenant architecture**
+  - 🔲 User authentication and authorization
+  - 🔲 User-scoped project isolation
+  - 🔲 Quota management per user
+- 🔲 **Production deployment**
+  - 🔲 S3 backend for cloud storage
+  - 🔲 Redis session management
+  - 🔲 Distributed rendering
+  - 🔲 CDN integration for renders
+- 🔲 **API and webhooks**
+  - 🔲 REST API for project/render management
+  - 🔲 Webhook notifications for render completion
+  - 🔲 Batch render API
+
 ## See Also
 
 - [Themes Guide](themes.md) - Theme system documentation
 - [Token System](token-system.md) - Design tokens documentation
 - [Virtual Filesystem](virtual-filesystem.md) - VFS integration guide
+- [chuk-artifacts](https://github.com/chrishayuk/chuk-artifacts) - Unified artifact storage (external)
