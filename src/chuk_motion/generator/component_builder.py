@@ -32,11 +32,11 @@ class ComponentBuilder:
         if self.old_template_dir.exists():
             search_paths.append(str(self.old_template_dir))
 
-        self.env = Environment(
+        self.env = Environment(  # nosec B701 - TSX code generation, not HTML
             loader=FileSystemLoader(search_paths),
             trim_blocks=True,
             lstrip_blocks=True,
-            autoescape=False,  # Don't escape TSX code
+            autoescape=False,  # Intentional: generating TSX code, not HTML
             # Use [[ ]] for variables and [% %] for statements to avoid JSX {} conflicts
             variable_start_string="[[",
             variable_end_string="]]",
