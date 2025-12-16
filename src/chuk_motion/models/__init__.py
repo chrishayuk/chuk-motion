@@ -1,5 +1,18 @@
 """Response models for MCP tools."""
 
+from .artifact_models import (
+    AssetInfo,
+    AssetMetadata,
+    CheckpointInfo,
+    NamespaceInfo,
+    NamespaceType,
+    ProjectInfo,
+    ProjectMetadata,
+    ProviderType,
+    RenderInfo,
+    RenderMetadata,
+    StorageScope,
+)
 from .responses import (
     ChartComponentResponse,
     CodeComponentResponse,
@@ -12,6 +25,7 @@ from .responses import (
 )
 
 __all__ = [
+    # Response models
     "ComponentResponse",
     "ChartComponentResponse",
     "CodeComponentResponse",
@@ -20,4 +34,16 @@ __all__ = [
     "LayoutComponentResponse",
     "OverlayComponentResponse",
     "ErrorResponse",
+    # Artifact models
+    "NamespaceType",
+    "StorageScope",
+    "ProviderType",
+    "ProjectMetadata",
+    "RenderMetadata",
+    "AssetMetadata",
+    "NamespaceInfo",
+    "CheckpointInfo",
+    "ProjectInfo",
+    "RenderInfo",
+    "AssetInfo",
 ]

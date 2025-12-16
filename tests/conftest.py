@@ -26,7 +26,7 @@ from chuk_motion.tokens.motion import (
 from chuk_motion.tokens.spacing import SPACING_TOKENS
 from chuk_motion.tokens.token_manager import TokenManager
 from chuk_motion.tokens.typography import FontFamily
-from chuk_motion.utils.project_manager import ProjectManager
+from chuk_motion.utils.async_project_manager import AsyncProjectManager
 
 
 @pytest.fixture
@@ -142,10 +142,11 @@ def sample_theme(sample_theme_data):
 
 @pytest.fixture
 def project_manager():
-    """Create a mock ProjectManager instance."""
-    manager = Mock(spec=ProjectManager)
-    manager.current_project = None
+    """Create a mock AsyncProjectManager instance."""
+    manager = Mock(spec=AsyncProjectManager)
+    manager.current_project_id = None
     manager.current_composition = None
+    manager.current_timeline = None
     return manager
 
 

@@ -147,7 +147,7 @@ class TestDeviceFrameToolRegistration:
         from unittest.mock import Mock
 
         from chuk_motion.components.frames.DeviceFrame.tool import register_tool
-        from chuk_motion.utils.project_manager import ProjectManager
+        from chuk_motion.utils.async_project_manager import AsyncProjectManager as ProjectManager
 
         with tempfile.TemporaryDirectory() as tmpdir:
             pm = ProjectManager(tmpdir)

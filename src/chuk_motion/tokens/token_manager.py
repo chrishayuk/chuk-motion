@@ -106,6 +106,8 @@ class TokenManager:
         try:
             # Read from virtual filesystem
             json_content = await self.vfs.read_text(file_path)
+            if not json_content:
+                return "Error: File is empty or could not be read"
             imported_data = json.loads(json_content)
 
             # Validate structure
@@ -218,6 +220,8 @@ class TokenManager:
         try:
             # Read from virtual filesystem
             json_content = await self.vfs.read_text(file_path)
+            if not json_content:
+                return "Error: File is empty or could not be read"
             imported_data = json.loads(json_content)
 
             # Validate structure
@@ -336,6 +340,8 @@ class TokenManager:
         try:
             # Read from virtual filesystem
             json_content = await self.vfs.read_text(file_path)
+            if not json_content:
+                return "Error: File is empty or could not be read"
             imported_data = json.loads(json_content)
 
             # Validate structure
@@ -483,6 +489,8 @@ class TokenManager:
         try:
             # Read from virtual filesystem
             json_content = await self.vfs.read_text(file_path)
+            if not json_content:
+                return "Error: File is empty or could not be read"
             imported_data = json.loads(json_content)
 
             # Validate structure

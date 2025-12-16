@@ -23,12 +23,15 @@ from .components import (
     register_all_tools,
 )
 from .generator.composition_builder import CompositionBuilder
+from .models.artifact_models import ProviderType
+from .storage import ArtifactStorageManager
 from .themes.youtube_themes import YOUTUBE_THEMES
 
 # Import design system modules
+from .tools.artifact_tools import register_artifact_tools
 from .tools.theme_tools import register_theme_tools
 from .tools.token_tools import register_token_tools
-from .utils.project_manager import ProjectManager
+from .utils.async_project_manager import AsyncProjectManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -39,8 +42,27 @@ mcp = ChukMCPServer("chuk-motion")
 # Create virtual filesystem instance (using file provider for actual file operations)
 vfs = AsyncVirtualFileSystem(provider="file")
 
-# Create project manager instance
-project_manager = ProjectManager()
+# Determine storage provider from environment
+STORAGE_PROVIDER_ENV = os.environ.get("CHUK_MOTION_STORAGE_PROVIDER", "vfs-filesystem")
+try:
+    storage_provider = ProviderType(STORAGE_PROVIDER_ENV)
+except ValueError:
+    logger.warning(
+        f"Invalid storage provider '{STORAGE_PROVIDER_ENV}', defaulting to vfs-filesystem"
+    )
+    storage_provider = ProviderType.FILESYSTEM
+
+# Create artifact storage manager
+artifact_storage = ArtifactStorageManager(provider_type=storage_provider)
+
+# Create async project manager with artifact storage
+async_project_manager = AsyncProjectManager(provider_type=storage_provider)
+
+# For compatibility: alias async_project_manager as project_manager
+# This allows existing tools to work with the new async manager
+project_manager = async_project_manager
+
+logger.info(f"Using storage provider: {storage_provider.value}")
 
 # Register composition builder methods dynamically from components
 register_all_builders(CompositionBuilder)
@@ -49,6 +71,9 @@ register_all_renderers(CompositionBuilder)
 # Register theme and token tools with virtual filesystem
 register_theme_tools(mcp, project_manager, vfs)
 register_token_tools(mcp, project_manager, vfs)
+
+# Register artifact-based tools (async-native with chuk-artifacts)
+register_artifact_tools(mcp, async_project_manager)
 
 # Register all component tools automatically
 register_all_tools(mcp, project_manager)
@@ -192,7 +217,8 @@ async def remotion_create_project(
     Create a new Remotion video project.
 
     Creates a complete Remotion project with package.json, TypeScript config,
-    and project structure ready for video generation.
+    and project structure ready for video generation. Uses chuk-artifacts
+    for modern, async-native storage.
 
     Args:
         name: Project name (will be used as directory name)
@@ -213,15 +239,36 @@ async def remotion_create_project(
             height=1080
         )
     """
+    try:
+        from .models.artifact_models import StorageScope
 
-    def _create():
-        try:
-            result = project_manager.create_project(name, theme, fps, width, height)
-            return json.dumps(result, indent=2)
-        except Exception as e:
-            return json.dumps({"error": str(e)})
+        # Create project using artifact storage (SESSION scope by default for compatibility)
+        project_info = await async_project_manager.create_project(
+            name=name,
+            theme=theme,
+            fps=fps,
+            width=width,
+            height=height,
+            scope=StorageScope.SESSION,
+        )
 
-    return await asyncio.get_event_loop().run_in_executor(None, _create)
+        # Return compatible format
+        result = {
+            "name": project_info.metadata.project_name,
+            "path": f"artifact://{project_info.namespace_info.namespace_id}",
+            "namespace_id": project_info.namespace_info.namespace_id,
+            "theme": project_info.metadata.theme,
+            "fps": str(project_info.metadata.fps),
+            "resolution": f"{project_info.metadata.width}x{project_info.metadata.height}",
+            "provider": project_info.namespace_info.provider_type.value,
+            "scope": project_info.namespace_info.scope.value,
+        }
+
+        return json.dumps(result, indent=2)
+
+    except Exception as e:
+        logger.exception("Error creating project")
+        return json.dumps({"error": str(e)})
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -240,77 +287,58 @@ async def remotion_generate_video() -> str:
         result = await remotion_generate_video()
         # Video files generated! Run 'npm install' and 'npm start' to preview
     """
+    if not async_project_manager.current_project_id:
+        return json.dumps({"error": "No active project. Create a project first."})
 
-    def _generate():
-        if not project_manager.current_project:
-            return json.dumps({"error": "No active project. Create a project first."})
+    if not async_project_manager.current_timeline:
+        return json.dumps({"error": "No timeline created. Add components first."})
 
-        if not project_manager.current_timeline:
-            return json.dumps({"error": "No timeline created. Add components first."})
+    try:
+        # Generate components
+        theme = async_project_manager.current_timeline.theme
 
-        try:
-            # Generate components
-            theme = project_manager.current_timeline.theme
+        # Get unique component types from all tracks (including nested)
+        all_components = async_project_manager.current_timeline.get_all_components()
+        component_types = async_project_manager._find_all_component_types_recursive(all_components)
 
-            # Helper to recursively find all component types including nested ones
-            def find_all_component_types(components):
-                types = set()
-                from chuk_motion.generator.composition_builder import ComponentInstance
+        generated_files = []
 
-                def collect_types(comp):
-                    if isinstance(comp, ComponentInstance):
-                        types.add(comp.component_type)
-                        # Check for nested children in props
-                        for _key, value in comp.props.items():
-                            if isinstance(value, ComponentInstance):
-                                collect_types(value)
-                            elif isinstance(value, list):
-                                for item in value:
-                                    if isinstance(item, ComponentInstance):
-                                        collect_types(item)
+        for comp_type in component_types:
+            # Get a sample config from the timeline
+            # For nested components, use empty config as templates handle it
+            file_path = await async_project_manager.add_component_to_project(comp_type, {}, theme)
+            generated_files.append(file_path)
 
-                for comp in components:
-                    collect_types(comp)
+        # Generate main composition
+        composition_file = await async_project_manager.generate_composition()
+        generated_files.append(composition_file)
 
-                return types
+        # Get project info from artifact storage
+        project_info = await async_project_manager.storage.get_project(
+            async_project_manager.current_project_id
+        )
 
-            # Get unique component types from all tracks (including nested)
-            all_components = project_manager.current_timeline.get_all_components()
-            component_types = find_all_component_types(all_components)
-
-            generated_files = []
-
-            for comp_type in component_types:
-                # Get a sample config from the timeline
-                # For nested components, use empty config as templates handle it
-                file_path = project_manager.add_component_to_project(comp_type, {}, theme)
-                generated_files.append(file_path)
-
-            # Generate main composition
-            composition_file = project_manager.generate_composition()
-            generated_files.append(composition_file)
-
-            project_info = project_manager.get_project_info()
-
-            return json.dumps(
-                {
-                    "status": "success",
-                    "project": project_info,
-                    "generated_files": generated_files,
-                    "next_steps": [
-                        f"cd {project_info['path']}",
-                        "npm install",
-                        "npm start  # Opens Remotion Studio",
-                        "npm run build  # Renders the video",
-                    ],
+        return json.dumps(
+            {
+                "status": "success",
+                "project": {
+                    "namespace_id": project_info.namespace_info.namespace_id,
+                    "name": project_info.metadata.project_name,
+                    "theme": project_info.metadata.theme,
+                    "grid_path": project_info.namespace_info.grid_path,
                 },
-                indent=2,
-            )
+                "generated_files": generated_files,
+                "next_steps": [
+                    "Use artifact_render_video() to render the composition",
+                    "Or export and run locally with: npm install && npm start",
+                ],
+            },
+            indent=2,
+        )
 
-        except Exception as e:
-            return json.dumps({"error": str(e)})
-
-    return await asyncio.get_event_loop().run_in_executor(None, _generate)
+    except Exception as e:
+        logger.exception("Error generating video")
+        return json.dumps({"error": str(e)})
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -328,14 +356,28 @@ async def remotion_get_composition_info() -> str:
         info = await remotion_get_composition_info()
         # Returns composition details, components, timeline, etc.
     """
+    if not async_project_manager.current_composition:
+        return json.dumps({"error": "No active composition"})
 
-    def _get():
-        if not project_manager.current_composition:
-            return json.dumps({"error": "No active composition"})
+    if not async_project_manager.current_project_id:
+        return json.dumps({"error": "No active project"})
 
-        return json.dumps(project_manager.get_project_info(), indent=2)
+    # Get project info from artifact storage
+    project_info = await async_project_manager.storage.get_project(
+        async_project_manager.current_project_id
+    )
 
-    return await asyncio.get_event_loop().run_in_executor(None, _get)
+    return json.dumps(
+        {
+            "namespace_id": project_info.namespace_info.namespace_id,
+            "name": project_info.metadata.project_name,
+            "theme": project_info.metadata.theme,
+            "fps": project_info.metadata.fps,
+            "resolution": f"{project_info.metadata.width}x{project_info.metadata.height}",
+            "composition": async_project_manager.current_composition,
+        },
+        indent=2,
+    )
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -349,12 +391,22 @@ async def remotion_list_projects() -> str:
     Example:
         projects = await remotion_list_projects()
     """
+    # List all projects from artifact storage
+    projects = await async_project_manager.storage.list_projects()
 
-    def _list():
-        projects = project_manager.list_projects()
-        return json.dumps(projects, indent=2)
-
-    return await asyncio.get_event_loop().run_in_executor(None, _list)
+    return json.dumps(
+        [
+            {
+                "namespace_id": p.namespace_info.namespace_id,
+                "name": p.metadata.project_name,
+                "theme": p.metadata.theme,
+                "created_at": p.metadata.created_at.isoformat(),
+                "grid_path": p.namespace_info.grid_path,
+            }
+            for p in projects
+        ],
+        indent=2,
+    )
 
 
 # ============================================================================
@@ -386,24 +438,20 @@ async def remotion_add_track(
             description="Subtitle overlays"
         )
     """
+    if not async_project_manager.current_timeline:
+        return json.dumps({"error": "No active project. Create a project first."})
 
-    def _add():
-        if not project_manager.current_timeline:
-            return json.dumps({"error": "No active project. Create a project first."})
-
-        try:
-            project_manager.current_timeline.add_track(name, layer, default_gap, description)
-            return json.dumps(
-                {
-                    "status": "success",
-                    "track": {"name": name, "layer": layer, "default_gap": default_gap},
-                },
-                indent=2,
-            )
-        except Exception as e:
-            return json.dumps({"error": str(e)})
-
-    return await asyncio.get_event_loop().run_in_executor(None, _add)
+    try:
+        async_project_manager.current_timeline.add_track(name, layer, default_gap, description)
+        return json.dumps(
+            {
+                "status": "success",
+                "track": {"name": name, "layer": layer, "default_gap": default_gap},
+            },
+            indent=2,
+        )
+    except Exception as e:
+        return json.dumps({"error": str(e)})
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -418,15 +466,11 @@ async def remotion_list_tracks() -> str:
         tracks = await remotion_list_tracks()
         # Returns tracks sorted by layer (highest first)
     """
+    if not async_project_manager.current_timeline:
+        return json.dumps({"error": "No active project"})
 
-    def _list():
-        if not project_manager.current_timeline:
-            return json.dumps({"error": "No active project"})
-
-        tracks = project_manager.current_timeline.list_tracks()
-        return json.dumps(tracks, indent=2)
-
-    return await asyncio.get_event_loop().run_in_executor(None, _list)
+    tracks = async_project_manager.current_timeline.list_tracks()
+    return json.dumps(tracks, indent=2)
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -444,18 +488,14 @@ async def remotion_set_active_track(name: str) -> str:
         result = await remotion_set_active_track(name="overlay")
         # Subsequent component additions will use the overlay track by default
     """
+    if not async_project_manager.current_timeline:
+        return json.dumps({"error": "No active project"})
 
-    def _set():
-        if not project_manager.current_timeline:
-            return json.dumps({"error": "No active project"})
-
-        try:
-            project_manager.current_timeline.set_active_track(name)
-            return json.dumps({"status": "success", "active_track": name}, indent=2)
-        except Exception as e:
-            return json.dumps({"error": str(e)})
-
-    return await asyncio.get_event_loop().run_in_executor(None, _set)
+    try:
+        async_project_manager.current_timeline.set_active_track(name)
+        return json.dumps({"status": "success", "active_track": name}, indent=2)
+    except Exception as e:
+        return json.dumps({"error": str(e)})
 
 
 @mcp.tool  # type: ignore[arg-type]
@@ -472,26 +512,22 @@ async def remotion_get_track_cursor(track_name: str) -> str:
     Example:
         cursor = await remotion_get_track_cursor(track_name="main")
     """
+    if not async_project_manager.current_timeline:
+        return json.dumps({"error": "No active project"})
 
-    def _get():
-        if not project_manager.current_timeline:
-            return json.dumps({"error": "No active project"})
-
-        try:
-            cursor_frames = project_manager.current_timeline.get_track_cursor(track_name)
-            cursor_seconds = project_manager.current_timeline.frames_to_seconds(cursor_frames)
-            return json.dumps(
-                {
-                    "track": track_name,
-                    "cursor_frames": cursor_frames,
-                    "cursor_seconds": cursor_seconds,
-                },
-                indent=2,
-            )
-        except Exception as e:
-            return json.dumps({"error": str(e)})
-
-    return await asyncio.get_event_loop().run_in_executor(None, _get)
+    try:
+        cursor_frames = async_project_manager.current_timeline.get_track_cursor(track_name)
+        cursor_seconds = async_project_manager.current_timeline.frames_to_seconds(cursor_frames)
+        return json.dumps(
+            {
+                "track": track_name,
+                "cursor_frames": cursor_frames,
+                "cursor_seconds": cursor_seconds,
+            },
+            indent=2,
+        )
+    except Exception as e:
+        return json.dumps({"error": str(e)})
 
 
 # ============================================================================
@@ -514,22 +550,23 @@ async def remotion_get_info() -> str:
         info = await remotion_get_info()
         # Returns server version, component count, theme count, etc.
     """
-
-    def _get_info():
-        info = {
-            "name": "chuk-motion",
-            "version": "0.1.0",
-            "description": "AI-powered video generation with design system approach",
-            "statistics": {
-                "components": len(COMPONENT_REGISTRY),
-                "themes": len(YOUTUBE_THEMES),
-                "categories": len({c.get("category") for c in COMPONENT_REGISTRY.values()}),
-            },
-            "categories": list({c.get("category") for c in COMPONENT_REGISTRY.values()}),
-        }
-        return json.dumps(info, indent=2)
-
-    return await asyncio.get_event_loop().run_in_executor(None, _get_info)
+    info = {
+        "name": "chuk-motion",
+        "version": "0.1.0",
+        "description": "AI-powered video generation with design system approach",
+        "storage": {
+            "provider": storage_provider.value,
+            "artifact_storage": "chuk-artifacts",
+            "async_native": True,
+        },
+        "statistics": {
+            "components": len(COMPONENT_REGISTRY),
+            "themes": len(YOUTUBE_THEMES),
+            "categories": len({c.get("category") for c in COMPONENT_REGISTRY.values()}),
+        },
+        "categories": list({c.get("category") for c in COMPONENT_REGISTRY.values()}),
+    }
+    return json.dumps(info, indent=2)
 
 
 def main():
@@ -555,6 +592,24 @@ def main():
     parser.add_argument("--port", type=int, default=8000, help="Port for HTTP mode (default: 8000)")
 
     args = parser.parse_args()
+
+    # Initialize async managers on startup
+    async def startup():
+        """Initialize async resources."""
+        await artifact_storage.initialize()
+        await async_project_manager.initialize()
+        logger.info("Async managers initialized")
+
+    # Cleanup async managers on shutdown
+    async def shutdown():
+        """Cleanup async resources."""
+        await async_project_manager.cleanup()
+        await artifact_storage.cleanup()
+        logger.info("Async managers cleaned up")
+
+    # Register startup/shutdown hooks
+    mcp.on_startup(startup)
+    mcp.on_shutdown(shutdown)
 
     # Determine transport mode
     if args.mode == "stdio":
