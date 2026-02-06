@@ -12,10 +12,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from chuk_motion import (
     COLOR_TOKENS,
-    TYPOGRAPHY_TOKENS,
-    MOTION_TOKENS,
     COMPONENT_REGISTRY,
-    YOUTUBE_THEMES
+    MOTION_TOKENS,
+    TYPOGRAPHY_TOKENS,
+    YOUTUBE_THEMES,
 )
 
 
@@ -46,7 +46,7 @@ def explore_themes():
 
         print("\n  0. Back to main menu")
 
-        choice = input("\nSelect a theme (0-{}): ".format(len(theme_list)))
+        choice = input(f"\nSelect a theme (0-{len(theme_list)}): ")
 
         if choice == "0":
             break
@@ -110,7 +110,7 @@ def explore_components():
 
         print("\n  0. Back to main menu")
 
-        choice = input("\nSelect a category (0-{}): ".format(len(categories)))
+        choice = input(f"\nSelect a category (0-{len(categories)}): ")
 
         if choice == "0":
             break
@@ -134,7 +134,7 @@ def show_category_components(category: str, components: list):
 
         print("\n  0. Back to categories")
 
-        choice = input("\nSelect a component (0-{}): ".format(len(components)))
+        choice = input(f"\nSelect a component (0-{len(components)}): ")
 
         if choice == "0":
             break

@@ -6,20 +6,20 @@ including namespace types, scopes, and metadata structures.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class NamespaceType(str, Enum):
+class NamespaceType(StrEnum):
     """Type of namespace in artifact storage."""
 
     BLOB = "blob"  # Single file (renders, assets)
     WORKSPACE = "workspace"  # Multi-file directory tree (projects)
 
 
-class StorageScope(str, Enum):
+class StorageScope(StrEnum):
     """Storage scope for namespace isolation."""
 
     SESSION = "session"  # Ephemeral (session lifetime)
@@ -27,7 +27,7 @@ class StorageScope(str, Enum):
     SANDBOX = "sandbox"  # Persistent (shared)
 
 
-class ProviderType(str, Enum):
+class ProviderType(StrEnum):
     """Storage provider backend type."""
 
     MEMORY = "vfs-memory"  # In-memory (development)

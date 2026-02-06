@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_charts_showcase():
@@ -31,8 +32,8 @@ def generate_charts_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"CHARTS SHOWCASE")
-    print(f"All 6 Chart Components")
+    print("CHARTS SHOWCASE")
+    print("All 6 Chart Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -336,14 +337,14 @@ def generate_charts_showcase():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Charts: 6 charts × 2 scenes = 12 scenes")
-    print(f"   • Comparison Grid: 1 scene")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Individual Charts: 6 charts × 2 scenes = 12 scenes")
+    print("   • Comparison Grid: 1 scene")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n📈 Chart Components Showcased:")
+    print("\n📈 Chart Components Showcased:")
     print("   ✓ PieChart - Market share & proportions")
     print("   ✓ LineChart - Revenue trends over time")
     print("   ✓ AreaChart - Cumulative user growth")
@@ -380,7 +381,7 @@ def main():
     print("   Professional demonstration of all chart components\n")
 
     try:
-        project_path = generate_charts_showcase()
+        generate_charts_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

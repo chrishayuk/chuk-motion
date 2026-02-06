@@ -14,7 +14,6 @@ This example shows what the MCP tools need to do for full rendering.
 """
 import asyncio
 import json
-import os
 import shutil
 import subprocess
 import sys
@@ -210,7 +209,6 @@ async def render_video(project_dir: Path, composition_id: str, output_path: Path
     Returns:
         Dict with render result info
     """
-    import subprocess
 
     # Run npm install
     print("\n  Running npm install...")
@@ -273,8 +271,8 @@ async def test_render_workflow():
     print("=" * 70)
 
     # Import required modules
-    from chuk_motion.generator.composition_builder import CompositionBuilder
     from chuk_motion.components import register_all_builders, register_all_renderers
+    from chuk_motion.generator.composition_builder import CompositionBuilder
 
     # Register component builders
     register_all_builders(CompositionBuilder)

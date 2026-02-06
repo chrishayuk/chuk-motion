@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_code_showcase():
@@ -31,8 +32,8 @@ def generate_code_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"CODE COMPONENTS SHOWCASE")
-    print(f"All 3 Code Display Components")
+    print("CODE COMPONENTS SHOWCASE")
+    print("All 3 Code Display Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -342,19 +343,19 @@ console.log(greet("World"));''',
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Components: 6 × 2 scenes = 12 scenes")
-    print(f"   • Combined Layout: 1 scene")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Individual Components: 6 × 2 scenes = 12 scenes")
+    print("   • Combined Layout: 1 scene")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n💻 Code Components Showcased:")
+    print("\n💻 Code Components Showcased:")
     print("   ✓ CodeBlock - Static code display (Python, JS, TS)")
     print("   ✓ TypingCode - Animated typing effect")
     print("   ✓ CodeDiff - Git-style diffs and refactoring")
 
-    print(f"\n🎨 Languages Demonstrated:")
+    print("\n🎨 Languages Demonstrated:")
     print("   • Python")
     print("   • JavaScript")
     print("   • TypeScript")
@@ -389,7 +390,7 @@ def main():
     print("   Professional demonstration of all code display components\n")
 
     try:
-        project_path = generate_code_showcase()
+        generate_code_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

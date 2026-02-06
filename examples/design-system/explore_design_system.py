@@ -15,11 +15,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from chuk_motion import (
     COLOR_TOKENS,
-    TYPOGRAPHY_TOKENS,
+    COMPONENT_REGISTRY,
     MOTION_TOKENS,
     SPACING_TOKENS,
-    COMPONENT_REGISTRY,
-    YOUTUBE_THEMES
+    TYPOGRAPHY_TOKENS,
+    YOUTUBE_THEMES,
 )
 
 
@@ -58,7 +58,7 @@ async def explore_themes():
     print("AVAILABLE THEMES")
     print("="*70)
 
-    for theme_name, theme in YOUTUBE_THEMES.items():
+    for _theme_name, theme in YOUTUBE_THEMES.items():
         print(f"\n🎨 {theme.name.upper()}")
         print("-" * 70)
         print(f"  Description: {theme.description}")
@@ -87,12 +87,12 @@ async def explore_tokens():
     print(f"  Themes: {', '.join(color_themes.keys())}")
 
     # Typography tokens
-    print(f"\n📝 Typography:")
+    print("\n📝 Typography:")
     font_families = TYPOGRAPHY_TOKENS.font_families.model_dump()
     print(f"  Font Families: {', '.join(font_families.keys())}")
 
     # Motion tokens
-    print(f"\n⚡ Motion:")
+    print("\n⚡ Motion:")
     springs = MOTION_TOKENS.spring_configs
     easings = MOTION_TOKENS.easing
     durations = MOTION_TOKENS.duration
@@ -101,7 +101,7 @@ async def explore_tokens():
     print(f"  Duration Presets: {len(durations)}")
 
     # Spacing tokens
-    print(f"\n📏 Spacing:")
+    print("\n📏 Spacing:")
     spacing = SPACING_TOKENS.spacing
     safe_area = SPACING_TOKENS.safe_area
     print(f"  Spacing Scale: {len(spacing)} steps ({', '.join(list(spacing.keys())[:5])}...)")
@@ -155,12 +155,12 @@ async def main():
     print(f"  Total Components: {len(COMPONENT_REGISTRY)}")
     print(f"  Total Themes: {len(YOUTUBE_THEMES)}")
     # Count color themes by getting fields from ColorTokens model
-    color_themes = len([f for f in COLOR_TOKENS.model_fields.keys() if not f.startswith('_')])
+    color_themes = len([f for f in COLOR_TOKENS.model_fields if not f.startswith('_')])
     print(f"  Color Palettes: {color_themes}")
     print(f"  Spring Configs: {len(MOTION_TOKENS.spring_configs)}")
     print(f"  Easing Curves: {len(MOTION_TOKENS.easing)}")
     # Count spacing categories by checking model fields
-    spacing_categories = len([f for f in SPACING_TOKENS.model_fields.keys() if not f.startswith('_')])
+    spacing_categories = len([f for f in SPACING_TOKENS.model_fields if not f.startswith('_')])
     print(f"  Spacing Token Categories: {spacing_categories}")
     print(f"  Safe Margin Platforms: {len(SPACING_TOKENS.safe_area)}")
     print("\n" + "="*70)

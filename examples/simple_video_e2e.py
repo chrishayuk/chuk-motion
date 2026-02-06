@@ -10,7 +10,6 @@ Tests the complete workflow:
 This is a minimal test to verify the core pipeline works.
 """
 import asyncio
-import json
 import sys
 from pathlib import Path
 
@@ -26,8 +25,8 @@ async def test_simple_video():
 
     # Import the MCP tool functions directly
     from chuk_motion.async_server import (
-        remotion_create_project,
         remotion_add_title_scene,
+        remotion_create_project,
         remotion_generate_video,
         remotion_get_info,
     )

@@ -33,7 +33,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from chuk_motion.models.artifact_models import ProviderType, StorageScope
-from chuk_motion.storage import ArtifactStorageManager
 from chuk_motion.utils.async_project_manager import AsyncProjectManager
 
 
@@ -213,7 +212,7 @@ async def demo_artifact_workflow():
             # Generate presigned URL
             download_url = await store.presign(artifact_id, expires=3600)
             print(f"  Download URL: {download_url[:80]}...")
-            print(f"  Expires In: 3600 seconds (1 hour)")
+            print("  Expires In: 3600 seconds (1 hour)")
         else:
             print("  No artifact store configured for presigned URLs")
             print("  To enable download URLs:")

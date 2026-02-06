@@ -25,8 +25,9 @@ from chuk_motion.tokens.spacing import SPACING_TOKENS
 async def create_safe_margins_demo():
     """Create a video demonstrating safe margins for different platforms."""
 
-    from chuk_motion.utils.project_manager import ProjectManager
     import shutil
+
+    from chuk_motion.utils.project_manager import ProjectManager
 
     manager = ProjectManager()
     project_name = "safe_margins_demo"
@@ -38,7 +39,7 @@ async def create_safe_margins_demo():
 
     # Create project (standard YouTube 16:9)
     print(f"\n📁 Creating project: {project_name}")
-    project = manager.create_project(
+    manager.create_project(
         name=project_name,
         theme="tech",
         fps=30,
@@ -324,7 +325,7 @@ async def create_safe_margins_demo():
         print(f"  ✓ {comp_type}.tsx")
 
     manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    print("  ✓ VideoComposition.tsx")
 
     # Get project info
     info = manager.get_project_info()
@@ -334,7 +335,7 @@ async def create_safe_margins_demo():
     print("=" * 70)
     print(f"📁 Project: {project_path}")
     print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
-    print(f"📐 Resolution: 1920x1080 @ 30fps")
+    print("📐 Resolution: 1920x1080 @ 30fps")
     print("\n📱 Platform Safe Margins Covered:")
     for platform, margins in SPACING_TOKENS.safe_area.items():
         print(f"   • {platform.replace('_', ' ').title()}")

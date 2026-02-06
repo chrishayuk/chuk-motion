@@ -17,8 +17,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_content_showcase():
@@ -34,8 +35,8 @@ def generate_content_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"CONTENT COMPONENTS SHOWCASE")
-    print(f"All 5 Content Display Components")
+    print("CONTENT COMPONENTS SHOWCASE")
+    print("All 5 Content Display Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -373,21 +374,21 @@ def generate_content_showcase():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Components: 8 × 2 scenes = 16 scenes")
-    print(f"   • Combined Grid: 1 scene")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Individual Components: 8 × 2 scenes = 16 scenes")
+    print("   • Combined Grid: 1 scene")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n📦 Content Components Showcased:")
+    print("\n📦 Content Components Showcased:")
     print("   ✓ DemoBox - Quick placeholders (primary & accent)")
     print("   ✓ WebPage - Raw HTML content display")
     print("   ✓ StylizedWebPage - Pre-styled layouts (light & dark)")
     print("   ✓ ImageContent - Image display (cover, contain, opacity, border radius)")
     print("   ✓ VideoContent - Placeholder (requires actual video file)")
 
-    print(f"\n🎨 Features Demonstrated:")
+    print("\n🎨 Features Demonstrated:")
     print("   • Multiple color themes")
     print("   • Light and dark modes")
     print("   • Header, sidebar, footer components")
@@ -425,7 +426,7 @@ def main():
     print("   Professional demonstration of all content display components\n")
 
     try:
-        project_path = generate_content_showcase()
+        generate_content_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

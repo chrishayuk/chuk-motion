@@ -11,7 +11,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion import COLOR_TOKENS, COMPONENT_REGISTRY, YOUTUBE_THEMES
+from chuk_motion import COMPONENT_REGISTRY, YOUTUBE_THEMES
 
 
 def generate_theme_preview_html() -> str:
@@ -233,7 +233,7 @@ def generate_theme_preview_html() -> str:
     # Generate theme previews
     html_parts.append('<div class="section"><h2 class="section-title">🎨 YouTube Themes</h2><div class="theme-grid">')
 
-    for theme_name, theme in YOUTUBE_THEMES.items():
+    for _theme_name, theme in YOUTUBE_THEMES.items():
         colors = theme.colors
         primary = colors.primary[0] if isinstance(colors.primary, list) else colors.primary
         accent = colors.accent[0] if isinstance(colors.accent, list) else colors.accent

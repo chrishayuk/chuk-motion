@@ -30,8 +30,8 @@ def generate_layout_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"COMPLETE LAYOUT SHOWCASE")
-    print(f"Demonstrating All 17 Layout Components")
+    print("COMPLETE LAYOUT SHOWCASE")
+    print("Demonstrating All 17 Layout Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -396,26 +396,26 @@ def generate_layout_showcase():
     # ========================================
     # BUILD COMPOSITION
     # ========================================
-    print(f"\n💾 Building composition...")
+    print("\n💾 Building composition...")
 
-    result = project_manager.build_composition_from_scenes(scenes, theme=theme)
+    project_manager.build_composition_from_scenes(scenes, theme=theme)
 
     total_scenes = len(scenes)
     duration_seconds = start_frame / 30.0
 
     print(f"\n{'='*70}")
-    print(f"✅ Layout Showcase Created Successfully!")
+    print("✅ Layout Showcase Created Successfully!")
     print(f"{'='*70}")
     print(f"📁 Project: {project_path}")
     print(f"🎬 Total Scenes: {total_scenes}")
     print(f"⏱️  Duration: {duration_seconds} seconds ({start_frame} frames)")
-    print(f"📐 Layouts: 17 (7 core + 10 specialized)")
-    print(f"\n🎥 To preview:")
+    print("📐 Layouts: 17 (7 core + 10 specialized)")
+    print("\n🎥 To preview:")
     print(f"   cd {project_path}")
-    print(f"   npm start")
-    print(f"\n🎥 To generate video:")
+    print("   npm start")
+    print("\n🎥 To generate video:")
     print(f"   cd {project_path}")
-    print(f"   npm run build")
+    print("   npm run build")
     print(f"\n{'='*70}\n")
 
     return str(project_path)

@@ -31,7 +31,7 @@ async def create_theme_comparison():
 
     # List available themes
     print("Available themes:")
-    for theme_name in YOUTUBE_THEMES.themes.keys():
+    for theme_name in YOUTUBE_THEMES.themes:
         theme = YOUTUBE_THEMES.themes[theme_name]
         print(f"  • {theme.name}: {theme.description}")
         print(f"    Primary: {theme.colors.primary[0]}, Accent: {theme.colors.accent[0]}")
@@ -140,10 +140,10 @@ async def create_theme_comparison():
     # Create the final composition
     total_duration = len(themes_to_demo) * scene_duration
 
-    print(f"\nGenerating video:")
+    print("\nGenerating video:")
     print(f"  Duration: {total_duration} seconds")
     print(f"  Themes: {len(themes_to_demo)}")
-    print(f"  Components per theme: 5")
+    print("  Components per theme: 5")
     print(f"  Total tracks: {len(all_tracks)}")
 
     # Configuration
@@ -157,7 +157,7 @@ async def create_theme_comparison():
         "tracks": all_tracks,
     }
 
-    print(f"\nConfiguration:")
+    print("\nConfiguration:")
     print(f"  Resolution: {config['width']}x{config['height']}")
     print(f"  FPS: {config['fps']}")
     print(f"  Total frames: {config['duration_frames']}")

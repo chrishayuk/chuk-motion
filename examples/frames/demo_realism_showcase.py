@@ -17,8 +17,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import CompositionBuilder
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -315,7 +315,7 @@ async def main():
     print("\n🎬 Step 3: Generating composition files...")
     print(f"  Total duration: {manager.current_composition.get_total_duration_seconds():.1f}s ({manager.current_composition.get_total_duration_frames()} frames)")
     composition_file = manager.generate_composition()
-    print(f"✓ Composition generated successfully")
+    print("✓ Composition generated successfully")
     print(f"  Components: {len(manager.current_composition.components)}")
 
     print("\n" + "="*70)
@@ -324,13 +324,13 @@ async def main():
     print(f"\n📁 Project location: {manager.workspace_dir / project_name}")
     print(f"📄 Composition file: {composition_file}")
     print(f"📊 Components used: {len(manager.current_composition.components)}")
-    print(f"\n💡 Component breakdown:")
-    print(f"   • DeviceFrame: 2 (phone + laptop)")
-    print(f"   • BrowserFrame: 2 (Chrome + Safari)")
-    print(f"   • Terminal: 2 (Dracula + Nord)")
-    print(f"   • CodeDiff: 2 (unified + split)")
-    print(f"   • BeforeAfterSlider: 2 (horizontal + vertical)")
-    print(f"   • TextOverlay: 11 (labels)")
+    print("\n💡 Component breakdown:")
+    print("   • DeviceFrame: 2 (phone + laptop)")
+    print("   • BrowserFrame: 2 (Chrome + Safari)")
+    print("   • Terminal: 2 (Dracula + Nord)")
+    print("   • CodeDiff: 2 (unified + split)")
+    print("   • BeforeAfterSlider: 2 (horizontal + vertical)")
+    print("   • TextOverlay: 11 (labels)")
     print("\n💡 All components support:")
     print("   • Design system integration (colors, typography, motion)")
     print("   • Multiple themes and variants")
@@ -339,7 +339,7 @@ async def main():
     print("   • Customizable dimensions")
     print("\n🚀 To preview:")
     print(f"   cd {manager.workspace_dir / project_name}")
-    print(f"   npm run dev")
+    print("   npm run dev")
     print("="*70 + "\n")
 
 

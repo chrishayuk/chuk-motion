@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_true_focus_demo():
@@ -31,8 +32,8 @@ def generate_true_focus_demo():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"TRUE FOCUS TEXT ANIMATION DEMO")
-    print(f"Dramatic word-by-word focus with animated corner brackets")
+    print("TRUE FOCUS TEXT ANIMATION DEMO")
+    print("Dramatic word-by-word focus with animated corner brackets")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -202,14 +203,14 @@ def generate_true_focus_demo():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Demo structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Basic Examples: 5 scenes")
-    print(f"   • Combined Example: 1 scene")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Demo structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Basic Examples: 5 scenes")
+    print("   • Combined Example: 1 scene")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 TrueFocus Variations:")
+    print("\n🎨 TrueFocus Variations:")
     print("   ✓ Center, top, and bottom positions")
     print("   ✓ Multiple font sizes (2xl, 3xl, 4xl)")
     print("   ✓ Different cycle speeds (fast, normal, slow)")
@@ -246,7 +247,7 @@ def main():
     print("   Dramatic text animation showcase\n")
 
     try:
-        project_path = generate_true_focus_demo()
+        generate_true_focus_demo()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

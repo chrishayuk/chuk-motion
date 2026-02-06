@@ -9,7 +9,6 @@ This example demonstrates the complete workflow for generating a video:
 4. Instructions for rendering
 """
 import asyncio
-import json
 import shutil
 import sys
 from pathlib import Path
@@ -17,8 +16,8 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():

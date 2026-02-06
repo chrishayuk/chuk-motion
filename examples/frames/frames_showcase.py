@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_frames_showcase():
@@ -31,8 +32,8 @@ def generate_frames_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"FRAMES SHOWCASE")
-    print(f"BrowserFrame • DeviceFrame • Terminal")
+    print("FRAMES SHOWCASE")
+    print("BrowserFrame • DeviceFrame • Terminal")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -435,16 +436,16 @@ console.log(fibonacci(10));''',
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Browser Frames: 3 scenes")
-    print(f"   • Device Frames: 3 scenes")
-    print(f"   • Terminal Frames: 3 scenes")
-    print(f"   • Combined Layouts: 2 scenes")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Browser Frames: 3 scenes")
+    print("   • Device Frames: 3 scenes")
+    print("   • Terminal Frames: 3 scenes")
+    print("   • Combined Layouts: 2 scenes")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 Frame Components Showcased:")
+    print("\n🎨 Frame Components Showcased:")
     print("   ✓ BrowserFrame (Chrome, Safari, Firefox)")
     print("   ✓ DeviceFrame (iPhone, iPad, Android)")
     print("   ✓ Terminal (bash, zsh, python)")
@@ -479,7 +480,7 @@ def main():
     print("   Professional demonstration of frame components\n")
 
     try:
-        project_path = generate_frames_showcase()
+        generate_frames_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

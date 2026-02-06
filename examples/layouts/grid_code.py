@@ -16,8 +16,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -191,7 +191,7 @@ async def main():
 
     # Generate composition
     manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    print("  ✓ VideoComposition.tsx")
 
     # Get project info
     info = manager.get_project_info()
@@ -205,7 +205,7 @@ async def main():
     print(f"📁 Project: {project_path}")
     print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
     print(f"📊 Components: {len(composition['components'])}")
-    print(f"📐 Resolution: 1920x1080 @ 30fps")
+    print("📐 Resolution: 1920x1080 @ 30fps")
     print()
     print("✨ Features:")
     print("  • 9 code snippets across multiple languages")

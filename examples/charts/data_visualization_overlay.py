@@ -13,8 +13,8 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import CompositionBuilder
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -156,7 +156,7 @@ async def main():
     print(f"  Total duration: {composition['duration_seconds']:.1f} seconds")
     print(f"  Total frames: {composition['duration_frames']}")
     print(f"  Components: {len(composition['components'])}")
-    print(f"  Background: TRANSPARENT (for overlay)")
+    print("  Background: TRANSPARENT (for overlay)")
 
     print("\n  Timeline:")
     for comp in composition['components']:

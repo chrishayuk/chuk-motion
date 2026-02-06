@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_animations_showcase():
@@ -31,8 +32,8 @@ def generate_animations_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"ANIMATIONS SHOWCASE")
-    print(f"All 3 Animation Components")
+    print("ANIMATIONS SHOWCASE")
+    print("All 3 Animation Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -376,19 +377,19 @@ def generate_animations_showcase():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Animations: 8 × 2 scenes = 16 scenes")
-    print(f"   • Combined Animation: 1 scene")
-    print(f"   • Final Title: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Individual Animations: 8 × 2 scenes = 16 scenes")
+    print("   • Combined Animation: 1 scene")
+    print("   • Final Title: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 Animation Components Showcased:")
+    print("\n🎨 Animation Components Showcased:")
     print("   ✓ Counter - Numbers, percentages, revenue")
     print("   ✓ LayoutEntrance - Fade, slide, zoom")
     print("   ✓ PanelCascade - Sequential reveals")
 
-    print(f"\n✨ Animation Types Demonstrated:")
+    print("\n✨ Animation Types Demonstrated:")
     print("   • Number counting (linear, exponential)")
     print("   • Fade in transitions")
     print("   • Slide animations (left, right, top, bottom)")
@@ -424,7 +425,7 @@ def main():
     print("   Professional demonstration of all animation components\n")
 
     try:
-        project_path = generate_animations_showcase()
+        generate_animations_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

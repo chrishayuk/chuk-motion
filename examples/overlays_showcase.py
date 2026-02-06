@@ -14,8 +14,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_overlays_showcase():
@@ -31,8 +32,8 @@ def generate_overlays_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"OVERLAYS SHOWCASE")
-    print(f"All 6 Overlay Components")
+    print("OVERLAYS SHOWCASE")
+    print("All 6 Overlay Components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -334,14 +335,14 @@ def generate_overlays_showcase():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Individual Overlays: 8 overlays × 2 scenes = 16 scenes")
-    print(f"   • Combined Overlays: 1 scene")
-    print(f"   • Final End Screen: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Individual Overlays: 8 overlays × 2 scenes = 16 scenes")
+    print("   • Combined Overlays: 1 scene")
+    print("   • Final End Screen: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 Overlay Components Showcased:")
+    print("\n🎨 Overlay Components Showcased:")
     print("   ✓ TitleScene (Bold, Glass, Minimal variants)")
     print("   ✓ TextOverlay - Floating text positioning")
     print("   ✓ LowerThird - Name tags (left & right)")
@@ -377,7 +378,7 @@ def main():
     print("   Professional demonstration of all overlay components\n")
 
     try:
-        project_path = generate_overlays_showcase()
+        generate_overlays_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

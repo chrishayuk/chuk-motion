@@ -22,7 +22,7 @@ import asyncio
 from chuk_virtual_fs import AsyncVirtualFileSystem
 
 from chuk_motion.tokens.brand import get_brand_pack
-from chuk_motion.tokens.captions import CAPTION_STYLES, get_caption_style
+from chuk_motion.tokens.captions import get_caption_style
 from chuk_motion.tokens.colors import COLOR_TOKENS
 from chuk_motion.tokens.motion import MOTION_TOKENS
 from chuk_motion.tokens.spacing import SPACING_TOKENS
@@ -265,7 +265,7 @@ async def main():
 
         # Export all at once
         all_files = await token_manager.export_all_tokens("showcase_all_tokens")
-        print(f"\n  ✓ All tokens exported to directory: showcase_all_tokens/")
+        print("\n  ✓ All tokens exported to directory: showcase_all_tokens/")
         for token_type, file_path in all_files.items():
             print(f"    - {token_type}: {file_path}")
 

@@ -13,10 +13,9 @@ Outputs a prioritized report of violations.
 """
 
 import re
-from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import List, Dict, Set
+from pathlib import Path
 
 # Token definitions for matching
 SPACING_TOKENS = {
@@ -77,7 +76,7 @@ class TemplateAuditor:
 
     def __init__(self, components_dir: Path):
         self.components_dir = components_dir
-        self.violations: List[Violation] = []
+        self.violations: list[Violation] = []
         self.stats = defaultdict(int)
 
     def audit_all(self):
@@ -95,7 +94,7 @@ class TemplateAuditor:
     def audit_file(self, file_path: Path):
         """Audit a single template file."""
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 lines = f.readlines()
 
             for line_num, line in enumerate(lines, 1):
@@ -156,10 +155,7 @@ class TemplateAuditor:
                 opacity_match = re.search(r',\s*(0\.\d+|0)\s*\)', color)
                 if opacity_match:
                     opacity = float(opacity_match.group(1))
-                    if opacity <= 0.15:  # Very transparent = probably component-specific overlay
-                        priority = "P2"
-                    else:
-                        priority = "P1"
+                    priority = "P2" if opacity <= 0.15 else "P1"  # Very transparent = probably component-specific overlay
                 else:
                     priority = "P0"  # Opaque color should definitely use token
 
@@ -210,17 +206,14 @@ class TemplateAuditor:
         matches = re.finditer(pattern, line)
 
         for match in matches:
-            prop = match.group(1)
+            match.group(1)
             value = match.group(2) + "px"
 
             if value in SPACING_TOKENS:
                 suggested = SPACING_TOKENS[value]
 
                 # Priority based on how common the spacing is
-                if value in ["24px", "16px", "12px", "8px", "4px"]:
-                    priority = "P1"  # Very common spacing
-                else:
-                    priority = "P2"  # Less common but should still use token
+                priority = "P1" if value in ["24px", "16px", "12px", "8px", "4px"] else "P2"  # Very common spacing vs. less common
 
                 self.violations.append(Violation(
                     file=file,
@@ -281,14 +274,14 @@ class TemplateAuditor:
             by_file[v.file].append(v)
 
         # Summary statistics
-        print(f"\n📊 SUMMARY")
+        print("\n📊 SUMMARY")
         print(f"   Total violations: {len(self.violations)}")
         print(f"   Files affected: {len(by_file)}")
-        print(f"\n   By Type:")
+        print("\n   By Type:")
         for stat_type, count in sorted(self.stats.items()):
             print(f"      {stat_type}: {count}")
 
-        print(f"\n   By Priority:")
+        print("\n   By Priority:")
         for priority in ["P0", "P1", "P2", "P3"]:
             count = len(by_priority[priority])
             if count > 0:
@@ -353,7 +346,7 @@ class TemplateAuditor:
         print("2. Fix P1 violations soon (common spacing, border radius)")
         print("3. Fix P2 violations when touching the component")
         print("4. Review P3 violations - may be acceptable as hardcoded")
-        print(f"\n📖 See DESIGN_TOKEN_GUIDELINES.md for detailed guidance")
+        print("\n📖 See DESIGN_TOKEN_GUIDELINES.md for detailed guidance")
         print(f"{'='*80}\n")
 
 

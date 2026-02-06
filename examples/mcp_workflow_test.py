@@ -14,7 +14,6 @@ Replicates the exact sequence from the MCP CLI test:
 This tests the same workflow that would be called by Claude via MCP.
 """
 import asyncio
-import json
 import sys
 from pathlib import Path
 
@@ -31,14 +30,14 @@ async def test_mcp_workflow():
 
     # Import the MCP tool functions directly
     from chuk_motion.async_server import (
-        remotion_create_project,
-        remotion_add_title_scene,
-        remotion_add_fuzzy_text,
-        remotion_add_true_focus,
+        artifact_status,
         remotion_add_end_screen,
+        remotion_add_fuzzy_text,
+        remotion_add_title_scene,
+        remotion_add_true_focus,
+        remotion_create_project,
         remotion_generate_video,
         remotion_render_video,
-        artifact_status,
     )
 
     # Step 1: remotion_create_project
@@ -115,8 +114,9 @@ async def test_mcp_workflow():
     if job_id:
         # Step 7b: Poll for render completion
         print("\n--- Step 7b: remotion_render_status (polling) ---")
-        from chuk_motion.async_server import remotion_render_status
         import asyncio
+
+        from chuk_motion.async_server import remotion_render_status
 
         max_polls = 30  # 5 minutes max (10s intervals)
         for i in range(max_polls):
@@ -126,7 +126,7 @@ async def test_mcp_workflow():
             print(f"  Poll {i+1}: status={status_data.get('status')}, progress={status_data.get('progress')}%")
 
             if status_data.get("status") == "completed":
-                print(f"  ✓ Render complete!")
+                print("  ✓ Render complete!")
                 print(f"  Download URL: {status_data.get('download_url')}")
                 break
             elif status_data.get("status") == "failed":

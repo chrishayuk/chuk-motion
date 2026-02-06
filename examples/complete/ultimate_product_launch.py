@@ -18,8 +18,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -566,7 +566,7 @@ app = codeflow.create(
         print(f"  ✓ {comp_type}.tsx")
 
     manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    print("  ✓ VideoComposition.tsx")
 
     # Final instructions
     print("\n" + "="*80)

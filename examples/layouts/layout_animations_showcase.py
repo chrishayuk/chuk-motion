@@ -18,9 +18,10 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
-from chuk_motion.generator.composition_builder import ComponentInstance
 import shutil
+
+from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -40,7 +41,7 @@ async def main():
         shutil.rmtree(project_path)
 
     # Create project
-    project = manager.create_project(
+    manager.create_project(
         name=project_name,
         theme="tech",
         fps=30,
@@ -334,7 +335,7 @@ function traditionalAnimation() {
     # 6. SUMMARY
     # ============================================================================
     print("\n✅ DRAMATIC showcase created!")
-    print(f"\n📊 Timeline Summary:")
+    print("\n📊 Timeline Summary:")
     print(f"   Duration: {manager.current_timeline.get_total_duration_seconds():.1f}s")
     print(f"   Components: {len(manager.current_timeline.get_all_components())}")
     print("\n💡 Motion Token Usage:")

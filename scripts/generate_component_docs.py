@@ -154,9 +154,10 @@ def generate_component_md(component_path: Path, category: str, category_folder: 
         lines.append(f"{tool_name}(")
 
         if isinstance(example, list):
-            lines.append(f"    data={json.dumps(example, indent=8).replace('\\n', '\\n    ')},")
-            lines.append(f"    title=\"Example Chart\",")
-            lines.append(f"    duration=4.0")
+            json_data = json.dumps(example, indent=8).replace('\n', '\n    ')
+            lines.append(f"    data={json_data},")
+            lines.append("    title=\"Example Chart\",")
+            lines.append("    duration=4.0")
         elif isinstance(example, dict):
             for key, value in example.items():
                 if isinstance(value, str):
@@ -179,7 +180,7 @@ def generate_component_md(component_path: Path, category: str, category_folder: 
     lines.extend([
         "## Design Tokens",
         "",
-        f"This component uses the chuk-motion design token system for consistent styling:",
+        "This component uses the chuk-motion design token system for consistent styling:",
         "",
         "- **Colors**: Theme-aware color palettes",
         "- **Typography**: Video-optimized font scales",
@@ -308,7 +309,7 @@ def main():
     }
 
     generated_count = 0
-    category_components = {cat: [] for cat in categories.keys()}
+    category_components = {cat: [] for cat in categories}
 
     for category_folder, category_name in categories.items():
         category_path = src_path / category_folder

@@ -12,8 +12,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_pixel_transition_demo():
@@ -29,8 +30,8 @@ def generate_pixel_transition_demo():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"PIXEL TRANSITION DEMO")
-    print(f"Pixelated dissolve transition effects")
+    print("PIXEL TRANSITION DEMO")
+    print("Pixelated dissolve transition effects")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -193,14 +194,14 @@ def generate_pixel_transition_demo():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Demo structure:")
-    print(f"   • Text Transition: 1 scene")
-    print(f"   • Chart to Text: 1 scene")
-    print(f"   • Fine Grid: 1 scene")
-    print(f"   • Coarse Grid: 1 scene")
+    print("\n📊 Demo structure:")
+    print("   • Text Transition: 1 scene")
+    print("   • Chart to Text: 1 scene")
+    print("   • Fine Grid: 1 scene")
+    print("   • Coarse Grid: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 PixelTransition Variations:")
+    print("\n🎨 PixelTransition Variations:")
     print("   ✓ Different grid sizes (8x8 to 20x20)")
     print("   ✓ Variable transition timing")
     print("   ✓ Text, charts, and counters")
@@ -235,7 +236,7 @@ def main():
     print("   Retro-style pixel transition effects\n")
 
     try:
-        project_path = generate_pixel_transition_demo()
+        generate_pixel_transition_demo()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

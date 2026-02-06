@@ -12,8 +12,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -31,7 +31,7 @@ async def main():
         shutil.rmtree(project_path)
 
     # Create project
-    print(f"\n📁 Creating project...")
+    print("\n📁 Creating project...")
     project = manager.create_project(
         name=project_name,
         theme="tech",
@@ -193,7 +193,7 @@ print()
         print(f"  ✓ {comp_type}.tsx")
 
     manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    print("  ✓ VideoComposition.tsx")
 
     # Next steps
     print("\n" + "="*70)

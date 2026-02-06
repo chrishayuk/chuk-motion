@@ -19,8 +19,9 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def create_image_content(src, **kwargs):
@@ -48,8 +49,8 @@ def generate_image_layouts_showcase():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"IMAGE CONTENT & LAYOUTS SHOWCASE")
-    print(f"ImageContent Component + Layout Compositions")
+    print("IMAGE CONTENT & LAYOUTS SHOWCASE")
+    print("ImageContent Component + Layout Compositions")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -518,19 +519,19 @@ def generate_image_layouts_showcase():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Showcase structure:")
-    print(f"   • Introduction: 1 scene")
-    print(f"   • Image Demos: 17 × 2 scenes = 34 scenes")
-    print(f"   • Final Summary: 1 scene")
+    print("\n📊 Showcase structure:")
+    print("   • Introduction: 1 scene")
+    print("   • Image Demos: 17 × 2 scenes = 34 scenes")
+    print("   • Final Summary: 1 scene")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🖼️  Image Content Features:")
+    print("\n🖼️  Image Content Features:")
     print("   ✓ Cover, Contain, Fill fit modes")
     print("   ✓ Opacity control (0.0 - 1.0)")
     print("   ✓ Border radius (rounded corners)")
     print("   ✓ Local files & remote URLs")
 
-    print(f"\n🎨 Layouts Demonstrated:")
+    print("\n🎨 Layouts Demonstrated:")
     print("   ✓ Grid - Photo galleries")
     print("   ✓ SplitScreen - Before/after comparisons")
     print("   ✓ ThreeColumnLayout - Product showcases")
@@ -580,7 +581,7 @@ def main():
     print("   Comprehensive examples of ImageContent with various layouts\n")
 
     try:
-        project_path = generate_image_layouts_showcase()
+        generate_image_layouts_showcase()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

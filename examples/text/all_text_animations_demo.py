@@ -18,8 +18,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 import shutil
+
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 def generate_all_text_animations_demo():
@@ -35,8 +36,8 @@ def generate_all_text_animations_demo():
         shutil.rmtree(project_path_obj)
 
     print(f"\n{'='*70}")
-    print(f"ALL TEXT ANIMATIONS DEMO")
-    print(f"Complete showcase of 6 text animation components")
+    print("ALL TEXT ANIMATIONS DEMO")
+    print("Complete showcase of 6 text animation components")
     print(f"{'='*70}\n")
 
     # Create base project
@@ -326,16 +327,16 @@ def generate_all_text_animations_demo():
     total_duration = total_frames / 30.0
 
     print(f"\n⏱️  Total duration: {total_duration:.1f} seconds ({total_frames} frames @ 30fps)")
-    print(f"\n📊 Demo structure:")
-    print(f"   • TypewriterText: 2 examples")
-    print(f"   • StaggerText: 2 examples")
-    print(f"   • WavyText: 2 examples")
-    print(f"   • TrueFocus: 2 examples")
-    print(f"   • DecryptedText: 2 examples")
-    print(f"   • FuzzyText: 2 examples")
+    print("\n📊 Demo structure:")
+    print("   • TypewriterText: 2 examples")
+    print("   • StaggerText: 2 examples")
+    print("   • WavyText: 2 examples")
+    print("   • TrueFocus: 2 examples")
+    print("   • DecryptedText: 2 examples")
+    print("   • FuzzyText: 2 examples")
     print(f"   • TOTAL: {len(scenes)} scenes")
 
-    print(f"\n🎨 All Text Animation Components:")
+    print("\n🎨 All Text Animation Components:")
     print("   ✓ TypewriterText - Classic typing with cursor")
     print("   ✓ StaggerText - Staggered reveal with spring")
     print("   ✓ WavyText - Continuous wave motion")
@@ -368,7 +369,7 @@ def main():
     print("   Complete showcase of 6 text animation components\n")
 
     try:
-        project_path = generate_all_text_animations_demo()
+        generate_all_text_animations_demo()
         print("✨ Generation complete!")
         return 0
     except Exception as e:

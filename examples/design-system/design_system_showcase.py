@@ -26,8 +26,9 @@ from chuk_motion.themes.youtube_themes import YOUTUBE_THEMES
 async def create_design_system_showcase():
     """Create a comprehensive design system showcase video."""
 
-    from chuk_motion.utils.project_manager import ProjectManager
     import shutil
+
+    from chuk_motion.utils.project_manager import ProjectManager
 
     manager = ProjectManager()
     project_name = "design_system_showcase"
@@ -39,7 +40,7 @@ async def create_design_system_showcase():
 
     # Create project
     print(f"\n📁 Creating project: {project_name}")
-    project = manager.create_project(
+    manager.create_project(
         name=project_name,
         theme="tech",
         fps=30,
@@ -332,7 +333,7 @@ console.log(fibonacci(10)); // 55"""
         print(f"  ✓ {comp_type}.tsx")
 
     manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    print("  ✓ VideoComposition.tsx")
 
     # Get project info
     info = manager.get_project_info()
@@ -343,8 +344,8 @@ console.log(fibonacci(10)); // 55"""
     print(f"📁 Project: {project_path}")
     print(f"🎬 Duration: {composition['duration_seconds']:.1f} seconds")
     print(f"📊 Components: {len(composition['components'])}")
-    print(f"🎨 Themes Used: 7 (tech, finance, education, lifestyle, gaming, minimal, business)")
-    print(f"📐 Resolution: 1920x1080 @ 30fps")
+    print("🎨 Themes Used: 7 (tech, finance, education, lifestyle, gaming, minimal, business)")
+    print("📐 Resolution: 1920x1080 @ 30fps")
     print("\n💡 What's Showcased:")
     print("   • All 7 YouTube-optimized themes")
     print("   • Typography scales (1080p optimized)")

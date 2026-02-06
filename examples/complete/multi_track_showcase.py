@@ -10,7 +10,6 @@ This example demonstrates the new track-based timeline system:
 - No manual frame calculations needed!
 """
 import asyncio
-import json
 import shutil
 import sys
 from pathlib import Path
@@ -18,8 +17,8 @@ from pathlib import Path
 # Add parent directory to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from chuk_motion.utils.project_manager import ProjectManager
 from chuk_motion.generator.composition_builder import ComponentInstance
+from chuk_motion.utils.project_manager import ProjectManager
 
 
 async def main():
@@ -170,7 +169,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         align_to="main",
         offset=0.5
     )
-    print(f"✓ Lower third #1: 0.5s - 4.0s (layer 10, over title)")
+    print("✓ Lower third #1: 0.5s - 4.0s (layer 10, over title)")
 
     # Text overlay aligned to code block
     print("\n💬 Adding text overlay (aligned to code)...")
@@ -193,7 +192,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         align_to="main",
         offset=5.0
     )
-    print(f"✓ Text overlay: 5.0s - 9.0s (layer 10, over code)")
+    print("✓ Text overlay: 5.0s - 9.0s (layer 10, over code)")
 
     # Another lower third aligned to chart
     print("\n📋 Adding lower third (aligned to chart)...")
@@ -216,7 +215,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         align_to="main",
         offset=11.5
     )
-    print(f"✓ Lower third #2: 11.5s - 15.5s (layer 10, over chart)")
+    print("✓ Lower third #2: 11.5s - 15.5s (layer 10, over chart)")
 
     # ========================================================================
     # PIP TRACK: Picture-in-picture overlay at the top layer
@@ -247,7 +246,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         align_to="main",
         offset=4.0
     )
-    print(f"✓ Counter: 4.0s - 12.0s (layer 20, highest layer)")
+    print("✓ Counter: 4.0s - 12.0s (layer 20, highest layer)")
 
     # ========================================================================
     # BACKGROUND TRACK: Behind everything
@@ -277,7 +276,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         track="background",
         start_frame=0  # Explicit start from beginning
     )
-    print(f"✓ Background: 0.0s - 16.0s (layer -10, behind everything)")
+    print("✓ Background: 0.0s - 16.0s (layer -10, behind everything)")
 
     # ========================================================================
     # Summary
@@ -289,12 +288,12 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
     info = manager.get_project_info()
     composition = info['composition']
 
-    print(f"\n📊 Composition Stats:")
+    print("\n📊 Composition Stats:")
     print(f"  Total duration: {composition['duration_seconds']:.1f} seconds")
     print(f"  Total frames: {composition['duration_frames']}")
     print(f"  Total components: {len(composition['components'])}")
 
-    print(f"\n🎯 Track Summary:")
+    print("\n🎯 Track Summary:")
     all_tracks = manager.current_timeline.list_tracks()
     for track in all_tracks:
         print(f"  • {track['name']:<12}: {track['component_count']} components, "
@@ -331,7 +330,7 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
             c for c in manager.current_timeline.get_all_components()
             if c.component_type == comp_type
         )
-        file_path = manager.add_component_to_project(
+        manager.add_component_to_project(
             comp_type,
             sample.props,
             manager.current_timeline.theme
@@ -339,8 +338,8 @@ timeline.add_component(caption, duration=3.0, track="overlay")""",
         print(f"  ✓ {comp_type}.tsx")
 
     print("\n📝 Generating VideoComposition.tsx...")
-    composition_file = manager.generate_composition()
-    print(f"  ✓ VideoComposition.tsx")
+    manager.generate_composition()
+    print("  ✓ VideoComposition.tsx")
 
     # ========================================================================
     # Next steps
