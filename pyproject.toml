@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chuk-motion"
-version = "0.2.0"
+version = "0.2.1"
 description = "Remotion MCP Server - A design-system-first approach to AI-powered video generation"
 readme = "README.md"
 requires-python = ">=3.11"
-authors = [{ name = "Chris Hay" }]
+license = {text = "Apache-2.0"}
 dependencies = [
     "pydantic>=2.11.7",
     "aiofiles>=23.0.0",

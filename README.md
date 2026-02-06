@@ -157,10 +157,6 @@ Realistic UI mockups and demonstrations:
 ### Install Python Package
 
 ```bash
-# Clone the repository
-git clone https://github.com/chrishayuk/chuk-motion.git
-cd chuk-motion
-
 # Install dependencies with uv (recommended)
 uv pip install -e .
 
@@ -647,20 +643,11 @@ Contributions welcome! Please:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+Apache License 2.0 - see [LICENSE](LICENSE) for details.
 
 ## Links
 
-- **GitHub**: https://github.com/chrishayuk/chuk-motion
 - **Related Projects**:
-  - [chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server) - Zero-config MCP framework
-  - [chuk-mcp-pptx](https://github.com/chrishayuk/chuk-mcp-pptx) - PowerPoint MCP server
+  - chuk-mcp-server - Zero-config MCP framework
+  - chuk-mcp-pptx - PowerPoint MCP server
   - [Remotion](https://www.remotion.dev) - React-based video generation
-
-## Author
-
-**Chris Hay** - [@chrishayuk](https://github.com/chrishayuk)
-
----
-
-Built with ❤️ using [chuk-mcp-server](https://github.com/chrishayuk/chuk-mcp-server) and [Remotion](https://www.remotion.dev)
